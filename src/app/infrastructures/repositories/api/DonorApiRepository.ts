@@ -76,6 +76,11 @@ export class DonorApiRepository implements DonorRepositoryInterface {
         {},
         payload as CreateDonorApiRequest
       );
+
+      this.service.invoke("post",
+      this.endpoints.managerDonor(),
+      {},
+      payload as CreateDonorApiRequest).then(res => console.log('response', res)).then(err => console.log('error',err))
    
       console.log(resp)
       return ['success', {
@@ -88,7 +93,7 @@ export class DonorApiRepository implements DonorRepositoryInterface {
     }
   }
 
-  public async storeNewData(
+  public async storeNewData(  
     payload: CreateDonorRequestInterface
   ): Promise<DonorDetails> {
     const resp = await this.service.invoke(
