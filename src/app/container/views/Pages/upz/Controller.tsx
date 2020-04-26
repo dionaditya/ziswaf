@@ -282,7 +282,7 @@ export const CorporateController = ({ children }) => {
         if (debouncedValue !== '') {
             (async () => {
                 if (state.DonaturInfo.is_company === true) {
-                    const donaturQueryResult = await corporatePresenter.getAll({ search: debouncedValue, filter: { division_id: 1, donor_category: 1 }, })
+                    const donaturQueryResult = await corporatePresenter.getAll({ search: debouncedValue })
                     if (donaturQueryResult !== null) {
                         const transformedDonaturQuery = donaturQueryResult.map(val => {
                             return {
@@ -298,7 +298,7 @@ export const CorporateController = ({ children }) => {
                             }))
                     }
                 } else {
-                    const donaturQueryResult = await corporatePresenter.getAll({ search: debouncedValue, filter: { division_id: 1, donor_category: 0 }, })
+                    const donaturQueryResult = await corporatePresenter.getAll({ search: debouncedValue })
                     if (donaturQueryResult !== null) {
                         const transformedDonaturQuery = donaturQueryResult.map(val => {
                             return {

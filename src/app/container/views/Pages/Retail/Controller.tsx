@@ -221,7 +221,7 @@ export const RetailController = ({ children }) => {
     React.useEffect(() => {
         if (debouncedValue !== '') {
             (async () => {
-                const donaturQueryResult = await retailPresenter.getAll({ search: debouncedValue, filter: { division_id: 2, donor_category: 0 } })
+                const donaturQueryResult = await retailPresenter.getAll({ search: debouncedValue })
 
                 if (donaturQueryResult !== null) {
                     const transformedDonaturQuery = donaturQueryResult.map(val => {

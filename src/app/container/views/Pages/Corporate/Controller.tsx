@@ -223,7 +223,7 @@ export const CorporateController = ({ children }) => {
     React.useEffect(() => {
         if (debouncedValue !== '') {
             (async () => {
-                const donaturQueryResult = await corporatePresenter.getAll({ search: debouncedValue, filter: { division_id: 3, donor_category: 1 } })
+                const donaturQueryResult = await corporatePresenter.getAll({ search: debouncedValue })
                 if (donaturQueryResult !== null) {
                     const transformedDonaturQuery = donaturQueryResult.map(val => {
                         return {
