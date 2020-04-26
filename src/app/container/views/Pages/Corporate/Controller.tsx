@@ -146,7 +146,7 @@ export const CorporateController = ({ children }) => {
     const [index, setIndex] = useState(0)
     const [category, setCategory] = useState<any>([{}])
 
-    const debouncedValue = useDebounce(state.search, 300)
+    const debouncedValue = useDebounce(state.search, 100)
     const corporatePresenter: DonorPresenter = container.resolve(DonorPresenter)
     const donationPresenter: DonationPresenter = container.resolve(DonationPresenter)
     const provincePresenter: ProvincePresenter = container.resolve(ProvincePresenter)

@@ -113,7 +113,7 @@ const TopNavigation = () => {
                     color="success"
                     style={{ backgroundColor: "#00923F", fontWeight: 800 }}
                     // disabled
-                    onClick={() => controller.fetchReportData()}
+                    onClick={() => controller.handleExportPdf()}
                   >
                     <LaunchIcon />
                     EXPORT TO PDF

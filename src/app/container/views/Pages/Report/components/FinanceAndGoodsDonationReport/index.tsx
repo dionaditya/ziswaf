@@ -541,14 +541,14 @@ const LaporanKeuanganDanBarang = () => {
                       Detail Posisi Keuangan
                     </span>
                   </GridItem>
-                  <GridItem xs={12} sm={12} md={6}>
+                  <GridItem xs={12} sm={6} md={6}>
                     <DataDetailPosisiKeuangan
                       show={false}
                       rowsData={rowsDataLeft}
                       total
                     />
                   </GridItem>
-                  <GridItem xs={12} sm={12} md={6}>
+                  <GridItem xs={12} sm={6} md={6}>
                     <DataDetailPosisiKeuangan
                       show
                       rowsData={rowsDataRight}

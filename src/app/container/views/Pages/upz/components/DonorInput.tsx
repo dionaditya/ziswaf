@@ -81,8 +81,7 @@ const DonorInput = ({ index, setIndex }) => {
     control,
   } = useForm();
   const [error, setError] = React.useState(false);
-  const [wrongEmail, setWrongEmail] = React.useState(false)
- 
+  const [wrongEmail, setWrongEmail] = React.useState(false);
 
   const {
     company_name,
@@ -144,33 +143,26 @@ const DonorInput = ({ index, setIndex }) => {
   };
 
   const handleInputSubmit = async (e) => {
-    if(controller.DonaturInfo.status === '') {
-        setError(true)
+    if (controller.DonaturInfo.status === "") {
+      setError(true);
     } else {
-       if (_.isEmpty(errors)) {
-      const [status, response] = await controller.postData();
-      if (controller.selected) {
-        history.push(
-          `/dashboard/upz-transaction/${controller.DonationInfo.donor_id}?is_company=${controller.DonaturInfo.is_company}&kwitansi=${controller.DonationInfo.kwitansi}&tanggal=${controller.DonationInfo.created_at}&employee_id=${controller.DonationInfo.employee_id}`
-        );
-      } else {
-
-        if (status === "error") {
-           if(response.data.message === 'Email must be a valid email ') {
-              setWrongEmail(true)
-          } else {
-             setStatusModal(true);
-             setWrongEmail(false)
-          }
-        } else {
+      if (_.isEmpty(errors)) {
+        const [status, response] = await controller.postData();
+        if (controller.selected) {
           history.push(
-            `/dashboard/upz-transaction/${response.data.data.id}?is_company=${controller.DonaturInfo.is_company}&kwitansi=${controller.DonationInfo.kwitansi}&tanggal=${controller.DonationInfo.created_at}&employee_id=${controller.DonationInfo.employee_id}`
+            `/dashboard/upz-transaction/${controller.DonationInfo.donor_id}?is_company=${controller.DonaturInfo.is_company}&kwitansi=${controller.DonationInfo.kwitansi}&tanggal=${controller.DonationInfo.created_at}&employee_id=${controller.DonationInfo.employee_id}`
           );
+        } else {
+          if (status === "error") {
+            setStatusModal(true);
+          } else {
+            history.push(
+              `/dashboard/upz-transaction/${response.data.data.id}?is_company=${controller.DonaturInfo.is_company}&kwitansi=${controller.DonationInfo.kwitansi}&tanggal=${controller.DonationInfo.created_at}&employee_id=${controller.DonationInfo.employee_id}`
+            );
+          }
         }
       }
     }
-    }
-   
   };
 
   const handleUpdateInput = async () => {
@@ -377,16 +369,14 @@ const DonorInput = ({ index, setIndex }) => {
                                   labelPlacement="end"
                                 />
                               </FormGroup>
-                              {
-                                error &&  <p
-                                      style={{ color: "red", fontSize: "12px" }}
-                                    >
-                                      Belum memilih status
-                                    </p>
-                              }
+                              {error && (
+                                <p style={{ color: "red", fontSize: "12px" }}>
+                                  Belum memilih status
+                                </p>
+                              )}
                             </>
                           )}
-                       
+
                           <div className="row">
                             {controller.DonaturInfo.is_company ? (
                               <div className="col s12">
@@ -631,24 +621,36 @@ const DonorInput = ({ index, setIndex }) => {
                                   style={{ width: "100%" }}
                                   placeholder="Alamat Surel"
                                   onChange={onChange}
-                                  inputRef={register({ required: true })}
+                                  inputRef={register({
+                                    required: true,
+                                    pattern: /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/i,
+                                  })}
                                 />
                                 {errors &&
                                   errors.email &&
                                   errors.email.type === "required" && (
                                     <p
-                                      style={{ color: "red", fontSize: "12px" }}
+                                      style={{
+                                        color: "red",
+                                        fontSize: "12px",
+                                      }}
                                     >
                                       {errorMessage.email}
                                     </p>
                                   )}
-                                  {
-                                    wrongEmail &&  <p
-                                      style={{ color: "red", fontSize: "12px" }}
+                                {errors &&
+                                  errors.email &&
+                                  errors.email.type === "pattern" && (
+                                    <p
+                                      style={{
+                                        color: "red",
+                                        fontSize: "12px",
+                                      }}
                                     >
                                       Email tidak valid
                                     </p>
-                                  }
+                                  )}  
+                                />
                               </div>
                             ) : (
                               <div />
@@ -663,7 +665,9 @@ const DonorInput = ({ index, setIndex }) => {
                       <GridItem xs={12} sm={12} md={12}>
                         {/* <Box display="flex" flexDirection="column"> */}
                         <GridItem xs={12} sm={12} md={12}>
-                          <label   className={classes.label}>Kontak Donatur</label>
+                          <label className={classes.label}>
+                            Kontak Donatur
+                          </label>
                         </GridItem>
                         {controller.DonaturInfo.is_company ? (
                           <>
@@ -780,7 +784,7 @@ const DonorInput = ({ index, setIndex }) => {
                                 )}
                             </GridItem>
                             <GridItem xs={12} sm={12} md={12}>
-                              <label   className={classes.label}>
+                              <label className={classes.label}>
                                 Keterangan Tambahan
                               </label>
                             </GridItem>
@@ -802,12 +806,7 @@ const DonorInput = ({ index, setIndex }) => {
                               />
                             </GridItem>
                             <GridItem xs={12} sm={12} md={12}>
-                              <label
-                                htmlFor="info-donatur"
-                                
-                              >
-                                Info Donatur
-                              </label>
+                              <label htmlFor="info-donatur">Info Donatur</label>
                             </GridItem>
                             <Controller
                               as={
@@ -900,7 +899,10 @@ const DonorInput = ({ index, setIndex }) => {
                                     style={{ width: "100%" }}
                                     placeholder="Alamat Surel"
                                     onChange={onChange}
-                                    inputRef={register({ required: true })}
+                                    inputRef={register({
+                                      required: true,
+                                      pattern: /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/i,
+                                    })}
                                   />
                                   {errors &&
                                     errors.email &&
@@ -914,15 +916,21 @@ const DonorInput = ({ index, setIndex }) => {
                                         {errorMessage.email}
                                       </p>
                                     )}
-                                       {
-                                    wrongEmail &&  <p
-                                      style={{ color: "red", fontSize: "12px" }}
-                                    >
-                                      Email tidak valid
-                                    </p>
+                                  {errors &&
+                                    errors.email &&
+                                    errors.email.type === "pattern" && (
+                                      <p
+                                        style={{
+                                          color: "red",
+                                          fontSize: "12px",
+                                        }}
+                                      >
+                                        Email tidak valid
+                                      </p>
+                                    )}
                                   }
                                 </div>
-                                <label   className={classes.label}>
+                                <label className={classes.label}>
                                   Keterangan Tambahan
                                 </label>
                                 <label htmlFor="npwp" className="black-text">
@@ -938,10 +946,7 @@ const DonorInput = ({ index, setIndex }) => {
                                   inputRef={register}
                                   onChange={onChange}
                                 />
-                                <label
-                                  htmlFor="info-donatur"
-                              
-                                >
+                                <label htmlFor="info-donatur">
                                   Info Donatur
                                 </label>
                                 <Controller

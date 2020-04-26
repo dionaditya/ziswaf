@@ -98,14 +98,14 @@ const Content = () => {
           ...prevState,
           filter: {
             ...prevState.filter,
-            [field]: value,
+            [field]: moment(value).toISOString(),
           },
         }))
       : controller.setFilterParam((prevState) => ({
           ...prevState,
           filter: {
             ...prevState.filter,
-            [field]: [value],
+           [field]: moment(value).toISOString(),
             school_id: controller.idSchool,
           },
         }));

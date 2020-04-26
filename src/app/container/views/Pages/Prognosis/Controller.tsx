@@ -173,7 +173,7 @@ export const PrognosisController = ({ children }) => {
         Promise.all([resRetail, resCorporate, resUpz]).then(function(values){
             handleSetState('isLoadingSubmit', false)
             handleSetState('isModalConfirm', false)
-            history.push('/dashboard/prognosis')
+            history.push('/dashboard')
             return values
           }).catch(function(err){
             handleSetState('isLoadingSubmit', false)

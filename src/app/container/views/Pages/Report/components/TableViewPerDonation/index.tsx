@@ -98,7 +98,8 @@ const statements = [
 ];
 
 const TableViewPerDonation = (props) => {
-    const { role, data, dataOperator } = props;
+    const { role, dataAdmin, dataOperator } = props;
+
     const transformData = () => {
         const data: Array<object> = [];
         division.map((divisi) => {
@@ -108,7 +109,7 @@ const TableViewPerDonation = (props) => {
             data.push({
               name: `${name}`,
               label: `${divisi.label} - ${statement.label}`,
-              total: role === 1 ? data[name] : dataOperator[nameOperator],
+              total: role === 1 ? dataAdmin[name] : dataOperator[nameOperator],
             });
           });
         });
@@ -285,7 +286,7 @@ const TableViewPerDonation = (props) => {
                     md={6}
                     className={classes.tabHeader}
                   >
-                    <p className={classes.labels}>{role === 1 ? formatPrice(props.data.total || 0) : formatPrice(dataOperator.totalOperator || 0)}</p>
+                    <p className={classes.labels}>{role === 1 ? formatPrice(props.dataAdmin.total || 0) : formatPrice(dataOperator.totalOperator || 0)}</p>
                   </GridItem>
                 </GridContainer>
               </GridItem>

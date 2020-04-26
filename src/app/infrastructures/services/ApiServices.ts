@@ -10,14 +10,13 @@ import history from "@/app/infrastructures/misc/BrowserHistory";
 @injectable()
 export default class ApiService implements ApiServiceInterface {
     public client: AxiosInstance;
-  
+    
     constructor() {
         this.client = Axios.create({
             baseURL: Endpoints.baseUrl,
             timeout: 50000
         });
-    
-        if (process.env.NODE_ENV === "production") {
+        if (process.env.NODE_ENV || process.env.REACT_APP_BASE_URL) {
             this.client.interceptors.response.use(resp => {
                 return resp;
             }, function (error) {
@@ -28,30 +27,30 @@ export default class ApiService implements ApiServiceInterface {
             });
         }
     }
-  
+
     public async invoke<T>(
         method: Method = "get",
         url: string = "",
         params: Object = {},
         payload: any = null,
         headers: Map<string, string> = new Map()): Promise<AxiosResponse<any>> {
-            // set common header
-            this.client.defaults.headers["Access-Control-Allow-Origin"] = "*";
-            this.client.defaults.headers["Content-Type"] = "application/json";
-            this.client.defaults.headers["Authorization"] = "Bearer " + getToken();
-        
-            headers.forEach((value: string, key: string) => {
-                this.client.defaults.headers.common[key] = value;
-            });
-        
-            var result =  await this.client.request({
-                url,
-                params,
-                paramsSerializer: par => qs.stringify(par, { encode: false }),
-                data: payload ? JSON.stringify(new BaseRequest<T>(payload)) : null, 
-                method
-            });
-            return result;
+        // set common header
+        this.client.defaults.headers["Access-Control-Allow-Origin"] = "*";
+        this.client.defaults.headers["Content-Type"] = "application/json";
+        this.client.defaults.headers["Authorization"] = "Bearer " + getToken();
+
+        headers.forEach((value: string, key: string) => {
+            this.client.defaults.headers.common[key] = value;
+        });
+
+        var result = await this.client.request({
+            url,
+            params,
+            paramsSerializer: par => qs.stringify(par, { encode: false }),
+            data: payload ? JSON.stringify(new BaseRequest<T>(payload)) : null,
+            method
+        });
+        return result;
     }
 
 
@@ -62,16 +61,16 @@ export default class ApiService implements ApiServiceInterface {
         params: Object = {},
         payload: any = null,
         headers: Map<string, string> = new Map()): Promise<AxiosResponse<any>> {
-            // set common header
-            let result =  await this.client.request({
-                url,
-                params,
-                paramsSerializer: par => qs.stringify(par, { encode: false }),
-                data: payload.toFormData(), 
-                headers: {'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${getToken()}`  },
-                method
-            });
-            return result;
+        // set common header
+        let result = await this.client.request({
+            url,
+            params,
+            paramsSerializer: par => qs.stringify(par, { encode: false }),
+            data: payload.toFormData(),
+            headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${getToken()}` },
+            method
+        });
+        return result;
     }
-    
+
 }

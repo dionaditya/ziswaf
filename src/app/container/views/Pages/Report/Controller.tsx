@@ -122,7 +122,6 @@ export const ReportController = ({ children }) => {
       },
     }
 
-    console.log('start_date:', moment(state.filterData.dateSelected.start_date).toISOString())
 
     if (role === 1) {
       try {
@@ -399,13 +398,13 @@ export const ReportController = ({ children }) => {
     const schoolSelected = role === 1 ? state.filterData.unitSelected.map(item => item['name']).join(',') : idSchool;
 
     const pdfRef =
-      process.env.REACT_APP_API_KEY +
+      process.env.REACT_APP_BASE_URL +
       '/transaction/export-pdf?filter[regency]=' +
       regencySelected + '&filter[school_id]=' + schoolSelected +
       '&filter[start_date]=' + startDate +
       '&filter[end_date]=' + endDate
-
-    window.open(pdfRef, '_blank')
+      
+      window.open(pdfRef, '_blank')
   }
 
  return (

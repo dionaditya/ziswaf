@@ -197,7 +197,7 @@ const {
 } = createContainer(() => useState(initialState));
 
 export const DashboardController = ({ children }) => {
-  const [state, setState] = useState(initialState)
+  const [state, setState] = useTracked()
   const [data, setData] = useState<any>({});
   const [dataDashboard, setDataDashboard] = useState<any>({})
   const [dataCommonReport, setDataCommonReport] = useState<any>({})
@@ -284,12 +284,18 @@ export const DashboardController = ({ children }) => {
   useEffect(() => {
     if (role === 1) {
         onGetData();
+
     } 
   }, [filterParamAdmin]);
 
   useEffect(() => {
     if (role === 1) {
         getSchoolData("")
+        onGetDataDashboardOperator();
+      setState(prevState => ({
+        ...prevState,
+        selectedSeries: initialState.selectedSeries
+      }))
     } 
   }, []);
 
@@ -305,8 +311,10 @@ export const DashboardController = ({ children }) => {
             school_id: idSchool,
             shchool_name: nameSchool,
           }
-        }
+        },
+        selectedSeries: initialState.selectedSeries
       }))
+   
     }
   }, [filterParam]);
 
@@ -366,16 +374,6 @@ export const DashboardController = ({ children }) => {
       setDataZiswafPersent([])
       setState(prevState => ({
         ...prevState,loading: false}))
-       setState(prevState => ({
-        ...prevState,
-        selectedSeries: [  {
-      name: 'Zakat Maal',
-      total: role === 1 ? dataDashboard.totalZakatMaal :  dataDashboardOperator.totalZakatMaal,
-      compareData: role === 1 ? dataCommonReport.totalZiswafPersent && dataCommonReport.totalZiswafPersent.zakatMaalPersent : dataCommonReport.total_ziswaf_percent && dataCommonReport.total_ziswaf_percent.zakatMaalPersent,
-      data: role === 1 ? dataAdminZakatMaal.map(val => val.total) : dataOperatorZakatMaal.map(val => val.total),
-      color: "#3DB15B"
-    }]
-      }))   
     }
   };
 
@@ -401,7 +399,7 @@ export const DashboardController = ({ children }) => {
       .then((res) => {
         setState(prevState => ({
           ...prevState,loading: false}))
-        console.log(res)
+    
         setDataDashboardOperator(res.data?.dashboardOperator)
         setDataOperatorZakatMaal(res.data?.zakatMaalPerDay)
         setDataOperatorZakatFitrah(res.data?.zakatFitrahPerDay)
@@ -412,6 +410,7 @@ export const DashboardController = ({ children }) => {
       setDataCommonReport(res.data?.commonReport)
       setDataDivisionReport(res.data?.divisionReport)
       setDataNominalReport(res.data?.nominalReport)
+      console.log('res', res)
       })
       .catch((error) => {
         setState(prevState => ({

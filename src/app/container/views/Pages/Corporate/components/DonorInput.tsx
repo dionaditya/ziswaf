@@ -142,13 +142,7 @@ const DonorInput = ({ index, setIndex }) => {
         );
       } else {
         if (status === "error") {
-          if(response.data.message === 'Email must be a valid email ') {
-              setError(true)
-          } else {
-             setStatusModal(true);
-             setError(false)
-          }
-          
+          setStatusModal(true);
         } else {
           history.push(
             `/dashboard/corporate-transaction/${response.data.data.id}`
@@ -425,22 +419,35 @@ const DonorInput = ({ index, setIndex }) => {
                           style={{ width: "100%" }}
                           placeholder="Alamat Surel"
                           onChange={onChange}
-                          inputRef={register({ required: true })}
+                          inputRef={register({
+                            required: true,
+                            pattern: /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/i,
+                          })}
                         />
                         {errors &&
                           errors.email &&
                           errors.email.type === "required" && (
-                            <p style={{ color: "red", fontSize: "12px" }}>
+                            <p
+                              style={{
+                                color: "red",
+                                fontSize: "12px",
+                              }}
+                            >
                               {errorMessage.email}
                             </p>
                           )}
-                          {
-                            error &&
-                                <p style={{ color: "red", fontSize: "12px" }}>
-                              Email bukan email yang valid
+                        {errors &&
+                          errors.email &&
+                          errors.email.type === "pattern" && (
+                            <p
+                              style={{
+                                color: "red",
+                                fontSize: "12px",
+                              }}
+                            >
+                              Email tidak valid
                             </p>
-
-                          }
+                          )}
                       </Box>
                     </GridItem>
                   </Card>

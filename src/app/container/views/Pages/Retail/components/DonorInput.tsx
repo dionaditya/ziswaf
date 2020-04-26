@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme: Theme) =>
       color: "#323C47",
       fontSize: 12,
       fontWeight: 800,
-    },
+    },  
     modal: {
       marginTop: "5vh",
     },
@@ -162,12 +162,7 @@ const DonorInput = ({ index, setIndex }) => {
         );
       } else {
         if (status === "error") {
-           if(response.data.message === 'Email must be a valid email ') {
-              setWrongEmail(true)
-          } else {
-             setStatusModal(true);
-             setWrongEmail(false)
-          }
+           setStatusModal(true);
         } else {
           history.push(`/dashboard/retail-input/${response.data.data.id}`);
         }
@@ -615,7 +610,7 @@ const DonorInput = ({ index, setIndex }) => {
                                     style={{ width: "100%" }}
                                     placeholder="Alamat Surel"
                                     onChange={onChange}
-                                    inputRef={register({ required: true })}
+                                    inputRef={register({ required: true, pattern: /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/i })}
                                   />
                                   {errors &&
                                     errors.email &&
@@ -629,16 +624,18 @@ const DonorInput = ({ index, setIndex }) => {
                                         {errorMessage.email}
                                       </p>
                                     )}
-                                    {
-                                      wrongEmail &&  <p
+                                    {errors &&
+                                    errors.email &&
+                                    errors.email.type === "pattern" && (
+                                      <p
                                         style={{
                                           color: "red",
                                           fontSize: "12px",
                                         }}
                                       >
-                                        Email tidak valid
+                                       Email tidak valid
                                       </p>
-                                    }
+                                    )}
                                 </Box>
                               </GridItem>
                               <GridItem xs={12} sm={12} md={12}>

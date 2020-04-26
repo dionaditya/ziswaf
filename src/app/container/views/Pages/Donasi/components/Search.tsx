@@ -16,6 +16,7 @@ import FilterListIcon from "@material-ui/icons/FilterList";
 import ButtonDrop from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import { getUserInfo } from '@/app/infrastructures/misc/Cookies';
 
 
 const listColumnOptions = DonationTableColumns.map(val => {
@@ -61,6 +62,7 @@ export const SearchDonation: React.FC<{}> = () => {
   const controller = useContext(DonationContext)
   const [showModal, setShowModal] = React.useState(false)
   const [open, setOpen] = React.useState(false);
+  let userAccess = getUserInfo();
   const classes = useStyles();
   const xsmall = useMediaQuery("(min-width: 300px)" && "(max-width: 700px");
   const medium = useMediaQuery("(min-width: 701px)");
@@ -90,161 +92,6 @@ export const SearchDonation: React.FC<{}> = () => {
   };
 
   return (
-    // <React.Fragment>
-    //   <GridContainer>
-    //     <GridItem xs={12} sm={12} md={12}>
-    //       <div className="row">
-    //         <div className="col s12 l12 m12">
-    //           <ModalFilter showModal={open} setShowModal={handleClose} />
-    //           <div style={{
-    //             padding: '20px 20px'
-    //           }}>
-    //             <div style={{ background: "#f7f9fa" }}>
-    //               {/* <div className="row"> */}
-    //               <GridItem xs={12} sm={12} md={12}>
-    //                 <Box display="flex" justifyContent="center">
-    //                   <GridItem xs={12} sm={12} md={3}>
-    //                     <div className="col s12 l2 m2" style={{ padding: "0px 12px" }}>
-    //                       <Button
-    //                         node="button"
-    //                         style={{
-    //                           color: "#3A3B3F",
-    //                           background: "#ffffff"
-    //                         }}
-    //                         // onClick={e => setShowModal(!showModal)}
-    //                         onClick={handleOpen}
-    //                       >
-    //                         <div style={{
-    //                           display: 'flex',
-    //                           flexDirection: 'row'
-    //                         }}>
-    //                           <i className="material-icons prefix">filter_list</i>
-    //                           <span className="ml-4">Filter</span>
-    //                         </div>
-    //                       </Button>
-    //                     </div>
-    //                   </GridItem>
-    //                   <GridItem xs={12} sm={12} md={9}>
-    //                     <div
-    //                       className="Input-rounded col s12 l10 m10 white"
-    //                       style={{ padding: "0px 12px", display: 'flex', flexDirection: 'row', alignItems: 'center' }}
-    //                     >
-    //                       <i className="material-icons prefix">search</i>
-    //                       <input
-    //                         id="search"
-    //                         name="search"
-    //                         type="text"
-    //                         placeholder="Cari Donasi"
-    //                         onChange={e => {
-    //                           controller.setFilterParam(prevState => ({
-    //                             ...prevState,
-    //                             search: e.target.value
-    //                           }))
-    //                         }}
-    //                         onKeyPress={e => controller.eventSubmit(e)}
-    //                       />
-    //                     </div>
-    //                   </GridItem>
-    //                 </Box>
-    //                 <GridContainer>
-    //                   <GridItem xs={12} sm={12} md={8} >
-    //                     <h2>Daftar Donasi</h2>
-    //                   </GridItem>
-    //                 </GridContainer>
-    //                 <GridContainer>
-    //                   <GridItem xs={12} sm={1} md={1}>
-    //                     <h5>Column to Display</h5>
-    //                   </GridItem>
-    //                   <GridItem xs={12} sm={5} md={2}>
-    //                     <MySelect
-    //                       label={`${controller.displayColumns.data.length} to ${DonationTableColumns.length} column`}
-    //                       options={listColumnOptions}
-    //                       handleChange={e => controller.handleSelectedColumn(e)}
-    //                       checked={controller.displayColumns.data}
-    //                     />
-    //                   </GridItem>
-    //                   <GridItem xs={12} sm={6} md={8} >
-    //                     <Box display="flex" flexDirection="row" justifyContent="flex-end">
-    //                       <Button>
-    //                         <div style={{
-    //                           display: 'flex',
-    //                           flexDirection: 'row'
-    //                         }}>
-    //                           <i className="material-icons prefix">filter_list</i>
-    //                           <span className="ml-4">Filter</span>
-    //                         </div>
-    //                       </Button>
-    //                     </Box>
-    //                   </GridItem>
-    //                 </GridContainer>
-    //               </GridItem>
-    //               {/* </div>
-    //               <div className="row">
-    //                 <div className="col s12 l12 m12">
-    //                   <h5 className="black-text" style={{ fontWeight: "bold" }}>
-    //                     Daftar Donasi
-    //               </h5>
-    //                 </div>
-    //               </div>
-    //               <div className="row">
-    //                 <div className="col s6 valign-wrapper center-align">
-    //                   <div className="col">
-    //                     column to display
-    //              </div>
-    //                   <div className="col valign-wrapper center-align">
-    //                     <MySelect
-    //                       label={`${controller.displayColumns.data.length} to ${DonationTableColumns.length} column`}
-    //                       options={listColumnOptions}
-    //                       handleChange={e => controller.handleSelectedColumn(e)}
-    //                       checked={controller.displayColumns.data}
-    //                     />
-    //                   </div>
-    //                 </div> */}
-    //               {/* <div className="col s12 l12 m12">
-    //             <Dropdown
-    //               style={{ color: "#6DB400" }}
-    //               options={{
-    //                 alignment: "right",
-    //                 autoTrigger: true,
-    //                 closeOnClick: true,
-    //                 constrainWidth: true,
-    //                 container: null,
-    //                 coverTrigger: true,
-    //                 hover: false,
-    //                 inDuration: 150,
-    //                 onCloseEnd: null,
-    //                 onCloseStart: null,
-    //                 onOpenEnd: null,
-    //                 onOpenStart: null,
-    //                 outDuration: 250
-    //               }}
-    //               trigger={
-    //                 <Button
-    //                   node="button"
-    //                   className="right"
-    //                   style={{
-    //                     background: "#6DB400"
-    //                   }}
-    //                   waves="light"
-    //                 >
-    //                   <Icon right>expand_more</Icon>
-    //                   Input Donasi
-    //                   </Button>
-    //               }
-    //             >
-    //               <Link to="/retail/donor">Input Retail</Link>
-    //               <Link to="/corporate/donor">Input Corporate</Link>
-    //               <Link to="/upz">Input Upz</Link>
-    //             </Dropdown>
-    //           </div> */}
-    //               {/* </div> */}
-    //             </div>
-    //           </div>
-    //         </div>
-    //       </div>
-    //     </GridItem>
-    //   </GridContainer>
-    // </React.Fragment
     <Box className={classes.container}>
       <GridItem mr={4} ml={4} mt={4} mb={4}>
         <ModalFilter showModal={open} setShowModal={handleClose} />
@@ -325,16 +172,22 @@ export const SearchDonation: React.FC<{}> = () => {
           </GridItem>
           <GridItem xs={12} sm={12} md={6}>
             <Box display="flex" justifyContent="flex-end" mb={4} mt={2}>
-              <Button
-                style={{
-                  backgroundColor: "#6DB400",
-                  color: "#FFFF",
-                }}
-                onClick={handleClick}
-                icon={<Add />}
-              >
-                <span>Input Donasi</span>
-              </Button>
+              {userAccess.role !== 1 ?
+                (
+                  <>
+                    <Button
+                      style={{
+                        backgroundColor: "#6DB400",
+                        color: "#FFFF",
+                      }}
+                      onClick={handleClick}
+                      icon={<Add />}
+                    >
+                      <span>Input Donasi</span>
+                    </Button>
+                  </>
+                ) : null
+              }
               <Menu
                 id="simple-menu"
                 anchorEl={anchorEl}

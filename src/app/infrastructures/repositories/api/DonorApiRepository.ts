@@ -76,24 +76,18 @@ export class DonorApiRepository implements DonorRepositoryInterface {
         {},
         payload as CreateDonorApiRequest
       );
-
-      this.service.invoke("post",
-      this.endpoints.managerDonor(),
-      {},
-      payload as CreateDonorApiRequest).then(res => console.log('response', res)).then(err => console.log('error',err))
    
-      console.log(resp)
       return ['success', {
         ...resp,
         data: { ...resp.data, data: this.mapper.convertDonorDetailsFromApi(resp) }
       }]
     } catch (error) {
-      console.log(error, error.toJSON())
+      console.log(error)
       return ['error',  error.response ]
     }
   }
 
-  public async storeNewData(  
+  public async storeNewData(
     payload: CreateDonorRequestInterface
   ): Promise<DonorDetails> {
     const resp = await this.service.invoke(

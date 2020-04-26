@@ -243,7 +243,7 @@ const LaporanDivisi = () => {
                   Jumlah Dana Per Divisi dan Kategori
                 </span>
                 <TableViewPerDonation
-                  data={controller.divisionReport}
+                  dataAdmin={controller.divisionReport}
                   dataOperator={controller.divisionReportOperator}
                   role={controller.role}
                 />

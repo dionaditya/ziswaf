@@ -167,7 +167,7 @@ export const CorporateController = ({ children }) => {
     const [selectedEmployee, setSelectedEmployee] = useState<any>({})
     const [employee, setEmployee] = useState<any>([{}])
     const [selected, setSelected] = useState(false)
-    const debouncedValue = useDebounce(state.search, 300)
+    const debouncedValue = useDebounce(state.search, 100)
     const searchEmployeeDebounced = useDebounce(state.employeeQuery, 200)
     const corporatePresenter: DonorPresenter = container.resolve(DonorPresenter)
     const donationPresenter: DonationPresenter = container.resolve(DonationPresenter)
