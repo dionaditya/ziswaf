@@ -204,7 +204,7 @@ export const DashboardController = ({ children }) => {
   const [dataDivisionReport, setDataDivisionReport] = useState<any>({})
   const [dataNominalReport, setDataNominalReport] = useState<any>({})
   const [dataPrognosisUpz, setDataPrognosisUpz] = useState<any>({})
-  const [dataPrognosisRetail, setDataPrognosisRetail] = useState<any>({})
+  const [dataPrognosisRetail, setDataPrognosisRetail]     = useState<any>({})
   const [dataPrognosisCorporate, setDataPrognosisCorporate] = useState<any>({})
   const [dataUpzPerMonth, setDataUpzPerMonth] = useState<any>({})
   const [dataRetailPerMonth, setDataRetailPerMonth] = useState<any>({})
@@ -233,7 +233,6 @@ export const DashboardController = ({ children }) => {
   const [labelDataSelect, setLabelDataSelect] = useState(null);
   const [labelSearch, setLabelSearch] = useState('');
 
-  console.log(dataCommonReport)
 
 
   const adminPermonth = dataAdminPermonth.map(val => val.total)
@@ -247,6 +246,7 @@ export const DashboardController = ({ children }) => {
           data: adminPermonth
         }]
       })) 
+
     } 
   }, [dataAdminPermonth])
 
@@ -286,6 +286,7 @@ export const DashboardController = ({ children }) => {
         onGetData();
 
     } 
+
   }, [filterParamAdmin]);
 
   useEffect(() => {
@@ -314,6 +315,7 @@ export const DashboardController = ({ children }) => {
         },
         selectedSeries: initialState.selectedSeries
       }))
+
    
     }
   }, [filterParam]);
@@ -410,7 +412,6 @@ export const DashboardController = ({ children }) => {
       setDataCommonReport(res.data?.commonReport)
       setDataDivisionReport(res.data?.divisionReport)
       setDataNominalReport(res.data?.nominalReport)
-      console.log('res', res)
       })
       .catch((error) => {
         setState(prevState => ({
@@ -502,7 +503,7 @@ export const DashboardController = ({ children }) => {
     'Nov',
     'Des'
   ].map(val => `${val} ${currentYear}`)
-  const categoriesPerDay = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+  const categoriesPerDay = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] 
 
   const series = [
     {
@@ -625,7 +626,7 @@ export const DashboardController = ({ children }) => {
     </DashboardProvider>
   );
 
-  }, [state.loading, state, filterParam, filterParamAdmin, filterDataSchool, state.filterStartDate, state.filterEndDate, state.dataDashboard, state.dataDashboardOperator, dataAdminZakatMaal, dataOperatorZakatMaal])
+  }, [state.loading, filterParam, filterParamAdmin, filterDataSchool, state.filterStartDate, state.filterEndDate, state.dataDashboard, state.dataDashboardOperator, dataAdminZakatMaal, dataOperatorZakatMaal])
 
  
 };

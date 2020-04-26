@@ -96,6 +96,7 @@ export default function SimpleSelect(props) {
           id={name}
           value={value}
           name={name}
+          disabled={disabled}
           onChange={onChange}
           input={<BootstrapInput />}
         >

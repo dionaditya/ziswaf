@@ -125,7 +125,6 @@ const Content = () => {
   };
   const showColor = controller.selectedSeries.map((val) => val.color);
 
-console.log(controller.dataDashboard, controller.dataDashboardOperator)
 
   return (
     <div>

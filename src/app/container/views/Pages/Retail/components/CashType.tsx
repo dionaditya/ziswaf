@@ -69,7 +69,7 @@ const JenisUang = ({ controller, onChange }) => {
                 <GridItem xs={12} sm={12} md={12}>
                   <Box className={classes.formContainer}>
                     <GridItem xs={12} sm={12} md={12}>
-                      <label className={classes.label}>Tunai / Non Tunai</label>
+                      <label className={classes.label}>PIlihan Tunai / Non Tunai</label>
                       <SimpleSelect
                         async={false}
                         name="type_id"
@@ -82,14 +82,14 @@ const JenisUang = ({ controller, onChange }) => {
                   </Box>
                   <Box className={classes.formContainer}>
                     <GridItem xs={12} sm={12} md={12}>
-                      <label className={classes.label}>Non Tunai</label>
+                      <label className={classes.label}>Pilihan Non Tunai</label>
                       {type_id === 0 || type_id === "0" ? (
                         <SimpleSelect
                           async={false}
                           name="category_id"
-                          disabled={true}
                           onChange={onChange}
                           value={category_id}
+                          disabled={true}
                           data={[CashCategories[0]]}
                           label="Non Tunai"
                         />
@@ -107,7 +107,7 @@ const JenisUang = ({ controller, onChange }) => {
                   </Box>
                   <Box className={classes.formContainer}>
                     <GridItem xs={12} sm={12} md={12}>
-                      <label className={classes.label}>Nominal</label>
+                      <label className={classes.label}>Besar Nominal</label>
                     </GridItem>
                     <GridItem xs={12} sm={12} md={12}>
                       <InputMask
@@ -129,7 +129,7 @@ const JenisUang = ({ controller, onChange }) => {
                   </Box>
                   <Box className={classes.formContainer}>
                     <GridItem xs={12} sm={12} md={12}>
-                      <label className={classes.label}>No Ref</label>
+                      <label className={classes.label}>Nomor Ref</label>
                     </GridItem>
                     <GridItem xs={12} sm={12} md={12}>
                       <TextField

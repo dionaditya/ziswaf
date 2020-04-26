@@ -9,6 +9,7 @@ import Card from "@/app/container/commons/Card/Card.js";
 import CardHeader from "@/app/container/commons/Card/CardHeader.js";
 import CardBody from "@/app/container/commons/Card/CardBody.js";
 import InputMask from "@/app/container/components/InputMask";
+import SimpleSelectWithDisabled from '@/app/container/components/SelectWithDisabled';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -64,7 +65,7 @@ const JenisUang = ({ controller, onChange }) => {
                   <Box className={classes.formContainer}>
                     <GridItem xs={12} sm={12} md={12}>
                       <label className={classes.label}>
-                        Tunai / Non Tunai
+                        Pilihan Tunai / Non Tunai
                       </label>
                       <SimpleSelect
                         async={false}
@@ -82,16 +83,16 @@ const JenisUang = ({ controller, onChange }) => {
                   <Box className={classes.formContainer}>
                     <GridItem xs={12} sm={12} md={12}>
                       <label className={classes.label}>
-                        Non Tunai
+                       Pilihan  Non Tunai
                       </label>
                      {
-                        type_id === 0  || type_id === "0" ? (
+                        type_id === 0 || type_id === "0" ? (
                            <SimpleSelect
                         async={false}
                         name="category_id"
-                        disabled={true}
                         onChange={onChange}
                         value={category_id}
+                        disabled={true}
                         data={[CashCategories[0]]}
                         label="Non Tunai"
                       />
@@ -112,7 +113,7 @@ const JenisUang = ({ controller, onChange }) => {
                   <Box className={classes.formContainer}>
                     <GridItem xs={12} sm={12} md={12}>
                       <label className={classes.label}>
-                        Nominal
+                        Besar Nominal
                        </label>
                     </GridItem>
                     <GridItem xs={12} sm={12} md={12}>
@@ -136,7 +137,7 @@ const JenisUang = ({ controller, onChange }) => {
                   <Box className={classes.formContainer}>
                     <GridItem xs={12} sm={12} md={12}>
                       <label className={classes.label}>
-                        No Ref
+                        Nomor Ref
                        </label>
                     </GridItem>
                     <GridItem xs={12} sm={12} md={12}>

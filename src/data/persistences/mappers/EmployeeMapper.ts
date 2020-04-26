@@ -5,6 +5,7 @@ import { EmployeeStatus} from '@/domain/entities/AllOptions'
 import { Employee, EmployeeSortAble } from '@/domain/entities/Employee'
 import moment from 'moment'
 import 'moment/locale/id'
+import _ from 'lodash'
 
 @singleton()
 export class EmployeeMapper extends BaseResponseMapper {
@@ -13,26 +14,28 @@ export class EmployeeMapper extends BaseResponseMapper {
         const { data } = result
         if(data.data === null) {
             return null
+        } else {
+            return data.data.map(val => {
+                const employeeStatus = EmployeeStatus.filter(data => data[0] === val.status)
+                return new EmployeeSortAble(
+                    val.id,
+                    val.school_name,
+                    val.name,
+                    val.place_of_birth,
+                    moment(val.birth_of_date).format('dddd, DD MMMM YYYY').toString(),
+                    val.phone,
+                    val.email,
+                    val.address,
+                    _.isNil(employeeStatus[0]) ? "Salah Status / Data Broken, Hubungi Teknisi" : employeeStatus[0][1],
+                    val.registered_year,
+                    val.pos_code,
+                    val.province_name,
+                    val.regency_name,
+                    val.image,
+                )
+            })
         }
-        return data.data.map(val => {
-            const employeeStatus = EmployeeStatus.filter(data => data[0] === val.status)
-            return new EmployeeSortAble(
-                val.id,
-                val.school_name,
-                val.name,
-                val.place_of_birth,
-                moment(val.birth_of_date).format('dddd, DD MMMM YYYY').toString(),
-                val.phone,
-                val.email,
-                val.address,
-                employeeStatus[0][1],
-                val.registered_year,
-                val.pos_code,
-                val.province_name,
-                val.regency_name,
-                val.image,
-            )
-        })
+       
     }
 
 

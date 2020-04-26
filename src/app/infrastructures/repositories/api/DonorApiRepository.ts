@@ -82,7 +82,6 @@ export class DonorApiRepository implements DonorRepositoryInterface {
         data: { ...resp.data, data: this.mapper.convertDonorDetailsFromApi(resp) }
       }]
     } catch (error) {
-      console.log(error)
       return ['error',  error.response ]
     }
   }

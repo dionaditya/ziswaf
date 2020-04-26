@@ -28,9 +28,9 @@ export class UserMapper extends BaseResponseMapper {
                 userStatus[0][1],
                 userRole[0][1],
                 val.school.name,
-                moment(val.last_login).format('dddd, MM YYYY'),  
-                moment(val.created_at).format('dddd, MM YYYY'),
-                moment(val.updated_at).format('ddd, MM YYYY'),
+                moment(val.last_login).format('dddd, DD MMMM YYYY'),  
+                moment(val.created_at).format('dddd, DD MMMM YYYY'),
+                moment(val.updated_at).format('ddd,DD MMMM YYYY'),
                 val.school.id,
                
             )
@@ -58,9 +58,9 @@ export class UserMapper extends BaseResponseMapper {
             data.status,
             data.role,
             data.school.name,
-            moment(data.last_login).format('dddd, MM YYYY'),  
-            moment(data.created_at).format('dddd, MM YYYY'),
-            moment(data.updated_at).format('ddd, MM YYYY'),
+            moment(data.last_login).format('dddd, DD MMMM YYYY'),  
+            moment(data.created_at).format('dddd, DD MMMM YYYY'),
+            moment(data.updated_at).format('ddd, DD MMMM YYYY'),
             data.school.id,
         )
     }
