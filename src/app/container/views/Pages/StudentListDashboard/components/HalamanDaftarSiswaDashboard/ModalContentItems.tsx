@@ -261,7 +261,15 @@ const ModalContentItems = () => {
                       registered_start === ""
                         ? null : moment(registered_start).toDate()
                     }
-                    onChange={handleChange}
+                    onChange={(date: any) => {
+                      controller.setFilterStatus((prevState) => ({
+                        ...prevState,
+                        filter: {
+                          ...prevState.filter,
+                          registered_start: moment(date).format("YYYY"),
+                        },
+                      }));
+                    }}
                     KeyboardButtonProps={{
                       "aria-label": "change date",
                     }}

@@ -78,7 +78,7 @@ const initialState: IState = {
     DonaturInfo: {
         name: '',
         company_name: '',
-        is_company: true,
+        is_company: false,
         position: '',
         email: '',
         address: '',
@@ -221,7 +221,7 @@ export const RetailController = ({ children }) => {
     React.useEffect(() => {
         if (debouncedValue !== '') {
             (async () => {
-                const donaturQueryResult = await retailPresenter.getAll({ search: debouncedValue })
+                const donaturQueryResult = await retailPresenter.getAll({ search: debouncedValue, filter: {donor_category: 0} })
 
                 if (donaturQueryResult !== null) {
                     const transformedDonaturQuery = donaturQueryResult.map(val => {

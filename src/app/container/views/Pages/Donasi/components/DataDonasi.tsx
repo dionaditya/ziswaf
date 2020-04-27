@@ -81,6 +81,10 @@ export function DataDonasi() {
                 <Link
                   to={`/dashboard/${controller.divisionId}-tanda-terima/${controller.tableIndex}`}
                   className="black-text"
+                  style={{
+                    textDecoration: 'none',
+                    color: '#000'
+                  }}
                 >
                   <Box className={classes.wrapper_menu}>
                     <ListItemIcon>

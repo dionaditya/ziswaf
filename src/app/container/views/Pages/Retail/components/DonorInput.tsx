@@ -136,7 +136,7 @@ const DonorInput = ({ index, setIndex }) => {
       { email: email },
       { name: name },
     ]);
-  }, [controller.selected]);
+  }, [controller.selected, controller.selectedDonatur]);
 
   const errorMessage = {
     empty: "Data ini tidak boleh kosong",
@@ -155,12 +155,13 @@ const DonorInput = ({ index, setIndex }) => {
 
   const handleSubmitInput = async (e) => {
     if (_.isEmpty(errors)) {
-      const [status, response] = await controller.postData();
+     
       if (controller.selected) {
         history.push(
           `/dashboard/retail-input/${controller.DonationInfo.donor_id}`
         );
       } else {
+        const [status, response] = await controller.postData();
         if (status === "error") {
            setStatusModal(true);
         } else {

@@ -113,7 +113,7 @@ export class DonationTransactionDetail {
     cash_description: string;
     good_description: string;
     donor_category: boolean;
-    good_status: number;
+    good_status: any;
     created_by: string;
     donor_address: string;
 
@@ -140,7 +140,7 @@ export class DonationTransactionDetail {
         cash_description: string,
         good_description: string,
         donor_category: boolean,
-        good_status: number,
+        good_status: any,
         created_by: string,
         donor_address: string,
     ) {
@@ -192,7 +192,7 @@ export class DonationWithSort {
     statement_category_id: string;
     donor_category: boolean | string;
     quantity_good: number;
-    good_status: number;
+    good_status: any;
     created_by: string;
     updated_by: string;
     created_at: Date | string;
@@ -218,7 +218,7 @@ export class DonationWithSort {
         statement_category_id: string,
         donor_category: boolean | string,
         quantity_good: number,
-        good_status: number,
+        good_status: any,
         created_by: string,
         updated_by: string,
         created_at: Date | string,

@@ -212,10 +212,11 @@ const ModalContentItems = () => {
             <KeyboardDatePicker
               disableToolbar
               variant="inline"
-              views={["year"]}
+              format="dd-MM-yyyy"
               style={{
                 width: "100%",
               }}
+              maxDate={moment(register_end).toDate()}
               inputVariant="outlined"
               placeholder={
                 register_start === null
@@ -234,7 +235,7 @@ const ModalContentItems = () => {
                   ...prevState,
                   filter: {
                     ...prevState.filter,
-                    register_start: moment(date).format("YYYY"),
+                    register_start: moment(date).toISOString(),
                   },
                 }));
               }}
@@ -252,41 +253,11 @@ const ModalContentItems = () => {
             }}
           >
             <label htmlFor="registered_year_start">Hingga</label>
-            {_.toNumber(register_end) < _.toNumber(register_start) ? (
-              <KeyboardDatePicker
+            <KeyboardDatePicker
                 disableToolbar
                 variant="inline"
-                views={["year"]}
-                inputVariant="outlined"
-                style={{
-                  width: "100%",
-                }}
-                placeholder={
-                  register_end === null
-                    ?  'Tahun Masuk'
-                    : moment(register_end).toString()
-                }
-                id="date-picker-inline"
-                label=""
-                value={register_start}
-                onChange={(date: any) => {
-                  controller.setFilterStatus((prevState) => ({
-                    ...prevState,
-                    filter: {
-                      ...prevState.filter,
-                      register_end: moment(date).format("YYYY"),
-                    },
-                  }));
-                }}
-                KeyboardButtonProps={{
-                  "aria-label": "change date",
-                }}
-              />
-            ) : (
-              <KeyboardDatePicker
-                disableToolbar
-                variant="inline"
-                views={["year"]}
+                format="dd-MM-yyyy"
+                minDate={moment(register_start).toDate()}
                 inputVariant="outlined"
                 placeholder={
                   register_end === null
@@ -307,7 +278,7 @@ const ModalContentItems = () => {
                     ...prevState,
                     filter: {
                       ...prevState.filter,
-                      register_end: moment(date).format("YYYY"),
+                      register_end: moment(date).toISOString(),
                     },
                   }));
                 }}
@@ -315,7 +286,6 @@ const ModalContentItems = () => {
                   "aria-label": "change date",
                 }}
               />
-            )}
           </GridItem>
         </GridContainer>
       </GridItem>

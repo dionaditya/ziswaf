@@ -27,13 +27,13 @@ export class EmployeeMapper extends BaseResponseMapper {
                     val.email,
                     val.address,
                     _.isNil(employeeStatus[0]) ? "Salah Status / Data Broken, Hubungi Teknisi" : employeeStatus[0][1],
-                    val.registered_year,
+                    moment(val.registered_year).format('dddd, DD MM YYYY').toString(),
                     val.pos_code,
                     val.province_name,
                     val.regency_name,
                     val.image,
                 )
-            })
+            })  
         }
        
     }
@@ -49,12 +49,12 @@ export class EmployeeMapper extends BaseResponseMapper {
             data.school_name,
             data.name,
             data.place_of_birth,
-            moment(data.birth_of_date).format('dddd, MMMM YYYY').toString(),
+            moment(data.birth_of_date).format('dddd, DD MMMM YYYY').toString(),
             data.phone,
             data.email,
             data.address,
             data.status,
-            moment(data.registered_year).format('YYYY-MM-DD'),
+            moment(data.registered_year).format('dddd, DD MMMM YYYY').toString(),
             data.pos_code,
             data.province_name,
             data.regency_name,

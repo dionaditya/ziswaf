@@ -329,7 +329,8 @@ export const StudentListController = ({ children }) => {
         const listEmployee = await employeePresenter.loadData({
           ...filterStatus,
         });
-        dispatch({ type: ActionType.setData, payload: listEmployee.data.data });
+      
+        dispatch({ type: ActionType.setData, payload: listEmployee.data.data !== null ? listEmployee.data.data : [] });
         setPagintion({
           total: listEmployee.data.pagination.total,
           page: listEmployee.data.pagination.current_page-1,
@@ -355,7 +356,12 @@ export const StudentListController = ({ children }) => {
             school_id: userAccess.school.id,
           },
         });
-        dispatch({ type: ActionType.setData, payload: listEmployee.data.data });
+        setPagintion({
+          total: listEmployee.data.pagination.total,
+          page: listEmployee.data.pagination.current_page-1,
+          rowsPerPage: listEmployee.data.pagination.page_size,
+        });
+        dispatch({ type: ActionType.setData, payload: listEmployee.data.data !== null ? listEmployee.data.data : [] });
         dispatch({ type: ActionType.setLoading, payload: false });
       }
     };
@@ -392,7 +398,6 @@ export const StudentListController = ({ children }) => {
     print: false,
     download: false,
     viewColumns: false,
-    expandableRows: true,
     textLabels: {
       body: {
         noMatch: state.loading ? 'loading...' : "Maaf tidak ada data",
@@ -591,7 +596,9 @@ export const StudentListController = ({ children }) => {
       dispatch({ type: ActionType.setLoading, payload: true });
 
       const listFilteredEmployee = await employeePresenter.loadData(
-        filterStatus
+        {
+          ...filterStatus,
+        }
       );
       if (listFilteredEmployee.data.data === null) {
         setFilter(true);

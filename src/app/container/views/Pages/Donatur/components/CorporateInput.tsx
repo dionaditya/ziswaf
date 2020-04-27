@@ -25,6 +25,7 @@ const errorMessage = {
   poscodeField: "Kode pos hanya dapat di isi angka",
   phoneField: "No telepon hanya dapat di isi angka",
   positionField: "Posisi tidak boleh kosong",
+  email: 'Emaul tidak boleh kosong',
   provinceId: "Belum memilih provinsi asal",
   regencyId: "Belum memilih kota asal",
   status: "Belum memilih status perusahaan",
@@ -77,6 +78,7 @@ const DataInput = () => {
   const { register, handleSubmit, errors, setValue, control, watch} = useForm();
   const classes = useStyles();
   const { addToast } = useToasts();
+  const [statusModal, setStatusModal] = React.useState(false);
 
   const {
     companyName,
@@ -121,20 +123,20 @@ const DataInput = () => {
 
   const onSubmit = async (e: any) => {
     if (_.isEmpty(errors)) {
-      const resp = await controller._onStoreCorporate(e);
-      if (resp) {
-        addToast("Data donaturtelah tersimpan", {
+      const [status, response]= await controller._onStoreCorporate(e);
+      if (status === "error") {
+          addToast("Error menyimpan data donatur, Nama dan No Hp Sudah terdaftar", {
+          appearance: "error",
+        });
+        } else {
+          addToast("Data donatur telah tersimpan", {
           appearance: "success",
         });
         setTimeout(() => {
           
           history.push(`/dashboard/donatur`);
         }, 1000)
-      } else {
-        addToast("Error menyimpan data donatur ke server", {
-          appearance: "error",
-        });
-      }
+        }
     }
   };
 
@@ -453,15 +455,35 @@ const DataInput = () => {
                           placeholder="Surel Perusahaan"
                           size="small"
                           onChange={(e) => controller.setEmail(e.target.value)}
-                          inputRef={register({required: true})}
-                        />
-                        {errors &&
-                          errors.email &&
-                          errors.email.type === "required" && (
-                            <p style={{ color: "red", fontSize: "12px" }}>
-                              {errorMessage.emailField}
-                            </p>
-                          )}
+                        inputRef={register({
+                                    required: true,
+                                    pattern: /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/i,
+                                  })}
+                                />
+                                {errors &&
+                                  errors.email &&
+                                  errors.email.type === "required" && (
+                                    <p
+                                      style={{
+                                        color: "red",
+                                        fontSize: "12px",
+                                      }}
+                                    >
+                                      {errorMessage.email}
+                                    </p>
+                                  )}
+                                {errors &&
+                                  errors.email &&
+                                  errors.email.type === "pattern" && (
+                                    <p
+                                      style={{
+                                        color: "red",
+                                        fontSize: "12px",
+                                      }}
+                                    >
+                                      Email tidak valid
+                                    </p>
+                                  )}  
                       </Box>
                     </GridItem>
                   </GridContainer>
@@ -652,7 +674,8 @@ const DataInput = () => {
                             fontWeight: 600,
                           }}
                           color="primary"
-                          onClick={onSubmit}
+                          onClick={e => null}
+                          type="submit"
                           disabled={isDetailSession || handleSubmitButton()}
                         >
                           Simpan & Lanjutkan

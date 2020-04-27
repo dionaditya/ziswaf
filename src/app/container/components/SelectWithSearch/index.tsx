@@ -6,7 +6,7 @@ import _ from 'lodash'
 const style = {
   control: (base) => ({
     ...base,
-    height: 45,
+    height: 47,
     backgroundColor: "#ffffff",
     minHeight: "1px",
     "&:hover": {
@@ -28,7 +28,7 @@ const style = {
   }),
   valueContainer: (base) => ({
     ...base,
-    height: 45,
+    height: 47,
   }),
   singleValue: (base) => ({
     ...base,

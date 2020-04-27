@@ -9,7 +9,7 @@ export class EmployeeApiRequest implements createEmployeeInterface {
     email: string
     address: string
     status: number
-    registered_year: number
+    registered_year: string
     pos_code: number
     province_id: number
     regency_id: number
@@ -25,7 +25,7 @@ export class EmployeeApiRequest implements createEmployeeInterface {
         email: string,
         address: string,
         status: number,
-        registered_year: number,
+        registered_year: string,
         pos_code: number,
         province_id: number,
         regency_id: number,
@@ -76,7 +76,7 @@ export class EmployeeApiRequestWithoutImage implements createEmployeeInterface {
     email: string
     address: string
     status: number
-    registered_year: number
+    registered_year:string
     pos_code: number
     province_id: number
     regency_id: number
@@ -91,7 +91,7 @@ export class EmployeeApiRequestWithoutImage implements createEmployeeInterface {
         email: string,
         address: string,
         status: number,
-        registered_year: number,
+        registered_year: string,
         pos_code: number,
         province_id: number,
         regency_id: number,

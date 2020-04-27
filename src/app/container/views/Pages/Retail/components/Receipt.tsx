@@ -192,7 +192,7 @@ const Receipt = ({ index, setIndex }) => {
                       <p className="black-text">{item_type || "-"}</p>
                     </div>
                        {
-                        controller.DonationInfo.donation_item === 1 ? (
+                        item_type === "uang" ? (
                           <div>
                             <div className="row mb-4">
                               <span

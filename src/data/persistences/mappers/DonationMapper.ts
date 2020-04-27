@@ -2,6 +2,7 @@ import { singleton } from 'tsyringe';
 import { AxiosResponse } from 'axios';
 import { Donation, DonationDetail, DonationTransactionDetail, DonationWithSort } from '@/domain/entities/Donation';
 import moment from 'moment';
+import { GoodsStatus } from '@/domain/entities/AllOptions';
 
 @singleton()
 export class DonationMapper {
@@ -46,6 +47,7 @@ export class DonationMapper {
 
     public convertDonatioDetailFromApi(result: AxiosResponse<any>): DonationTransactionDetail{
         const aResp = result.data.data;
+        const goodStatus = GoodsStatus.filter(val => val[0] === aResp.good_status)
         return new DonationTransactionDetail(
             aResp.id,
             aResp.description,
@@ -69,7 +71,7 @@ export class DonationMapper {
             aResp.cash_description,
             aResp.good_description,
             aResp.donor_category,
-            aResp.good_status,
+            goodStatus[0][1],
             aResp.created_by,
             aResp.donor_address
 
@@ -86,9 +88,11 @@ export class DonationMapper {
 
     public convertDonationListFromApiWithPagination(result: AxiosResponse<any>): any | null {
         const response = Array<DonationWithSort>();
+        
         const aResp = result.data;
         if(result.data.data !== null) {
             aResp.data.forEach((item: any) => {
+                const goodStatus = GoodsStatus.filter(val => val[0] === item.good_status)
                 var donation = new DonationWithSort(
                     item.id,
                     item.donor_name,
@@ -109,7 +113,7 @@ export class DonationMapper {
                     item.statement_category,
                     item.donor_category ? "Perusahaan" : "Perorangan",
                     item.quantity_good,
-                    item.good_status,
+                    goodStatus[0][1],
                     item.created_by,
                     item.updated_by,
                     moment(item.created_at).format('dddd, DD MMMM YYYY'),

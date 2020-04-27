@@ -126,6 +126,7 @@ const DonorPage = () => {
               style={{
                 backgroundColor: "transparent !important",
                 color: "#00923F",
+                marginLeft: '70px'
               }}
               color="transparent"
               className=" btn-flat gray-text"
@@ -140,6 +141,7 @@ const DonorPage = () => {
             <ButtonFilter
               style={{
                 color: "#00923F",
+                marginLeft: '70px'
               }}
               color="transparent"
               onClick={async (e) => {

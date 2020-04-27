@@ -75,7 +75,7 @@ const Receipts = ({ index, setIndex }) => {
 
   return (
     <>
-      <ModalDetail controller={controller} setCloseModal={handleClose} showModal={open} />
+      <ModalDetail setCloseModal={handleClose} showModal={open} />
       <GridContainer>
         <GridItem xs={12} sm={12} md={12}>
           <Box className={classes.modal}>

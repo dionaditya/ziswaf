@@ -161,7 +161,7 @@ const StudentListDashboardPage = () => {
                   color: "#fff",
                 }}
                 onClick={(e) =>
-                  controller.handleCTA(controller.dispatch)
+                  controller.handleCTA()
                 }
               >
                 {<CircularProgress size={16} className={classes.root} />}
@@ -175,9 +175,7 @@ const StudentListDashboardPage = () => {
                 }}
                 onClick={async (e) => {
                   setLoading(true);
-                  await controller.handleCTA(e)(controller.dispatch)(
-                    ActionType.handleCTA
-                  );
+                  await controller.handleCTA()
                   setLoading(false);
                 }}
               >

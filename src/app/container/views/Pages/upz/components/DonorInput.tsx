@@ -81,7 +81,6 @@ const DonorInput = ({ index, setIndex }) => {
     control,
   } = useForm();
   const [error, setError] = React.useState(false);
-  const [wrongEmail, setWrongEmail] = React.useState(false);
 
   const {
     company_name,
@@ -98,6 +97,7 @@ const DonorInput = ({ index, setIndex }) => {
     name,
   } = controller.DonaturInfo;
 
+
   React.useEffect(() => {
     setValue([
       { company_name: company_name },
@@ -113,7 +113,24 @@ const DonorInput = ({ index, setIndex }) => {
       { email: email },
       { name: name },
     ]);
-  }, [controller.selected]);
+  }, []);
+
+  React.useEffect(() => {
+    setValue([
+      { company_name: company_name },
+      { status: status },
+      { address: address },
+      { npwp: npwp },
+      { info: info },
+      { province_id: province_id },
+      { position: position },
+      { pos_code: pos_code },
+      { regency_id: regency_id },
+      { phone: phone },
+      { email: email },
+      { name: name },
+    ]);
+  }, [controller.selected, controller.selectedDonatur, ]);
 
   const errorMessage = {
     empty: "Data ini tidak boleh kosong",
@@ -147,12 +164,13 @@ const DonorInput = ({ index, setIndex }) => {
       setError(true);
     } else {
       if (_.isEmpty(errors)) {
-        const [status, response] = await controller.postData();
+      
         if (controller.selected) {
           history.push(
             `/dashboard/upz-transaction/${controller.DonationInfo.donor_id}?is_company=${controller.DonaturInfo.is_company}&kwitansi=${controller.DonationInfo.kwitansi}&tanggal=${controller.DonationInfo.created_at}&employee_id=${controller.DonationInfo.employee_id}`
           );
         } else {
+          const [status, response] = await controller.postData();
           if (status === "error") {
             setStatusModal(true);
           } else {
@@ -218,7 +236,9 @@ const DonorInput = ({ index, setIndex }) => {
                   <GridItem xs={12} sm={6} md={6}>
                     <Card className={classes.container}>
                       <GridItem xs={12} sm={12} md={12}>
-                        <Box display="flex" flexDirection="column">
+                        <Box display="flex" flexDirection="column" style={{
+                          marginBottom: '15px'
+                        }}>
                           <label
                             htmlFor="comp-name"
                             className={
@@ -379,7 +399,11 @@ const DonorInput = ({ index, setIndex }) => {
 
                           <div className="row">
                             {controller.DonaturInfo.is_company ? (
-                              <div className="col s12">
+                              <div className="col s12" style={{
+                                  marginTop: '15px',
+                                  marginBottom: '15px'
+                                }}>
+                                <Box display="flex" flexDirection="column" >
                                 <label
                                   htmlFor="comp-name"
                                   className={
@@ -414,9 +438,13 @@ const DonorInput = ({ index, setIndex }) => {
                                       {errorMessage.companyName}
                                     </p>
                                   )}
+                                </Box>
+                              
                               </div>
                             ) : (
-                              <div className="col s12">
+                              <div className="col s12" style={{
+                                marginBottom: '20px'
+                              }}>
                                 <label
                                   htmlFor="comp-name"
                                   className={
@@ -461,16 +489,18 @@ const DonorInput = ({ index, setIndex }) => {
                           </label>
                           <Controller
                             as={
-                              <textarea
-                                className="text-area"
-                                id="address"
+                              <TextField
                                 name="address"
+                                multiline
+                                rows={4}
+                                variant="outlined"
                                 placeholder="Alamat Tinggal"
                                 disabled={controller.selected}
                                 onChange={onChange}
                                 style={{
                                   minHeight: "100px",
                                   width: "100%",
+                                  
                                 }}
                               />
                             }
@@ -495,7 +525,9 @@ const DonorInput = ({ index, setIndex }) => {
                                 {errorMessage.address}
                               </p>
                             )}
-                          <label>Provinsi</label>
+                          <label style={{
+                            marginTop: '20px'
+                          }}>Provinsi</label>
                           <Controller
                             as={
                               <SimpleSelect
@@ -529,7 +561,9 @@ const DonorInput = ({ index, setIndex }) => {
                                 {errorMessage.province}
                               </p>
                             )}
-                          <label>Kota</label>
+                          <label style={{
+                            marginTop: '20px'
+                          }}>Kota</label>
                           <Controller
                             as={
                               <SimpleSelect
@@ -559,6 +593,9 @@ const DonorInput = ({ index, setIndex }) => {
                               </p>
                             )}
                           <label
+                          style={{
+                            marginTop: '20px'
+                          }}
                             htmlFor="zipcode"
                             className={
                               errors && errors.pos_code
@@ -573,7 +610,7 @@ const DonorInput = ({ index, setIndex }) => {
                             id="pos_code"
                             name="pos_code"
                             type="text"
-                            style={{ width: "100%" }}
+                            style={{ width: "100%", marginBottom: '20px' }}
                             disabled={controller.selected}
                             placeholder="Kode Pos"
                             onChange={onChange}
@@ -609,6 +646,9 @@ const DonorInput = ({ index, setIndex }) => {
                                       ? "red-text"
                                       : "black-text"
                                   }
+                                  style={{
+                            marginTop: '20px'
+                          }}
                                 >
                                   Surel Perusahaan
                                 </label>
@@ -665,7 +705,9 @@ const DonorInput = ({ index, setIndex }) => {
                       <GridItem xs={12} sm={12} md={12}>
                         {/* <Box display="flex" flexDirection="column"> */}
                         <GridItem xs={12} sm={12} md={12}>
-                          <label className={classes.label}>
+                          <label className={classes.label} style={{
+                            fontSize: '16px'
+                          }}>
                             Kontak Donatur
                           </label>
                         </GridItem>
@@ -679,6 +721,9 @@ const DonorInput = ({ index, setIndex }) => {
                                     ? "red-text"
                                     : "black-text"
                                 }
+                                style={{
+                            marginTop: '20px'
+                          }}
                               >
                                 Nama Kontak Person
                               </label>
@@ -693,6 +738,10 @@ const DonorInput = ({ index, setIndex }) => {
                                 placeholder="Nama Kontak Person"
                                 onChange={onChange}
                                 inputRef={register({ required: true })}
+                                style={{
+                                  width: '100%',
+                                  marginBottom: '20px'
+                                }}
                                 className={
                                   errors && errors.name ? "invalid" : "validate"
                                 }
@@ -713,6 +762,9 @@ const DonorInput = ({ index, setIndex }) => {
                                     ? "red-text"
                                     : "black-text"
                                 }
+                                style={{
+                            marginTop: '20px'
+                          }}
                               >
                                 Jabatan Kontak Person
                               </label>
@@ -726,6 +778,10 @@ const DonorInput = ({ index, setIndex }) => {
                                 disabled={controller.selected}
                                 placeholder="Jabatan Kontak Person"
                                 onChange={onChange}
+                                style={{
+                                  width: '100%',
+                                  marginBottom: '20px'
+                                }}
                                 inputRef={register}
                                 className={
                                   errors && errors.position
@@ -749,6 +805,9 @@ const DonorInput = ({ index, setIndex }) => {
                                     ? "red-text"
                                     : "black-text"
                                 }
+                                style={{
+                            marginTop: '20px'
+                          }}
                               >
                                 No Handphone
                               </label>
@@ -760,7 +819,7 @@ const DonorInput = ({ index, setIndex }) => {
                                 variant="outlined"
                                 type="tel"
                                 disabled={controller.selected}
-                                style={{ width: "100%" }}
+                                style={{ width: "100%", marginBottom: '20px'}}
                                 placeholder="No Handphone"
                                 onChange={onChange}
                                 inputRef={register({
@@ -784,12 +843,17 @@ const DonorInput = ({ index, setIndex }) => {
                                 )}
                             </GridItem>
                             <GridItem xs={12} sm={12} md={12}>
-                              <label className={classes.label}>
+                              <label className={classes.label} style={{
+                                fontSize: '16px',
+                                marginBottom: '20px'
+                              }}>
                                 Keterangan Tambahan
                               </label>
                             </GridItem>
                             <GridItem xs={12} sm={12} md={12}>
-                              <label htmlFor="npwp" className="black-text">
+                              <label htmlFor="npwp" className="black-text" style={{
+                            marginTop: '20px'
+                          }}>
                                 No NPWP
                               </label>
                             </GridItem>
@@ -802,24 +866,35 @@ const DonorInput = ({ index, setIndex }) => {
                                 disabled={controller.selected}
                                 placeholder="No NPWP"
                                 inputRef={register}
+                                style={{
+                                  width: '100%',
+                                  marginBottom: '20px'
+                                }}
                                 onChange={onChange}
                               />
                             </GridItem>
                             <GridItem xs={12} sm={12} md={12}>
-                              <label htmlFor="info-donatur">Info Donatur</label>
+                              <label htmlFor="info-donatur" style={{
+                            marginTop: '20px',
+                            fontSize: '16px'
+                          }}>Info Donatur</label>
                             </GridItem>
                             <Controller
                               as={
-                                <TextareaAutosize
+                                <TextField
                                   className="text-area"
                                   id="info"
+                                      variant="outlined"
                                   disabled={controller.selected}
                                   name="info"
+                                  multiline
+                                  rows={4}
                                   placeholder="Info Donatur"
                                   onChange={onChange}
                                   style={{
                                     minHeight: "100px",
                                     width: "100%",
+                                    marginBottom: '15px'
                                   }}
                                 />
                               }
@@ -844,6 +919,9 @@ const DonorInput = ({ index, setIndex }) => {
                                       ? "red-text"
                                       : "black-text"
                                   }
+                                  style={{
+                            marginTop: '20px'
+                          }}
                                 >
                                   No Handphone
                                 </label>
@@ -853,7 +931,7 @@ const DonorInput = ({ index, setIndex }) => {
                                   variant="outlined"
                                   type="tel"
                                   disabled={controller.selected}
-                                  style={{ width: "100%" }}
+                                  style={{ width: "100%", marginBottom: '15px'}}
                                   placeholder="No Handphone"
                                   onChange={onChange}
                                   inputRef={register({
@@ -887,6 +965,9 @@ const DonorInput = ({ index, setIndex }) => {
                                         ? "red-text"
                                         : "black-text"
                                     }
+                                    style={{
+                            marginTop: '20px'
+                          }}
                                   >
                                     Alamat Surel
                                   </label>
@@ -896,9 +977,10 @@ const DonorInput = ({ index, setIndex }) => {
                                     disabled={controller.selected}
                                     variant="outlined"
                                     type="email"
-                                    style={{ width: "100%" }}
+                                    style={{ width: "100%", marginBottom: '20px' }}
                                     placeholder="Alamat Surel"
                                     onChange={onChange}
+
                                     inputRef={register({
                                       required: true,
                                       pattern: /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/i,
@@ -928,9 +1010,12 @@ const DonorInput = ({ index, setIndex }) => {
                                         Email tidak valid
                                       </p>
                                     )}
-                                  }
+                                  
                                 </div>
-                                <label className={classes.label}>
+                                <label className={classes.label} style={{
+                            marginTop: '20px',
+                            marginBottom: '15px'
+                          }}>
                                   Keterangan Tambahan
                                 </label>
                                 <label htmlFor="npwp" className="black-text">
@@ -943,26 +1028,34 @@ const DonorInput = ({ index, setIndex }) => {
                                   type="text"
                                   disabled={controller.selected}
                                   placeholder="No NPWP"
+                                
                                   inputRef={register}
                                   onChange={onChange}
                                 />
-                                <label htmlFor="info-donatur">
+                                <label style={{
+                            marginTop: '20px',
+                        
+                          }}>
                                   Info Donatur
                                 </label>
                                 <Controller
                                   as={
-                                    <TextareaAutosize
-                                      className="text-area"
-                                      id="info"
-                                      disabled={controller.selected}
-                                      name="info"
-                                      placeholder="Info Donatur"
-                                      onChange={onChange}
-                                      style={{
-                                        minHeight: "100px",
-                                        width: "100%",
-                                      }}
-                                    />
+                                   <TextField
+                                  className="text-area"
+                                  id="info"
+                                  disabled={controller.selected}
+                                  name="info"
+                                  multiline
+                                  variant="outlined"
+                                  rows={4}
+                                  placeholder="Info Donatur"
+                                  onChange={onChange}
+                                  style={{
+                                    minHeight: "100px",
+                                    width: "100%",
+                                    marginBottom: '70px'
+                                  }}
+                                />
                                   }
                                   name="info"
                                   onChange={(value) => {

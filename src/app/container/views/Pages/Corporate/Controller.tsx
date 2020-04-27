@@ -37,7 +37,7 @@ export interface Donation {
     statement_category_id: number;
     description: string;
     donation_item: number;
-    employee_id: number;
+    employee_id: any;
     cash: Cash;
     goods: Goods;
 }
@@ -95,7 +95,7 @@ const initialState: IState = {
         statement_category_id: 0,
         description: '',
         donation_item: 1,
-        employee_id: 0,
+        employee_id: '',
         cash: {
             type_id: 0,
             category_id: 0,
@@ -193,14 +193,11 @@ export const CorporateController = ({ children }) => {
         if (isDonation && isDonation.path === '/dashboard/corporate-transaction/:donor_id') {
             (async () => {
                 const donorDetail: any = await corporatePresenter.getById(_.toNumber(donationParams.donor_id))
-                const getUser = await userPresenter.loadDataDetail(_.toNumber(user_id))
-                const employeeId = await employeePresenter.loadData({ search: getUser?.data.data.name })
                 setState(prevState => ({
                     ...prevState,
                     DonationInfo: {
                         ...state.DonationInfo,
                         donor_id: donorDetail.id,
-                        employee_id: employeeId.data.data[0].id
                     },
                     donor: donorDetail
                 }))
@@ -223,7 +220,7 @@ export const CorporateController = ({ children }) => {
     React.useEffect(() => {
         if (debouncedValue !== '') {
             (async () => {
-                const donaturQueryResult = await corporatePresenter.getAll({ search: debouncedValue })
+                const donaturQueryResult = await corporatePresenter.getAll({ search: debouncedValue, donor_category: 1 })
                 if (donaturQueryResult !== null) {
                     const transformedDonaturQuery = donaturQueryResult.map(val => {
                         return {

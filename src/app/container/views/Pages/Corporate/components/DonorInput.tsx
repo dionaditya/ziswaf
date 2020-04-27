@@ -103,7 +103,7 @@ const DonorInput = ({ index, setIndex }) => {
       { email: email },
       { name: name },
     ]);
-  }, [controller.selected]);
+  }, [controller.selected, controller.selectedDonatur]);
 
   const errorMessage = {
     empty: "Data ini tidak boleh kosong",
@@ -135,15 +135,17 @@ const DonorInput = ({ index, setIndex }) => {
 
   const handleSubmitInput = async (e) => {
     if (_.isEmpty(errors)) {
-      const [status, response] = await controller.postData();
+      
       if (controller.selected) {
         history.push(
           `/dashboard/corporate-transaction/${controller.DonationInfo.donor_id}`
         );
       } else {
+        const [status, response] = await controller.postData();
         if (status === "error") {
           setStatusModal(true);
         } else {
+          
           history.push(
             `/dashboard/corporate-transaction/${response.data.data.id}`
           );
@@ -159,7 +161,6 @@ const DonorInput = ({ index, setIndex }) => {
     }
   };
 
-  console.log(controller.DonaturInfo);
 
   return (
     <React.Fragment>

@@ -126,20 +126,20 @@ const DataInput = () => {
 
   const onSubmit = async (e: any) => {
     if (_.isEmpty(errors)) {
-      const resp = await controller._onStoreCorporate(e);
-      if (resp) {
-        addToast("Data donatur telah tersimpan", {
+       const [status, response] = await controller._onStoreRetail(e);
+      if (status === "error") {
+          addToast("Error menyimpan data donatur, Nama dan No Hp Sudah terdaftar", {
+          appearance: "error",
+        });
+        } else {
+          addToast("Data donatur telah tersimpan", {
           appearance: "success",
         });
         setTimeout(() => {
           
           history.push(`/dashboard/donatur`);
         }, 1000)
-      } else {
-        addToast("Error menyimpan data donatur ke server", {
-          appearance: "error",
-        });
-      }
+        }
     }
   };
 
@@ -557,15 +557,35 @@ const DataInput = () => {
                           placeholder="e.g. andre@mail.com"
                           size="small"
                           onChange={(e) => controller.setEmail(e.target.value)}
-                           inputRef={register({required: true})}
-                        />
-                        {errors &&
-                          errors.email &&
-                          errors.email.type === "required" && (
-                            <p style={{ color: "red", fontSize: "12px" }}>
-                              {errorMessage.nameField}
-                            </p>
-                          )}
+                           inputRef={register({
+                                    required: true,
+                                    pattern: /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/i,
+                                  })}
+                                />
+                                {errors &&
+                                  errors.email &&
+                                  errors.email.type === "required" && (
+                                    <p
+                                      style={{
+                                        color: "red",
+                                        fontSize: "12px",
+                                      }}
+                                    >
+                                      {errorMessage.emailField}
+                                    </p>
+                                  )}
+                                {errors &&
+                                  errors.email &&
+                                  errors.email.type === "pattern" && (
+                                    <p
+                                      style={{
+                                        color: "red",
+                                        fontSize: "12px",
+                                      }}
+                                    >
+                                      Email tidak valid
+                                    </p>
+                                  )}  
                       </Box>
                     </GridItem>
                   </GridContainer>
@@ -647,8 +667,8 @@ const DataInput = () => {
                             fontWeight: 600,
                           }}
                           color="primary"
-                          onClick={onSubmit}
                           type="submit"
+                          onClick={e => null}
                           disabled={isDetailSession}
                         >
                           Simpan & Lanjutkan

@@ -757,7 +757,7 @@ export const StudentListController = ({ children }) => {
     }
   };
 
-  const handleCTA = async (dispatch) => {
+  const handleCTA = async () => {
     let studentPresenter: StudentPresenter = container.resolve(
       StudentPresenter
     );

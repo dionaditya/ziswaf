@@ -27,7 +27,6 @@ export class DashboardOperatorMapper {
     result: AxiosResponse<any>
   ): DashboardOperator {
     const item = result.data;
-    console.log(item.data.dashboard_operator.total)
     return new DashboardOperator(
       item.success,
       item.message,

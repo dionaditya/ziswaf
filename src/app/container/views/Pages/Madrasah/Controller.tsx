@@ -7,7 +7,7 @@ import moment from "moment";
 import { ProvincePresenter } from "@/app/infrastructures/Presenter/Province/Presenter";
 import { CityPresenter } from "@/app/infrastructures/Presenter/City/Presenter";
 import { SchoolDataColumnsTable } from "@/domain/entities/AllOptions";
-import { createContainer } from 'react-tracked' 
+import { createContainer } from "react-tracked";
 
 export enum ActionType {
   handleModal = "HANDLEMODAL",
@@ -86,14 +86,14 @@ export interface IState {
   intialData: any;
   fetchData: Function;
   provinceData: any;
-  regencyData: any
+  regencyData: any;
 }
 
 const DataTableColumns = SchoolDataColumnsTable.map((val) => {
   if (
     val[0] === "head_master" ||
     val[0] === "total_teacher" ||
-    val[0] === "total_student" || 
+    val[0] === "total_student" ||
     val[0] === "phone"
   ) {
     return {
@@ -177,7 +177,7 @@ const initialState: IState = {
   intialData: [],
   fetchData: () => {},
   regencyData: [],
-  provinceData: []
+  provinceData: [],
 };
 
 const reducer: React.Reducer<IState, IAction> = (state, action) => {
@@ -359,7 +359,7 @@ const reducer: React.Reducer<IState, IAction> = (state, action) => {
       return {
         ...state,
         province: [...state.province, ...transformListProvince],
-        provinceData: action.payload
+        provinceData: action.payload,
       };
 
     case ActionType.setCity:
@@ -371,8 +371,13 @@ const reducer: React.Reducer<IState, IAction> = (state, action) => {
       });
       return {
         ...state,
-        regency: [...state.regency, ...transformlistCity],
-        regencyData: action.payload
+        regency: [
+          {
+            name: "all",
+            label: "SEMUA KOTA",
+          },
+        ].concat(transformlistCity),
+        regencyData: action.payload,
       };
 
     case ActionType.handleChangesRowPerPage:
@@ -469,12 +474,12 @@ const reducer: React.Reducer<IState, IAction> = (state, action) => {
 export const MadrasahContext = React.createContext<IState>(initialState);
 const { Provider: MadrasahProvider } = MadrasahContext;
 
-const useValue = ({ reducer, initialState }) => useReducer(reducer, initialState);
+const useValue = ({ reducer, initialState }) =>
+  useReducer(reducer, initialState);
 
-const {
-  Provider,
-  useTracked,
-} = createContainer(() => useReducer(reducer, initialState));
+const { Provider, useTracked } = createContainer(() =>
+  useReducer(reducer, initialState)
+);
 
 export const MadrasahController = ({ children }) => {
   const [state, dispatch] = useTracked();
@@ -494,7 +499,7 @@ export const MadrasahController = ({ children }) => {
     filter: {
       province: "",
       regency: "",
-      detail: true
+      detail: true,
     },
     search: "",
     sort: {
@@ -507,29 +512,46 @@ export const MadrasahController = ({ children }) => {
     rowsPerPage: 10,
   });
 
+  const getCity = async (provinceId) => {
+    const listCity = await cityPresenter.loadData({
+      filter: {
+        province_id: provinceId,
+        school: 1,
+      },
+    });
+
+    dispatch({ type: ActionType.setCity, payload: listCity });
+  };
+
+  useEffect(() => {
+    const provinceId = filterStatus.filter.province;
+    getCity(provinceId);
+  }, [filterStatus.filter.province]);
+
+  const getListProvince = async () => {
+    const listProvince = await provincePresenter.loadData({
+      filter: {
+        school: 1,
+      },
+    });
+    dispatch({ type: ActionType.setProvince, payload: listProvince });
+  };
+
+  useEffect(() => {
+    getListProvince();
+  }, []);
+
   useEffect(() => {
     const getData = async () => {
       dispatch({ type: ActionType.setLoading, payload: true });
       const listSchool: any = await schoolPresenter.loadData(filterStatus);
-      const listCity = await cityPresenter.loadData({
-        filter: {
-          school: "all",
-        },
-      });
-      const listProvince = await provincePresenter.loadData({
-        filter: {
-          school: "all",
-        },
-      });
       setPagintion({
         total: listSchool.data.pagination.total,
-        page: listSchool.data.pagination.current_page-1,
+        page: listSchool.data.pagination.current_page - 1,
         rowsPerPage: listSchool.data.pagination.page_size,
       });
 
       dispatch({ type: ActionType.setData, payload: listSchool.data.data });
-      dispatch({ type: ActionType.setProvince, payload: listProvince });
-      dispatch({ type: ActionType.setCity, payload: listCity });
       dispatch({ type: ActionType.setLoading, payload: false });
     };
     getData();
@@ -544,7 +566,7 @@ export const MadrasahController = ({ children }) => {
     count: pagination.total,
     rowsPerPage: pagination.rowsPerPage,
     selectableRowsHeader: false,
-   
+
     search: false,
     filter: false,
     elevation: 0,
@@ -562,7 +584,7 @@ export const MadrasahController = ({ children }) => {
     disableToolbarSelect: true,
     textLabels: {
       body: {
-        noMatch: state.loading ? 'loading...' : "Maaf tidak ada data",
+        noMatch: state.loading ? "loading..." : "Maaf tidak ada data",
       },
     },
     serverSide: true,
@@ -580,8 +602,6 @@ export const MadrasahController = ({ children }) => {
               state.displayColumns[tableState.activeColumn]["name"] ===
               "province_name"
             ) {
-           
-
               const schoolSortByColumn: any = await schoolPresenter.loadData({
                 ...filterStatus,
                 sort: {
@@ -599,12 +619,10 @@ export const MadrasahController = ({ children }) => {
                 type: ActionType.setData,
                 payload: schoolSortByColumn.data.data,
               });
-          
             } else if (
               state.displayColumns[tableState.activeColumn]["name"] ===
               "regency_name"
             ) {
-          
               const schoolSortByColumn: any = await schoolPresenter.loadData({
                 ...filterStatus,
                 sort: {
@@ -622,9 +640,7 @@ export const MadrasahController = ({ children }) => {
                 type: ActionType.setData,
                 payload: schoolSortByColumn.data.data,
               });
-          
             } else {
-         
               const schoolSortByColumn: any = await schoolPresenter.loadData({
                 ...filterStatus,
                 sort: {
@@ -644,14 +660,12 @@ export const MadrasahController = ({ children }) => {
                 type: ActionType.setData,
                 payload: schoolSortByColumn.data.data,
               });
-         
             }
           } else {
             if (
               state.displayColumns[tableState.activeColumn]["name"] ===
               "province_name"
             ) {
-         
               const schoolSortByColumn: any = await schoolPresenter.loadData({
                 ...filterStatus,
                 sort: {
@@ -669,12 +683,10 @@ export const MadrasahController = ({ children }) => {
                 type: ActionType.setData,
                 payload: schoolSortByColumn.data.data,
               });
-          
             } else if (
               state.displayColumns[tableState.activeColumn]["name"] ===
               "regency_name"
             ) {
-              
               const schoolSortByColumn: any = await schoolPresenter.loadData({
                 ...filterStatus,
                 sort: {
@@ -692,7 +704,6 @@ export const MadrasahController = ({ children }) => {
                 type: ActionType.setData,
                 payload: schoolSortByColumn.data.data,
               });
-        
             } else {
               const schoolSortByColumn: any = await schoolPresenter.loadData({
                 ...filterStatus,
@@ -702,7 +713,7 @@ export const MadrasahController = ({ children }) => {
                     "DESC",
                 },
               });
-          
+
               setFilterStatus({
                 ...filterStatus,
                 sort: {
@@ -715,21 +726,19 @@ export const MadrasahController = ({ children }) => {
                 type: ActionType.setData,
                 payload: schoolSortByColumn.data.data,
               });
-          
             }
           }
           break;
         case "changePage":
           setFilter(false);
-        
+
           const schoolSorted: any = await schoolPresenter.loadData({
             ...filterStatus,
             paging: {
-              page: tableState.page+1,
+              page: tableState.page + 1,
               limit: tableState.rowsPerPage,
             },
           });
-          console.log(schoolSorted)
           setPagintion((prevState) => ({
             ...prevState,
             page: tableState.page,
@@ -737,7 +746,7 @@ export const MadrasahController = ({ children }) => {
           setFilterStatus({
             ...filterStatus,
             paging: {
-              page: tableState.page+1,
+              page: tableState.page + 1,
               limit: tableState.rowsPerPage,
             },
           });
@@ -747,18 +756,16 @@ export const MadrasahController = ({ children }) => {
               type: ActionType.setData,
               payload: schoolSorted.data.data,
             });
-        
           } else {
             dispatch({
               type: ActionType.setData,
               payload: [],
             });
-         
           }
           break;
         case "changeRowsPerPage":
           setFilter(false);
-    
+
           const schoolSortedByRows = await schoolPresenter.loadData({
             ...filterStatus,
             paging: {
@@ -769,7 +776,7 @@ export const MadrasahController = ({ children }) => {
           setFilterStatus({
             ...filterStatus,
             paging: {
-              page: tableState.page+1,
+              page: tableState.page + 1,
               limit: tableState.rowsPerPage,
             },
           });
@@ -782,13 +789,11 @@ export const MadrasahController = ({ children }) => {
               type: ActionType.setData,
               payload: schoolSortedByRows.data.data,
             });
-          
           } else {
             dispatch({
               type: ActionType.setData,
               payload: schoolSorted.data.data,
             });
-         
           }
           break;
         case "propsUpdate":
@@ -826,12 +831,12 @@ export const MadrasahController = ({ children }) => {
             ...filterStatus.filter,
             province: "",
           },
-          paging: state.filterStatus.paging
+          paging: state.filterStatus.paging,
         });
 
         setPagintion({
           total: school.data.pagination.total,
-          page: school.data.pagination.current_page-1,
+          page: school.data.pagination.current_page - 1,
           rowsPerPage: school.data.pagination.page_size,
         });
         dispatch({
@@ -845,7 +850,7 @@ export const MadrasahController = ({ children }) => {
             ...filterStatus.filter,
             province: "",
           },
-          paging: state.filterStatus.paging
+          paging: state.filterStatus.paging,
         });
         dispatch({
           type: ActionType.setLoading,
@@ -875,7 +880,7 @@ export const MadrasahController = ({ children }) => {
                   ...filterStatus.filter,
                   province: "",
                 },
-                paging: state.filterStatus.paging
+                paging: state.filterStatus.paging,
               });
 
               dispatch({
@@ -885,7 +890,7 @@ export const MadrasahController = ({ children }) => {
 
               setPagintion({
                 total: school.data.pagination.total,
-                page: school.data.pagination.current_page-1,
+                page: school.data.pagination.current_page - 1,
                 rowsPerPage: school.data.pagination.page_size,
               });
 
@@ -895,7 +900,7 @@ export const MadrasahController = ({ children }) => {
                   ...filterStatus.filter,
                   province: "",
                 },
-                paging: state.filterStatus.paging
+                paging: state.filterStatus.paging,
               });
               dispatch({
                 type: ActionType.setLoading,
@@ -923,7 +928,7 @@ export const MadrasahController = ({ children }) => {
                   ...filterStatus.filter,
                   province: addedProvince.toString(),
                 },
-                paging: state.filterStatus.paging
+                paging: state.filterStatus.paging,
               });
               dispatch({
                 type: ActionType.setData,
@@ -931,7 +936,7 @@ export const MadrasahController = ({ children }) => {
               });
               setPagintion({
                 total: school.data.pagination.total,
-                page: school.data.pagination.current_page-1,
+                page: school.data.pagination.current_page - 1,
                 rowsPerPage: school.data.pagination.page_size,
               });
               setFilterStatus({
@@ -940,7 +945,7 @@ export const MadrasahController = ({ children }) => {
                   ...filterStatus.filter,
                   province: addedProvince.toString(),
                 },
-                paging: state.filterStatus.paging
+                paging: state.filterStatus.paging,
               });
               dispatch({
                 type: ActionType.setLoading,
@@ -967,7 +972,7 @@ export const MadrasahController = ({ children }) => {
                 ...filterStatus.filter,
                 province: addedProvince.toString(),
               },
-              paging: state.filterStatus.paging
+              paging: state.filterStatus.paging,
             });
             dispatch({
               type: ActionType.setData,
@@ -975,7 +980,7 @@ export const MadrasahController = ({ children }) => {
             });
             setPagintion({
               total: school.data.pagination.total,
-              page: school.data.pagination.current_page-1,
+              page: school.data.pagination.current_page - 1,
               rowsPerPage: school.data.pagination.page_size,
             });
             setFilterStatus({
@@ -984,7 +989,7 @@ export const MadrasahController = ({ children }) => {
                 ...filterStatus.filter,
                 province: addedProvince.toString(),
               },
-              paging: state.filterStatus.paging
+              paging: state.filterStatus.paging,
             });
             dispatch({
               type: ActionType.setLoading,
@@ -1010,18 +1015,18 @@ export const MadrasahController = ({ children }) => {
             const removedProvince = state.provinceChecked.filter(
               (val) => val.name !== parseInt(e.target.value)
             );
-            const transformData = removedProvince.map(val => val.name)
+            const transformData = removedProvince.map((val) => val.name);
             const school = await schoolPresenter.loadData({
               ...filterStatus,
               filter: {
                 ...filterStatus.filter,
                 province: transformData.toString(),
               },
-              paging: state.filterStatus.paging
+              paging: state.filterStatus.paging,
             });
             setPagintion({
               total: school.data.pagination.total,
-              page: school.data.pagination.current_page-1,
+              page: school.data.pagination.current_page - 1,
               rowsPerPage: school.data.pagination.page_size,
             });
             dispatch({
@@ -1038,7 +1043,7 @@ export const MadrasahController = ({ children }) => {
                 ...filterStatus.filter,
                 province: transformData.toString(),
               },
-               paging: state.filterStatus.paging
+              paging: state.filterStatus.paging,
             });
           } else {
             dispatch({
@@ -1065,7 +1070,7 @@ export const MadrasahController = ({ children }) => {
                 ...filterStatus.filter,
                 province: addedProvince.toString(),
               },
-               paging: state.filterStatus.paging
+              paging: state.filterStatus.paging,
             });
             dispatch({
               type: ActionType.setData,
@@ -1073,7 +1078,7 @@ export const MadrasahController = ({ children }) => {
             });
             setPagintion({
               total: school.data.pagination.total,
-              page: school.data.pagination.current_page-1,
+              page: school.data.pagination.current_page - 1,
               rowsPerPage: school.data.pagination.page_size,
             });
             setFilterStatus({
@@ -1082,7 +1087,7 @@ export const MadrasahController = ({ children }) => {
                 ...filterStatus.filter,
                 province: addedProvince.toString(),
               },
-              paging: state.filterStatus.paging
+              paging: state.filterStatus.paging,
             });
             dispatch({
               type: ActionType.setLoading,
@@ -1110,7 +1115,7 @@ export const MadrasahController = ({ children }) => {
             ...filterStatus.filter,
             regency: "",
           },
-          paging: state.filterStatus.paging
+          paging: state.filterStatus.paging,
         });
 
         dispatch({
@@ -1119,7 +1124,7 @@ export const MadrasahController = ({ children }) => {
         });
         setPagintion({
           total: school.data.pagination.total,
-          page: school.data.pagination.current_page-1,
+          page: school.data.pagination.current_page - 1,
           rowsPerPage: school.data.pagination.page_size,
         });
         setFilterStatus({
@@ -1128,7 +1133,7 @@ export const MadrasahController = ({ children }) => {
             ...filterStatus.filter,
             regency: "",
           },
-          paging: state.filterStatus.paging
+          paging: state.filterStatus.paging,
         });
         dispatch({
           type: ActionType.setLoading,
@@ -1158,7 +1163,7 @@ export const MadrasahController = ({ children }) => {
                   ...filterStatus.filter,
                   regency: "",
                 },
-                paging: state.filterStatus.paging
+                paging: state.filterStatus.paging,
               });
 
               dispatch({
@@ -1167,7 +1172,7 @@ export const MadrasahController = ({ children }) => {
               });
               setPagintion({
                 total: school.data.pagination.total,
-                page: school.data.pagination.current_page-1,
+                page: school.data.pagination.current_page - 1,
                 rowsPerPage: school.data.pagination.page_size,
               });
 
@@ -1177,7 +1182,7 @@ export const MadrasahController = ({ children }) => {
                   ...filterStatus.filter,
                   regency: "",
                 },
-                paging: state.filterStatus.paging
+                paging: state.filterStatus.paging,
               });
               dispatch({
                 type: ActionType.setLoading,
@@ -1195,14 +1200,14 @@ export const MadrasahController = ({ children }) => {
                   label: e.target.name,
                 },
               });
-              const addedCity = [state.cityChecked[0]['name'], e.target.value];
+              const addedCity = [state.cityChecked[0]["name"], e.target.value];
               const school = await schoolPresenter.loadData({
                 ...filterStatus,
                 filter: {
                   ...filterStatus.filter,
                   regency: addedCity.toString(),
                 },
-                 paging: state.filterStatus.paging
+                paging: state.filterStatus.paging,
               });
               dispatch({
                 type: ActionType.setData,
@@ -1210,7 +1215,7 @@ export const MadrasahController = ({ children }) => {
               });
               setPagintion({
                 total: school.data.pagination.total,
-                page: school.data.pagination.current_page-1,
+                page: school.data.pagination.current_page - 1,
                 rowsPerPage: school.data.pagination.page_size,
               });
               setFilterStatus({
@@ -1219,7 +1224,7 @@ export const MadrasahController = ({ children }) => {
                   ...filterStatus.filter,
                   regency: addedCity.toString(),
                 },
-                paging: state.filterStatus.paging
+                paging: state.filterStatus.paging,
               });
               dispatch({
                 type: ActionType.setLoading,
@@ -1249,15 +1254,15 @@ export const MadrasahController = ({ children }) => {
                 ...filterStatus.filter,
                 regency: addedCity.toString(),
               },
-              paging: state.filterStatus.paging
-            }); 
+              paging: state.filterStatus.paging,
+            });
             dispatch({
               type: ActionType.setData,
               payload: school.data.data,
             });
             setPagintion({
               total: school.data.pagination.total,
-              page: school.data.pagination.current_page-1,
+              page: school.data.pagination.current_page - 1,
               rowsPerPage: school.data.pagination.page_size,
             });
             setFilterStatus({
@@ -1266,7 +1271,7 @@ export const MadrasahController = ({ children }) => {
                 ...filterStatus.filter,
                 regency: addedCity.toString(),
               },
-              paging: state.filterStatus.paging
+              paging: state.filterStatus.paging,
             });
             dispatch({
               type: ActionType.setLoading,
@@ -1292,18 +1297,18 @@ export const MadrasahController = ({ children }) => {
             const removedCity = state.cityChecked.filter(
               (val) => val.name !== parseInt(e.target.value)
             );
-            const transformData = removedCity.map(val => val.name) 
+            const transformData = removedCity.map((val) => val.name);
             const school = await schoolPresenter.loadData({
               ...filterStatus,
               filter: {
                 ...filterStatus.filter,
                 regency: transformData.toString(),
               },
-               paging: state.filterStatus.paging
+              paging: state.filterStatus.paging,
             });
             setPagintion({
               total: school.data.pagination.total,
-              page: school.data.pagination.current_page-1,
+              page: school.data.pagination.current_page - 1,
               rowsPerPage: school.data.pagination.page_size,
             });
             dispatch({
@@ -1317,7 +1322,7 @@ export const MadrasahController = ({ children }) => {
                 ...filterStatus.filter,
                 regency: transformData.toString(),
               },
-              paging: state.filterStatus.paging
+              paging: state.filterStatus.paging,
             });
             dispatch({
               type: ActionType.setLoading,
@@ -1345,7 +1350,7 @@ export const MadrasahController = ({ children }) => {
                 ...filterStatus.filter,
                 regency: addedCity.toString(),
               },
-              paging: state.filterStatus.paging
+              paging: state.filterStatus.paging,
             });
             dispatch({
               type: ActionType.setData,
@@ -1353,7 +1358,7 @@ export const MadrasahController = ({ children }) => {
             });
             setPagintion({
               total: school.data.pagination.total,
-              page: school.data.pagination.current_page-1,
+              page: school.data.pagination.current_page - 1,
               rowsPerPage: school.data.pagination.page_size,
             });
             setFilterStatus({
@@ -1362,7 +1367,7 @@ export const MadrasahController = ({ children }) => {
                 ...filterStatus.filter,
                 regency: addedCity.toString(),
               },
-              paging: state.filterStatus.paging
+              paging: state.filterStatus.paging,
             });
             dispatch({
               type: ActionType.setLoading,
@@ -1394,7 +1399,7 @@ export const MadrasahController = ({ children }) => {
     return (dispatch) => async (actiontype: any) => {
       const listFilteredSchool = await schoolPresenter.loadData({
         search: controller.filterStatus.search,
-      });
+      })
       if (listFilteredSchool.data.data === null) {
         dispatch({ type: actiontype, payload: [] });
         setPagintion({
@@ -1405,7 +1410,7 @@ export const MadrasahController = ({ children }) => {
       } else {
         setPagintion({
           total: listFilteredSchool.data.pagination.total,
-          page: listFilteredSchool.data.pagination.current_page-1,
+          page: listFilteredSchool.data.pagination.current_page - 1,
           rowsPerPage: listFilteredSchool.data.pagination.page_size,
         });
         dispatch({ type: actiontype, payload: listFilteredSchool.data.data });
@@ -1450,16 +1455,16 @@ export const MadrasahController = ({ children }) => {
           payload: true,
         });
         const school = await schoolPresenter.loadData({
-          ...filterStatus
+          ...filterStatus,
         });
         setPagintion({
           total: school.data.pagination.total,
-          page: school.data.pagination.current_page-1,
+          page: school.data.pagination.current_page - 1,
           rowsPerPage: school.data.pagination.page_size,
         });
         dispatch({
           type: ActionType.setData,
-          payload: school.data.data
+          payload: school.data.data,
         });
         dispatch({
           type: ActionType.setLoading,
@@ -1504,12 +1509,10 @@ export const MadrasahController = ({ children }) => {
   );
 };
 
-export const AppProvider = ({children}) => {
-    return(
-      <Provider>
-         <MadrasahController>
-             {children}
-         </MadrasahController>
-      </Provider>
-      )
-}
+export const AppProvider = ({ children }) => {
+  return (
+    <Provider>
+      <MadrasahController>{children}</MadrasahController>
+    </Provider>
+  );
+};

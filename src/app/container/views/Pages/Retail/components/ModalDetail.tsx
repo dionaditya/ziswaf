@@ -22,11 +22,11 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     paper: {
       position: "absolute",
-      width: 500,
+      width: '40%',
       backgroundColor: theme.palette.background.paper,
       border: "2px solid #000",
       boxShadow: theme.shadows[5],
-      padding: theme.spacing(2, 4, 3),
+      padding: theme.spacing(3, 4, 3),
     },
     modal: {
       display: "flex",
@@ -43,6 +43,9 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
 
   const {
     donor_name,
+    donor_phone,
+    donor_email,
+    donor_npwp,
     division_name,
     kwitansi,
     category,
@@ -53,34 +56,39 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
     created_at,
     good_status,
     donor_address,
-    cash_description,
     good_description,
-    total
+    total,
+    unit,
+    description,
+    ref_number
   } = controller.transaction;
+
 
   const body = (
     <GridContainer>
       <GridItem sm={12} md={12}>
+      <div style={modalStyle} className={classes.paper}>
         <GridContainer>
-          <GridItem xs={12} sm={12} md={12}>
-            <div style={modalStyle} className={classes.paper}>
-              <GridContainer>
-                <span
+          <GridItem xs={12} sm={12} md={12} style={{
+            marginBottom: '20px'
+          }}>
+          <span
                   style={{
                     color: "rgba(50, 60, 71, 0.8)",
                     fontSize: "18px",
                     fontWeight: "bold",
+                    marginBottom: '20px'
                   }}
                 >
                   DETAIL ZISWAF
                 </span>
-              </GridContainer>
-              <GridContainer>
-                <div className="divider"></div>
-                <Box display="flex" flexDirection="row">
-                  <GridItem xs={12} sm={12} md={4}>
-                    <div className="col s12 l4 m4">
-                      <div className="row mb-4">
+          </GridItem>
+          <GridItem xs={12} sm={12} md={12}>
+                <GridContainer>
+                    <GridItem xs={12} sm={12} md={4}>
+                      <GridContainer>
+                        <GridItem xs={12} sm={12} md={12}>
+                        <div className="row mb-4">
                         <span
                           style={{
                             color: "#828282",
@@ -92,7 +100,9 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
                         </span>
                         <p className="black-text">{division_name || "-"}</p>
                       </div>
-                      <div className="row mb-4">
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={12}>
+                        <div className="row mb-4">
                         <span
                           style={{
                             color: "#828282",
@@ -106,7 +116,9 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
                           {moment(created_at).format("dddd, MMM YYYY")}
                         </p>
                       </div>
-                      <div className="row mb-4">
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={12}>
+                        <div className="row mb-4">
                         <span
                           style={{
                             color: "#828282",
@@ -114,15 +126,20 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
                             fontWeight: "bold",
                           }}
                         >
-                          NOMOR KWITANSI
+                          UNIT
                         </span>
-                        <p className="black-text">{kwitansi || "-"}</p>
+                        <p className="black-text">
+                          {unit}
+                        </p>
                       </div>
-                    </div>
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={4}>
-                    <div className="col s12 l4 m4">
-                      <div className="row mb-4">
+                        </GridItem>
+                      </GridContainer>
+                   
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={4}>
+                      <GridContainer>
+                          <GridItem xs={12} sm={12} md={12}>
+                          <div className="row mb-4">
                         <span
                           style={{
                             color: "#828282",
@@ -134,7 +151,9 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
                         </span>
                         <p className="black-text">{donor_name || "-"}</p>
                       </div>
-                      <div className="row mb-4">
+                          </GridItem>
+                          <GridItem xs={12} sm={12} md={12}>
+                          <div className="row mb-4">
                         <span
                           style={{
                             color: "#828282",
@@ -145,8 +164,84 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
                           ALAMAT DONATUR
                         </span>
                         <p className="black-text">{donor_address || "-"}</p>
-                      </div>
+                      </div>  
+                        </GridItem>
+                      </GridContainer>
+                   
+
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={4}>
+                    <GridContainer>
+                      <GridItem xs={12} sm={12} md={12}>
                       <div className="row mb-4">
+                        <span
+                          style={{
+                            color: "#828282",
+                            fontSize: "12px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                         NO HP. 
+                        </span>
+                        <p className="black-text">{donor_phone || "-"}</p>
+                      </div>  
+                          </GridItem>
+                          <GridItem xs={12} sm={12} md={12}>
+                          <div className="row mb-4">
+                        <span
+                          style={{
+                            color: "#828282",
+                            fontSize: "12px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                         SUREL
+                        </span>
+                        <p className="black-text">{donor_email || "-"}</p>
+                      </div>  
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={12}>
+                        <div className="row mb-4">
+                        <span
+                          style={{
+                            color: "#828282",
+                            fontSize: "12px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                         NO NPWP
+                        </span>
+                        <p className="black-text">{donor_npwp || "-"}</p>
+                      </div>  
+                          </GridItem>
+                      </GridContainer>
+                   
+                    </GridItem>
+                </GridContainer>
+          </GridItem>
+          <GridItem xs={12} sm={12} >
+                <GridContainer>
+                    <GridItem xs={12} sm={12} md={4}>
+                    <GridContainer>
+                      <GridItem xs={12} sm={12} md={12}>
+                      <div className="col s12 l4 m4">
+                    
+                    <div className="row mb-4">
+                      <span
+                        style={{
+                          color: "#828282",
+                          fontSize: "12px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        NOMOR KWITANSI
+                      </span>
+                      <p className="black-text">{kwitansi || "-"}</p>
+                    </div>
+                  </div>
+                          </GridItem>
+                          <GridItem xs={12} sm={12} md={12}>
+                          <div className="row mb-4">
                         <span
                           style={{
                             color: "#828282",
@@ -158,7 +253,9 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
                         </span>
                         <p className="black-text">{category || "-"}</p>
                       </div>
-                      <div className="row mb-4">
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={12}>
+                        <div className="row mb-4">
                         <span
                           style={{
                             color: "#828282",
@@ -172,11 +269,33 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
                           {statement_category || "-"}
                         </p>
                       </div>
-                    </div>
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={4}>
-                    <div className="col s12 l4 m4">
+                          </GridItem>
+                      </GridContainer>
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={4}>
+                    <GridContainer>
+                      <GridItem xs={12} sm={12} md={12}>
                       <div className="row mb-4">
+                        <span
+                          style={{
+                            color: "#828282",
+                            fontSize: "12px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          DESKRIPSI DONASI
+                        </span>
+                        <p className="black-text">
+                          {description || "-"}
+                        </p>
+                      </div>
+                          </GridItem>
+                      </GridContainer>
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={4}>
+                    <GridContainer>
+                          <GridItem xs={12} sm={12} md={12}>
+                          <div className="row mb-4">
                         <span
                           style={{
                             color: "#828282",
@@ -188,8 +307,11 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
                         </span>
                         <p className="black-text">{item_type || "-"}</p>
                       </div>
-                      {item_type === "uang" ? (
-                        <>
+                          </GridItem>
+                          {
+                            item_type === "Uang" ? (
+                              <>
+                                <GridItem xs={12} sm={12} md={12}>
                           <div className="row mb-4">
                             <span
                               style={{
@@ -198,10 +320,13 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
                                 fontWeight: "bold",
                               }}
                             >
-                              DESKRIPSI PEMBAYARAN
+                              TUNAI / NON TUNAI
                             </span>
                             <p className="black-text">{item_category}</p>
                           </div>
+                          </GridItem>
+                          <GridItem xs={12} sm={12} md={12}>
+
                           <div className="row mb-4">
                             <span
                               style={{
@@ -210,15 +335,12 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
                                 fontWeight: "bold",
                               }}
                             >
-                              JUMLAH
+                              NOMINAL
                             </span>
-                            <p className="black-text">
-                              {new Intl.NumberFormat("id-ID", {
-                                style: "currency",
-                                currency: "IDR",
-                              }).format(total)}
-                            </p>
+                            <p className="black-text">{total}</p>
                           </div>
+                          </GridItem>
+                          <GridItem xs={12} sm={12} md={12}>
                           <div className="row mb-4">
                             <span
                               style={{
@@ -227,13 +349,15 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
                                 fontWeight: "bold",
                               }}
                             >
-                              DESKRIPSI
+                             NO REF
                             </span>
-                            <p className="black-text">{cash_description}</p>
+                            <p className="black-text">{ref_number}</p>
                           </div>
-                        </>
-                      ) : (
-                        <>
+                          </GridItem>
+                              </>
+                            ) : (
+                              <>
+                               <GridItem xs={12} sm={12} md={12}>
                           <div className="row mb-4">
                             <span
                               style={{
@@ -246,6 +370,9 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
                             </span>
                             <p className="black-text">{good_description}</p>
                           </div>
+                          </GridItem>
+                          <GridItem xs={12} sm={12} md={12}>
+
                           <div className="row mb-4">
                             <span
                               style={{
@@ -258,6 +385,8 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
                             </span>
                             <p className="black-text">{quantity}</p>
                           </div>
+                          </GridItem>
+                          <GridItem xs={12} sm={12} md={12}>
                           <div className="row mb-4">
                             <span
                               style={{
@@ -270,15 +399,18 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
                             </span>
                             <p className="black-text">{good_status}</p>
                           </div>
-                        </>
-                      )}
-                    </div>
-                  </GridItem>
-                </Box>
-              </GridContainer>
-            </div>
+                          </GridItem>
+                              </>
+                            )
+                          }
+                          
+                         
+                      </GridContainer>
+                    </GridItem>
+                </GridContainer>
           </GridItem>
         </GridContainer>
+        </div>
       </GridItem>
     </GridContainer>
   );

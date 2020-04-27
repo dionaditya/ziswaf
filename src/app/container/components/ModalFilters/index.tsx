@@ -27,7 +27,6 @@ export const ModalFooter = ({ children }) => {
   } else {
     return(
       <div
-          className="modal-footer"
           style={{
             flex: 0.5,
             border: "4px solid transparent",

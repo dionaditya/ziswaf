@@ -93,7 +93,7 @@ export const { Provider: DonorProvider } = DonorContext;
 export const DonorController = ({ children }) => {
   const [name, setName] = useState<string>("");
   const [companyName, setCompanyName] = useState<string>("");
-  const [isCompany, setCompany] = useState<boolean>(false);
+  const [isCompany, setCompany] = useState<boolean>(true);
   const [position, setPosition] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [address, setAddress] = useState<string>("");
@@ -183,9 +183,7 @@ export const DonorController = ({ children }) => {
   }, []);
 
   const _onStoreCorporate = async (e) => {
-    try {
-      e.preventDefault();
-      if(id === undefined) {
+     if(id === undefined) {
 
         const resp = await donorPresenter.store(
           new CreateDonorApiRequest(
@@ -204,11 +202,7 @@ export const DonorController = ({ children }) => {
             Number(regencyId)
           )
         );
-        if (resp) {
-          return resp;
-        } else {
-          return false;
-        }
+        return resp
       } else {
         const resp = await donorPresenter.update(
           new UpdateDonorApiRequest(
@@ -224,28 +218,17 @@ export const DonorController = ({ children }) => {
             Number(regencyId)
           ), Number(id)
         );
-        if (resp) {
-          return resp;
-        } else {
-          return false;
-        }
+       return resp
       }
-    
-      
-    } catch (error) {
-      return false;
-    }
   };
 
   const _onStoreRetail = async (e) => {
-    try {
-      e.preventDefault();
-      if(id === undefined) {
+    if(id === undefined) {
         const resp = await donorPresenter.store(
           new CreateDonorApiRequest(
             name,
             companyName,
-            !isCompany,
+            false,
             position,
             email,
             address,
@@ -258,11 +241,7 @@ export const DonorController = ({ children }) => {
             Number(regencyId)
           )
         );
-        if (resp) {
-          return resp;
-        } else {
-          return false;
-        }
+        return resp
       } else {
         const resp = await donorPresenter.update(
           new UpdateDonorApiRequest(
@@ -278,16 +257,8 @@ export const DonorController = ({ children }) => {
             Number(regencyId)
           ), Number(id)
         );
-        if (resp) {
-          return resp;
-        } else {
-          return false;
-        }
+       return resp
       }
-     
-    } catch (error) {
-      return false;
-    }
   };
 
   const handleInput = async (e) => {

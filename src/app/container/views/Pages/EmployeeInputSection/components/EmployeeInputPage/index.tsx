@@ -992,7 +992,7 @@ const EmployeeInputSection = () => {
                                 disableToolbar
                                 variant="inline"
                                 disabled={true}
-                                views={["year"]}
+                                format="dd-MM-yyyy"
                                 inputVariant="outlined"
                                 style={{
                                   width: "100%",
@@ -1013,7 +1013,7 @@ const EmployeeInputSection = () => {
                                   const data = {
                                     target: {
                                       name: "registered_year",
-                                      value: moment(date).format("YYYY"),
+                                      value: moment(date).toISOString(),
                                     },
                                   };
                                   onChange(data);
@@ -1029,8 +1029,9 @@ const EmployeeInputSection = () => {
                                 as={
                                   <KeyboardDatePicker
                                     disableToolbar
+                                    autoOk
                                     variant="inline"
-                                    views={["year"]}
+                                    format="dd/MM/yyyy"
                                     inputVariant="outlined"
                                     style={{
                                       width: "100%",
@@ -1051,7 +1052,7 @@ const EmployeeInputSection = () => {
                                       const data = {
                                         target: {
                                           name: "registered_year",
-                                          value: moment(date).format("YYYY"),
+                                          value: moment(date).toISOString(),
                                         },
                                       };
                                       onChange(data);
@@ -1071,7 +1072,7 @@ const EmployeeInputSection = () => {
                                   const data = {
                                     target: {
                                       name: "registered_year",
-                                      value: moment(date[0]).format("YYYY"),
+                                      value: moment(date[0]).toISOString(),
                                     },
                                   };
                                   onChange(data);

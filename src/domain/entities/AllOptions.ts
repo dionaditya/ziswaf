@@ -222,7 +222,9 @@ export const GoodsCategories = [
   [1, "Aset Tidak Bergerak"],
   [2, "Aset Bergerak"],
   [3, "Makanan / Minuman"],
-  [4, "Bentu Lainnya"],
+  [4, "Bentuk Lainnya"],
+  [5, 'Hewan Kurban']
+
 ];
 
 export const GoodsStatus = [

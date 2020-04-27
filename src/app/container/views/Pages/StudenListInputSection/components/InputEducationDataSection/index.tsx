@@ -86,9 +86,9 @@ const useStyles = makeStyles((theme: Theme) =>
       color: "#00923F",
     },
     label: {
-      color: '#323C47',
-      fontWeight: 'bold'
-    }
+      color: "#323C47",
+      fontWeight: "bold",
+    },
   })
 );
 
@@ -136,9 +136,7 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
     education_description,
   } = controller.education_info;
 
-  const {
-    isDetailSession
-  } = controller
+  const { isDetailSession } = controller;
 
   const isNullFinishedAt =
     moment(finished_at).format("YYYY-MM-DD") === "0001-01-01";
@@ -202,7 +200,9 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                   <GridContainer>
                     <GridItem xs={12} sm={12} md={12}>
                       <Box className={classes.marginBottom}>
-                        <label htmlFor="status" className={classes.label}>Status Pendidikan</label>
+                        <label htmlFor="status" className={classes.label}>
+                          Status Pendidikan
+                        </label>
                         <Controller
                           as={
                             <SelectWithSearch
@@ -253,7 +253,12 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                   <GridContainer>
                     <GridItem xs={12} sm={12} md={6}>
                       <Box className={classes.marginBottom}>
-                        <label htmlFor="registered_at"  className={classes.label}>Tanggal Masuk</label>
+                        <label
+                          htmlFor="registered_at"
+                          className={classes.label}
+                        >
+                          Tanggal Masuk
+                        </label>
                         <Controller
                           as={
                             <KeyboardDatePicker
@@ -322,7 +327,9 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                     </GridItem>
                     <GridItem xs={12} sm={12} md={6}>
                       <Box className={classes.marginBottom}>
-                        <label htmlFor="finished_at"  className={classes.label}>Tanggal Keluar</label>
+                        <label htmlFor="finished_at" className={classes.label}>
+                          Tanggal Keluar
+                        </label>
                         {finished_at !== "" &&
                         _.toNumber(moment(finished_at).toDate()) <
                           _.toNumber(moment(registered_at).toDate()) ? (
@@ -335,7 +342,7 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                                 style={{
                                   width: "100%",
                                 }}
-                                disabled={isDetailSession}
+                                disabled={isDetailSession || education_status === 1}
                                 className={classes.datepicker}
                                 format="dd/MM/yyyy"
                                 placeholder={
@@ -387,7 +394,7 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                                   variant="inline"
                                   inputVariant="outlined"
                                   format="dd/MM/yyyy"
-                                     disabled={isDetailSession}
+                                  disabled={isDetailSession || education_status === 1}
                                   style={{
                                     width: "100%",
                                   }}
@@ -451,7 +458,6 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                         <Typography
                           component="h5"
                           style={{ fontWeight: "bold" }}
-                       
                         >
                           Info Skorsing
                         </Typography>
@@ -503,7 +509,7 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                             <KeyboardDatePicker
                               autoOk
                               variant="inline"
-                                 disabled={isDetailSession}
+                              disabled={isDetailSession}
                               inputVariant="outlined"
                               style={{
                                 width: "100%",
@@ -558,7 +564,7 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                     </GridItem>
                     <GridItem xs={12} sm={12} md={6}>
                       <Box className={classes.marginBottom}>
-                        <label    className={classes.label}>Hingga Tanggal</label>
+                        <label className={classes.label}>Hingga Tanggal</label>
                         {punishment_end !== "" &&
                         _.toNumber(moment(punishment_end).toDate()) <
                           moment(punishment_start).toDate() ? (
@@ -676,7 +682,9 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                   <GridContainer>
                     <GridItem xs={12} sm={12} md={12}>
                       <Box className={classes.marginBottom}>
-                        <label    className={classes.label}>Juz yang telah di hafal</label>
+                        <label className={classes.label}>
+                          Juz yang telah di hafal
+                        </label>
                         <Controller
                           as={
                             <TextField
@@ -710,7 +718,9 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                   <GridContainer>
                     <GridItem xs={12} sm={12} md={12}>
                       <Box className={classes.marginBottom}>
-                        <label    className={classes.label}>Surat telah di hafal</label>
+                        <label className={classes.label}>
+                          Surat telah di hafal
+                        </label>
                         <Controller
                           as={
                             <TextField
@@ -744,7 +754,9 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                   <GridContainer>
                     <GridItem xs={12} sm={12} md={12}>
                       <Box className={classes.marginBottom}>
-                        <label    className={classes.label}>Hadis telah di hafal</label>
+                        <label className={classes.label}>
+                          Hadis telah di hafal
+                        </label>
                         <Controller
                           as={
                             <TextField
@@ -778,7 +790,9 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                   <GridContainer>
                     <GridItem xs={12} sm={12} md={12}>
                       <Box className={classes.marginBottom}>
-                        <label   className={classes.label}>Catatan Tambahan</label>
+                        <label className={classes.label}>
+                          Catatan Tambahan
+                        </label>
                         <Controller
                           as={
                             <TextField

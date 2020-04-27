@@ -257,6 +257,7 @@ export const UserListInputController = ({ children }) => {
                 ))
                 return postUser
             } catch(e) {
+                console.log(e)
                 return e.response
             }
             

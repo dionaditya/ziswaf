@@ -8,7 +8,7 @@ export class Employee {
     email: string
     address: string
     status: number | string
-    registered_year: string
+    registered_year: Date | string
     pos_code: number
     province_name: string | number
     regency_name: string | number
@@ -24,7 +24,7 @@ export class Employee {
         email: string,
         address: string,
         status: number | string,
-        registered_year: string,
+        registered_year: Date | string,
         pos_code: number,
         province_name: string | number,
         regency_name: string | number,

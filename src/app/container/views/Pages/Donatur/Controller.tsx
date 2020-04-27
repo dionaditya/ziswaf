@@ -54,7 +54,7 @@ export interface FilterStatus {
   };
   filter: {
     school_id: any;
-    regency_id: any;
+    regency: any;
     donor_category: any;
     status: any;
   };
@@ -158,7 +158,7 @@ const initialState: IState = {
     },
     filter: {
       school_id: "",
-      regency_id: "",
+      regency: "",
       donor_category: "",
       status: "",
     },
@@ -372,15 +372,13 @@ const DonorController = ({ children }) => {
           ...filterStatus,
           filter: {
             ...filterStatus.filter,
-            school_id: userAccess.school.id,
           }
         });
         setUserInfo(userAccess);
         setFilterStatus(prevState => ({
           ...prevState,
-          filter: {
-            ...prevState.filter,
-            school_id: userAccess.school.id,
+          filter: { 
+            ...prevState.filter
           },
         }));
         if(listDonor.data.data !== null) {
@@ -416,7 +414,6 @@ const DonorController = ({ children }) => {
 
     getData();  
 
-    console.log('mount')
    
   }, []);
 
@@ -570,6 +567,10 @@ const DonorController = ({ children }) => {
 
   const handleModal = async (e: any) => {
       dispatch({ type: ActionType.handleModal });
+      dispatch({
+        type: ActionType.setLoading,
+        payload: true,
+      });
 
       let listSchool = await schoolPresenter.loadData();
       let listRegency = await regencyPresenter.loadData();
@@ -580,6 +581,10 @@ const DonorController = ({ children }) => {
           payload: listSchool.data.data
         });
         dispatch({ type: ActionType.setRegency, payload: listRegency });
+        dispatch({
+          type: ActionType.setLoading,
+          payload: false,
+        });
       } else {
         let filterOperator = listSchool.data.data.filter(
           (val) => val.id === userInfo.school.id
@@ -598,6 +603,10 @@ const DonorController = ({ children }) => {
             payload: listSchool.data.data,
           });
           dispatch({ type: ActionType.setRegency, payload: listRegency });
+          dispatch({
+            type: ActionType.setLoading,
+            payload: false,
+          });
         }
       }
   };
@@ -653,7 +662,7 @@ const DonorController = ({ children }) => {
      
       const listFilteredDonor = await donorPresenter.getAllWithPagination(
         {
-          ...filterStatus
+          ...filterStatus,
         }
       );
       if (listFilteredDonor.data.data === null) {
@@ -789,7 +798,6 @@ const DonorController = ({ children }) => {
   };
 
 
-console.log(state)
 
   return (
       <DonorProvider

@@ -27,7 +27,7 @@ const ModalFilter = () => {
 
   const {
     school_id,
-    regency_id,
+    regency,
     donor_category,
     status,
   } = controller.filterStatus.filter;
@@ -87,7 +87,7 @@ const ModalFilter = () => {
                   ]}
                   name="school_id"
                   label="Unit"
-                  placeholder="UNIT"
+                  placeholder={controller.loading ? "loading..." : "UNIT"}
                 />
               )}
             </GridItem>
@@ -113,11 +113,11 @@ const ModalFilter = () => {
                     },
                   }));
                 }}
-                value={regency_id}
+                value={regency}
                 data={controller.regency}
                 name="regency"
                 label="Kota"
-                placeholder="KOTA"
+                placeholder={controller.loading ? "loading..." : "KOTA"}
               />
             </GridItem>
             <GridItem

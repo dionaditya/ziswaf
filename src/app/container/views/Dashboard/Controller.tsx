@@ -552,9 +552,7 @@ export const DashboardController = ({ children }) => {
 
    
 
-  
-  return useMemo(() => {
-    return (
+  return (
     <DashboardProvider
       value={{
         getSchoolData,
@@ -625,9 +623,6 @@ export const DashboardController = ({ children }) => {
       {children}
     </DashboardProvider>
   );
-
-  }, [state.loading, filterParam, filterParamAdmin, filterDataSchool, state.filterStartDate, state.filterEndDate, state.dataDashboard, state.dataDashboardOperator, dataAdminZakatMaal, dataOperatorZakatMaal])
-
  
 };
 

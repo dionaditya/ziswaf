@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme: Theme) =>
       left: -10,
       top: 110,
       background: "#00A247",
-      borderRadius: '50%',
+      borderRadius: "50%",
     },
     eclipse2: {
       position: "absolute",
@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme: Theme) =>
       right: 160,
       top: 0,
       background: "rgba(255, 255, 255, 0.1)",
-      borderRadius: '50%',
+      borderRadius: "50%",
     },
   })
 );
@@ -88,13 +88,12 @@ const SchoolInfo = () => {
   const controller = React.useContext(MadrasahInfoContext);
   const { register, handleSubmit, watch, control } = useForm();
   const [alertSucess, setSuccess] = React.useState(false);
-  const {id} = useParams();
+  const { id } = useParams();
   const classes = useStyles();
 
   const onSubmit = (data) => {
     controller.handleSearch(data.employee_name);
   };
-  
 
   const handleAdd = () => {
     history.push(`/dashboard/personel-input?school_id=${id}`);
@@ -152,7 +151,13 @@ const SchoolInfo = () => {
                     marginBottom: "20px",
                   }}
                 >
-                  <span style={{ color: "#00923F", fontSize: "20px" }}>
+                  <span
+                    style={{
+                      color: "#00923F",
+                      fontSize: "16px",
+                      fontWeight: 800,
+                    }}
+                  >
                     Info Ma'had
                   </span>
                 </GridItem>
@@ -180,7 +185,7 @@ const SchoolInfo = () => {
                               className="black-text"
                               style={{ marginTop: "0px" }}
                             >
-                              {controller.data.name || '-'}
+                              {controller.data.name || "-"}
                             </p>
                           </GridItem>
                           <GridItem xs={12} sm={12} md={12}>
@@ -197,7 +202,7 @@ const SchoolInfo = () => {
                               className="black-text"
                               style={{ marginTop: "0px" }}
                             >
-                              {controller.data.address || '-'}
+                              {controller.data.address || "-"}
                             </p>
                           </GridItem>
                           <GridItem xs={12} sm={12} md={12}>
@@ -214,7 +219,7 @@ const SchoolInfo = () => {
                               className="black-text"
                               style={{ marginTop: "0px" }}
                             >
-                              {controller.data.opened_a || '-'}
+                              {controller.data.opened_at || "-"}
                             </p>
                           </GridItem>
                         </GridContainer>
@@ -235,7 +240,7 @@ const SchoolInfo = () => {
                               className="black-text"
                               style={{ marginTop: "0px" }}
                             >
-                              {controller.data.regency_name || '-'}
+                              {controller.data.regency_name || "-"}
                             </p>
                           </GridItem>
                           <GridItem xs={12} sm={12} md={12}>
@@ -252,7 +257,7 @@ const SchoolInfo = () => {
                               className="black-text"
                               style={{ marginTop: "0px" }}
                             >
-                              {controller.data.province_name || '-'}
+                              {controller.data.province_name || "-"}
                             </p>
                           </GridItem>
                           <GridItem xs={12} sm={12} md={12}>
@@ -269,7 +274,7 @@ const SchoolInfo = () => {
                               className="black-text"
                               style={{ marginTop: "0px" }}
                             >
-                              {controller.data.phone ||   '-'}
+                              {controller.data.phone || "-"}
                             </p>
                           </GridItem>
                           <GridItem xs={12} sm={12} md={12}>
@@ -286,7 +291,7 @@ const SchoolInfo = () => {
                               className="black-text"
                               style={{ marginTop: "0px" }}
                             >
-                              {controller.data.email || '-'}
+                              {controller.data.email || "-"}
                             </p>
                           </GridItem>
                         </GridContainer>
@@ -304,8 +309,9 @@ const SchoolInfo = () => {
                       <span
                         style={{
                           color: "#00923F",
-                          fontSize: "20px",
+                          fontSize: "16px",
                           marginBottom: "50px",
+                          fontWeight: 800,
                         }}
                       >
                         Pimpinan Ma'had
@@ -320,65 +326,49 @@ const SchoolInfo = () => {
                       <Box
                         display="flex"
                         flexDirection="row"
+                        alignItems="center"
                         style={{
-                          height: "100%",
-                          width: "250px",
-                          minHeight: "130px",
+                          minHeight: "100px",
                           padding: "10px 5px",
+                          backgroundColor: "#00923F",
+                          borderRadius: 4,
                         }}
-                        className={classes.rectangle}
                       >
-
-                        <Box className={classes.eclipse2}></Box>
-                        <Box display="flex" style={{ width: "50px" }}>
-                          <div
-                            style={{
-                              borderRadius: "50%",
-                              marginTop: "4vh",
-                              marginLeft: "2vw",
-                            }}
-                          >
-                            {controller.data.head_master.image === null ? (
-                              <Avatar className={classes.orange}>N</Avatar>
-                            ) : (
-                              <div
-                                style={{
-                                  width: "80px",
-                                  height: "80px",
-                                  borderRadius: "50%",
-                                  background: "white",
-                                }}
-                              >
-                                <img
-                                  src={controller.data.head_master.image || "-"}
-                                  alt="Head master photo"
-                                  style={{
-                                    width: "80px",
-                                    height: "80px",
-                                    borderRadius: "50%",
-                                  }}
-                                />
-                              </div>
-                            )}
-                          </div>
+                        <Box display="flex" style={{ width: "60px", marginRight: 20, marginLeft: 10 }}>
+                          {controller.data.head_master.image !== null ? (
+                            <img
+                              src={controller.data.head_master.image || "-"}
+                              style={{
+                                width: "60px",
+                                height: "60px",
+                                borderRadius: "50%",
+                                backgroundColor: "#FFFFFF",
+                              }}
+                            />
+                          ) : (
+                            <div
+                              style={{
+                                width: "60px",
+                                height: "60px",
+                                borderRadius: "50%",
+                                backgroundColor: "#FFFFFF",
+                              }}
+                            />
+                          )}
                         </Box>
                         <Box
                           display="flex"
                           flexDirection="column"
-                          style={{
-                            justifyContent: "center",
-                            marginLeft: "4vw",
-                          }}
+                          alignItems="center"
                         >
                           <span
                             style={{
                               fontSize: "16px",
                               fontWeight: "bold",
                               color: "#ffffff",
-                              marginTop: "2vh",
                             }}
                           >
-                            {controller.data.head_master.name || '-'}
+                            {controller.data.head_master.name || "-"}
                           </span>
                           <span
                             style={{
@@ -387,7 +377,7 @@ const SchoolInfo = () => {
                               color: "#ffffff",
                             }}
                           >
-                            {controller.data.head_master.phone || '-'}
+                            {controller.data.head_master.phone || "-"}
                           </span>
                           <span
                             style={{
@@ -396,7 +386,7 @@ const SchoolInfo = () => {
                               color: "#ffffff",
                             }}
                           >
-                            {controller.data.head_master.email || '-'}
+                            {controller.data.head_master.email || "-"}
                           </span>
                         </Box>
                       </Box>
@@ -406,7 +396,13 @@ const SchoolInfo = () => {
                 <GridItem xs={12} sm={12} md={6}>
                   <GridContainer>
                     <GridItem xs={12} sm={12} md={12}>
-                      <span style={{ color: "#00923F", fontSize: "20px" }}>
+                      <span
+                        style={{
+                          color: "#00923F",
+                          fontSize: "16px",
+                          fontWeight: 800,
+                        }}
+                      >
                         Info Tambahan
                       </span>
                     </GridItem>
@@ -416,20 +412,18 @@ const SchoolInfo = () => {
                       md={12}
                       style={{ marginTop: "25px" }}
                     >
-                      <Paper
-                        elevation={0}
+                      <Box
                         style={{
                           padding: "10px",
-                          height: "100%",
-                          minHeight: "130px",
+                          minHeight: "100px",
+                          backgroundColor: "#FFFFFF",
+                          borderRadius: 4,
                         }}
                       >
-                        <div className="card card-border z-depth-0">
-                          <div className="card-content">
-                            <span>{controller.data.description || '-'}</span>
-                          </div>
-                        </div>
-                      </Paper>
+                        <span style={{ color: "#6A7088", fontSize: "14px" }}>
+                          {controller.data.description || "-"}
+                        </span>
+                      </Box>
                     </GridItem>
                   </GridContainer>
                 </GridItem>

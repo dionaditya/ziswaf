@@ -175,7 +175,7 @@ export const CorporateController = ({ children }) => {
     const cityPresenter: CityPresenter = container.resolve(CityPresenter)
     const categoryPresenter: CategoryPresenter = container.resolve(CategoryPresenter)
     const employeePresenter: EmployeePresenter = container.resolve(EmployeePresenter)
-    const { user_id, role } = getUserInfo()
+    const { user_id, role, school } = getUserInfo()
     const history = useHistory()
     const donationParams: any = useParams()
     const { transaction_id } = useParams()
@@ -208,9 +208,15 @@ export const CorporateController = ({ children }) => {
         if (isReceipt && isReceipt.path === '/dashboard/upz-tanda-terima/:transaction_id') {
             (async () => {
                 const donationDetail: any = await donationPresenter.getById(_.toNumber(transaction_id))
+                const employee: any = await employeePresenter.loadDataDetail(_.toNumber(query['?employee_id']))
+                console.log(employee)
+
                 setState(prevState => ({
                     ...prevState,
-                    transaction: donationDetail,
+                    transaction: {
+                        ...donationDetail,
+                        employeeName: employee.data.data.name
+                    },
                 }))
             })()
         }
@@ -282,7 +288,7 @@ export const CorporateController = ({ children }) => {
         if (debouncedValue !== '') {
             (async () => {
                 if (state.DonaturInfo.is_company === true) {
-                    const donaturQueryResult = await corporatePresenter.getAll({ search: debouncedValue })
+                    const donaturQueryResult = await corporatePresenter.getAll({ search: debouncedValue, filter: {donor_category: 1} })
                     if (donaturQueryResult !== null) {
                         const transformedDonaturQuery = donaturQueryResult.map(val => {
                             return {
@@ -298,7 +304,7 @@ export const CorporateController = ({ children }) => {
                             }))
                     }
                 } else {
-                    const donaturQueryResult = await corporatePresenter.getAll({ search: debouncedValue })
+                    const donaturQueryResult = await corporatePresenter.getAll({ search: debouncedValue, filter: {donor_category: 0} })
                     if (donaturQueryResult !== null) {
                         const transformedDonaturQuery = donaturQueryResult.map(val => {
                             return {
@@ -481,7 +487,7 @@ export const CorporateController = ({ children }) => {
                 ...prevState,
                 transaction: transactionDetail
             }))
-            history.push(`/dashboard/upz-tanda-terima/${transactionDetail.id}`)
+            history.push(`/dashboard/upz-tanda-terima/${transactionDetail.id}?employee_id=${state.DonationInfo.employee_id}`)
             return postDontation
         } catch (e) {
             return false

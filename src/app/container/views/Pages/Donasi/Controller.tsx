@@ -27,9 +27,9 @@ interface IState {
   handleFetchRegency: Function;
   loadSchool: Function;
   loadRegency: Function;
-  divisionId: string
-  fetchSchool: Function
-  fetchRegency: Function
+  divisionId: string;
+  fetchSchool: Function;
+  fetchRegency: Function;
 }
 
 interface FilterParams {
@@ -122,10 +122,9 @@ const initialState = {
   handleFetchRegency: () => {},
   loadSchool: () => {},
   loadRegency: () => {},
-  divisionId: '',
+  divisionId: "",
   fetchRegency: () => {},
-  fetchSchool: () => {}
-
+  fetchSchool: () => {},
 };
 
 export const DonationContext = React.createContext<IState>(initialState);
@@ -148,7 +147,7 @@ export const DonationController = ({ children }) => {
   const debouncedQueySchoolValue = useDebounce(searchSchool, 200);
   const debouncedQueyRegencyValue = useDebounce(searchRegency, 200);
   const [tableIndex, setTableIndex] = useState(0);
-  const [divisionId, setDivisonId] = useState('')
+  const [divisionId, setDivisonId] = useState("");
   const [displayColumns, setDisplayColumns] = useState({
     data: [
       {
@@ -164,7 +163,7 @@ export const DonationController = ({ children }) => {
       {
         name: "regency",
         label: "Kota",
-        options: { filter: false, sort: false },
+        options: { filter: true, sort: true },
       },
       {
         name: "division_id",
@@ -220,9 +219,6 @@ export const DonationController = ({ children }) => {
     "status",
     "total",
     "kwitansi",
-    "id",
-    "created_at",
-    "updated_at",
   ];
 
   const optionsTable = {
@@ -238,7 +234,7 @@ export const DonationController = ({ children }) => {
     elevation: 0,
     textLabels: {
       body: {
-        noMatch: loading ? 'loading...' : "Maaf tidak ada data",
+        noMatch: loading ? "loading..." : "Maaf tidak ada data",
       },
     },
     print: false,
@@ -249,12 +245,12 @@ export const DonationController = ({ children }) => {
     onCellClick: (colData, celMeta: { colIndex; rowIndex; dataIndex }) => {
       const idData = data[celMeta.dataIndex]["id"];
       setTableIndex(idData);
-      setDivisonId(data[celMeta.dataIndex]['division_id'].toLowerCase())
+      setDivisonId(data[celMeta.dataIndex]["division_id"].toLowerCase());
     },
     setCellHeaderProps: () => ({ align: "center" }),
     selectableRowsOnClick: true,
     setCellProps: () => ({ align: "center" }),
-    onTableChange: async function (action, tableState) {
+    onTableChange: async function(action, tableState) {
       switch (action) {
         case "sort":
           if (
@@ -299,7 +295,7 @@ export const DonationController = ({ children }) => {
           const donationSorted = await donationPresenter.getAllWithPagination({
             ...filterParam,
             paging: {
-              page: tableState.page+1,
+              page: tableState.page + 1,
               limit: tableState.rowsPerPage,
             },
           });
@@ -311,7 +307,7 @@ export const DonationController = ({ children }) => {
             ...prevState,
             paging: {
               ...prevState.paging,
-              page: tableState.page+1,
+              page: tableState.page + 1,
             },
           }));
           if (donationSorted.data.data !== null) {
@@ -325,7 +321,7 @@ export const DonationController = ({ children }) => {
           const donationResult = await donationPresenter.getAllWithPagination({
             ...filterParam,
             paging: {
-              page: tableState.page+1,
+              page: tableState.page + 1,
               limit: tableState.rowsPerPage,
             },
           });
@@ -360,38 +356,15 @@ export const DonationController = ({ children }) => {
       setLoading(true);
       if (userAccess.role === 1) {
         let res = await donationPresenter.getAllWithPagination({
-          ...filterParam
+          ...filterParam,
         });
         if (res.data.data !== null) {
-          const transformData = res.data.data.map((val) => {
-            const data = {};
-            Object.keys(val).forEach((key) => {
-              if (key === "doncr_category") {
-                if (val[key]) {
-                  data[key] = "Perusahaan";
-                } else {
-                  data[key] = "Perorangan";
-                }
-              } else if (key === "good_status") {
-                const goodStatus = GoodsStatus.filter(
-                  (x) => x[0] === val[key]
-                );
-                if (goodStatus.length > 0) {
-                  data[key] = goodStatus[0][1];
-                }
-              } else {
-                data[key] = val[key];
-              }
-            });
-            return data;
-          });
-
           setPagintion({
             total: res.data.pagination.total,
-            page: res.data.pagination.current_page-1,
+            page: res.data.pagination.current_page - 1,
             rowsPerPage: res.data.pagination.page_size,
           });
-          setData(transformData);
+          setData(res.data.data);
           setDidUpdate(!didUpdate);
           setUserInfo(userAccess);
           setLoading(false);
@@ -407,35 +380,12 @@ export const DonationController = ({ children }) => {
           filter: {
             ...filterParam.filter,
             school_id: userAccess.school.id,
-          }
+          },
         });
         if (res.data.data !== null) {
-          const transformData = res.data.data.map((val) => {
-            const data = {};
-            Object.keys(val).forEach((key) => {
-              if (key === "doncr category") {
-                if (val[key]) {
-                  data[key] = "Perusahaan";
-                } else {
-                  data[key] = "Perorangan";
-                }
-              } else if (key === "good_status") {
-                const goodStatus = GoodsStatus.filter(
-                  (x) => x[0] === val[key]
-                );
-                if (goodStatus.length > 0) {
-                  data[key] = goodStatus[0][1];
-                }
-              } else {
-                data[key] = val[key];
-              }
-            });
-            return data;
-          });
-
           setPagintion({
             total: res.data.pagination.total,
-            page: res.data.pagination.current_page-1,
+            page: res.data.pagination.current_page - 1,
             rowsPerPage: res.data.pagination.page_size,
           });
           setFilterParam((prevState) => ({
@@ -445,7 +395,7 @@ export const DonationController = ({ children }) => {
               school_id: userAccess.school.id,
             },
           }));
-          setData(transformData);
+          setData(res.data.data);
           setDidUpdate(!didUpdate);
           setUserInfo(userAccess);
           setLoading(false);
@@ -465,7 +415,7 @@ export const DonationController = ({ children }) => {
       }
     }
     _getData();
-   
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -496,15 +446,11 @@ export const DonationController = ({ children }) => {
     try {
       let res = await donationPresenter.getAllWithPagination({
         ...filterParam,
-        paging: {
-          ...filterParam.paging,
-          page: 1,
-        },
       });
       if (res.data.data !== null) {
         setPagintion({
           total: res.data.pagination.total,
-          page: res.data.pagination.current_page-1,
+          page: res.data.pagination.current_page - 1,
           rowsPerPage: res.data.pagination.page_size,
         });
         setFilter(true);
@@ -527,17 +473,16 @@ export const DonationController = ({ children }) => {
 
   const clearData = async () => {
     try {
-      if(userAccess.role === 2) {
+      if (userAccess.role === 2) {
         setFilterParam((prevState) => ({
           ...prevState,
           filter: {
             ...initialState.filterParam.filter,
-            school_id: userAccess.school.id
+            school_id: userAccess.school.id,
           },
         }));
-    
+
         setFilter(false);
-        
       } else {
         setFilterParam((prevState) => ({
           ...prevState,
@@ -545,7 +490,6 @@ export const DonationController = ({ children }) => {
         }));
         setFilter(false);
       }
-     
     } catch (error) {
       alert(error);
     }
@@ -559,14 +503,14 @@ export const DonationController = ({ children }) => {
         search: filterParam.search,
         filter: filterParam.filter,
         sort: {
-          created_at: 'DESC'
-        }
+          created_at: "DESC",
+        },
       });
 
       if (res.data.data !== null) {
         setPagintion({
           total: res.data.pagination.total,
-          page: res.data.pagination.current_page-1,
+          page: res.data.pagination.current_page - 1,
           rowsPerPage: res.data.pagination.page_size,
         });
         setData(res.data.data);
@@ -585,14 +529,14 @@ export const DonationController = ({ children }) => {
   };
 
   const fetchSchool = async () => {
-      const school = await schoolPresenter.loadData()
-      setSchool(school.data.data)
-  }
+    const school = await schoolPresenter.loadData();
+    setSchool(school.data.data);
+  };
 
   const fetchRegency = async () => {
-      const regency = await cityPresenter.loadData()
-      setRegency(regency)
-  }
+    const regency = await cityPresenter.loadData();
+    setRegency(regency);
+  };
 
   const handleSelectedColumn = (e) => {
     e.persist();
@@ -609,7 +553,7 @@ export const DonationController = ({ children }) => {
           data: [...removeChecked],
         });
       } else {
-        if (sortable.includes(e.target.name)) {
+        if (sortable.includes(e.target.value)) {
           setDisplayColumns({
             data: [
               ...displayColumns.data,
@@ -659,7 +603,7 @@ export const DonationController = ({ children }) => {
   };
 
   const loadSchool = async () => {
-    if(school !== [] || school.length > 0) {
+    if (school !== [] || school.length > 0) {
       const transformData = school.map((val) => {
         return {
           value: val.id,
@@ -694,7 +638,7 @@ export const DonationController = ({ children }) => {
         loadSchool,
         divisionId,
         fetchSchool,
-        fetchRegency
+        fetchRegency,
       }}
     >
       {children}
