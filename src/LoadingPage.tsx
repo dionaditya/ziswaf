@@ -6,8 +6,9 @@ const LoadingPage = () => {
     React.useEffect(() => {
         setTimeout(() => {
 
-        }, 1000)
+        }, 500)
     }, [])
+
     return(
         <div style={{
             display: 'flex',
