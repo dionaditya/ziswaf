@@ -40,6 +40,7 @@ export class DonorPresenter {
     payload: UpdateDonorApiRequest,
     id: number
   ): Promise<DonorDetails> {
+    console.log(payload)
     return this.repository.update(payload, id);
   }
 

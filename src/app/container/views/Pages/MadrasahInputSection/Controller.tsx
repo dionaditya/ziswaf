@@ -68,9 +68,9 @@ const initialState: IState = {
         email: '',
         pos_code: '',
         description: '',
-        user_id: 0,
-        province_id: 0,
-        regency_id: 0,
+        user_id: '',
+        province_id: '',
+        regency_id: '',
         opened_at: '',
         address: '',
         id: ''
@@ -134,20 +134,10 @@ export const UserListInputController = ({ children }) => {
                 dispatch({ type: ActionType.setLoading, payload: true })
                 let schoolData: any = await schoolPresenter.loadDataDetail(_.toNumber(id))
                 let listProvincePresenter = await provincePresenter.loadData()
-                let provinceId: any = listProvincePresenter.filter(val => val.name === schoolData.province_name)
-                let listCityPresenter = await cityPresenter.loadData({
-                    filter: {
-                        province_id: provinceId[0].id
-                    }
-                })
-                let cityId: any = listCityPresenter.filter(val => val.name === schoolData.regency_name)
-                const transformData = {
-                    ...schoolData,
-                    province_id: provinceId[0].id,
-                    regency_id: cityId[0].id
-                }
+                let listCityPresenter = await cityPresenter.loadData()
+           
                 dispatch({
-                    type: ActionType.setMadrasahData, payload: transformData
+                    type: ActionType.setMadrasahData, payload: schoolData
                 })
                 dispatch({
                     type: ActionType.setCity, payload: listCityPresenter

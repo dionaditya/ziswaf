@@ -657,7 +657,7 @@ const DonorInput = ({ index, setIndex }) => {
                                     name="npwp"
                                     variant="outlined"
                                     type="text"
-                                    inputRef={regency}
+                                    inputRef={register}
                                     style={{ width: "100%" }}
                                     placeholder="No NPWP"
                                     onChange={onChange}
@@ -691,7 +691,6 @@ const DonorInput = ({ index, setIndex }) => {
                                       onChange(value[0]);
                                       return value[0].target.value;
                                     }}
-                                    rules={{ required: true }}
                                     control={control}
                                     defaultValue={info}
                                   />

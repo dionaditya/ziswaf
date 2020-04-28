@@ -18,7 +18,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import _ from 'lodash'
 import { ToastProvider, useToasts } from "react-toast-notifications";
-
+import ModalWarningData from "../../Retail/components/ModalWarningData";
 
 const errorMessage = {
   nameField: "Nama tidak boleh kosong",
@@ -85,6 +85,7 @@ const DataInput = () => {
     regency: false,
   });
   const { addToast } = useToasts();
+   const [statusModal, setStatusModal] = React.useState(false);
 
   const {
     name,
@@ -97,7 +98,8 @@ const DataInput = () => {
     position,
     npwp,
     info,
-    isDetailSession
+    isDetailSession,
+    status
   } = controller;
 
 
@@ -128,18 +130,30 @@ const DataInput = () => {
     if (_.isEmpty(errors)) {
        const [status, response] = await controller._onStoreRetail(e);
       if (status === "error") {
-          addToast("Error menyimpan data donatur, Nama dan No Hp Sudah terdaftar", {
-          appearance: "error",
-        });
-        } else {
-          addToast("Data donatur telah tersimpan", {
+         console.log(response)
+        if (response !== undefined) {
+          if (response.status === 400 || response.status === 402) {
+           if(response.data.message === 'Nama dan Nomor Handphone yang sama ditemukan dalam database') {
+                setStatusModal(true)
+            } else {
+                  addToast(response.data.message, {
+              appearance: "error",
+            });
+            }
+          } else {
+            addToast(response.data.message, {
+              appearance: "error",
+            });
+          }
+        } 
+      } else {
+        addToast("Data donatur telah tersimpan", {
           appearance: "success",
         });
         setTimeout(() => {
-          
           history.push(`/dashboard/donatur`);
-        }, 1000)
-        }
+        }, 1000);
+      }
     }
   };
 
@@ -153,20 +167,31 @@ const DataInput = () => {
     controller.handleInput(e);
   };
 
+   const handleUpdateInput = async () => {
+    const resp = await controller.postUpdateData();
+    if (resp) {
+      history.push(`/dashboard/donatur`);
+    }
+  };
+
   React.useEffect(() => {
     setValue([
       { name: name },
       { address: address },
-      { posCode: posCode },
+      { pos_code: posCode },
       { email: email },
-      { provinceId: provinceId },
-      { regencyId: regencyId },
+      { province_id: provinceId },
+      { regency_id: regencyId },
       { phone: phone },
       { position: position },
       { npwp: npwp },
       { info: info },
+      { status: status },
     ]);
   }, [controller]);
+
+
+  
 
   if (controller.loading) {
     return (
@@ -183,6 +208,7 @@ const DataInput = () => {
       </Box>
     );
   }
+
 
   return (
     <React.Fragment>
@@ -213,7 +239,7 @@ const DataInput = () => {
                           <FormControlLabel
                             control={
                               <Checkbox
-                                checked={controller.checkbox === 1}
+                                checked={controller.checkbox === 1 || controller.status === 1}
                                 onChange={() => handleInputValue(1)}
                                 name="status"
                                 value={1}
@@ -227,7 +253,7 @@ const DataInput = () => {
                           <FormControlLabel
                             control={
                               <Checkbox
-                                checked={controller.checkbox === 2}
+                                checked={controller.checkbox === 2 || controller.status === 2}
                                 onChange={() => handleInputValue(2)}
                                 name="status"
                                 value={2}
@@ -241,7 +267,7 @@ const DataInput = () => {
                           <FormControlLabel
                             control={
                               <Checkbox
-                                checked={controller.checkbox === 3}
+                                checked={controller.checkbox === 3 || controller.status === 3}
                                 onChange={() => handleInputValue(3)}
                                 name="status"
                                 value={3}
@@ -255,7 +281,7 @@ const DataInput = () => {
                           <FormControlLabel
                             control={
                               <Checkbox
-                                checked={controller.checkbox === 4}
+                                checked={controller.checkbox === 4 || controller.status === 4}
                                 onChange={() => handleInputValue(4)}
                                 name="status"
                                 value={4}
@@ -371,6 +397,7 @@ const DataInput = () => {
                               data={controller.province}
                               name="province_id"
                               label="Provinsi"
+                              placeholder={controller.provinceId || "Pilih Provinsi"}
                             />
                           }
                           name="province_id"
@@ -422,7 +449,7 @@ const DataInput = () => {
                               data={controller.regency}
                               name="regency_id"
                               label="Pilih Kota"
-                              placeholder="Pilih Kota"
+                              placeholder={controller.regencyId || "Pilih Kota"}
                             />
                           }
                           name="regency_id"
@@ -656,6 +683,17 @@ const DataInput = () => {
                     </GridItem>
                   </GridContainer>
                 </GridItem>
+                     <ModalWarningData
+                  showModal={statusModal}
+                  setShowModal={() => setStatusModal(false)}
+                  donor={{
+                    name: `${name}`,
+                    phone: `${phone}`,
+                    address: `${address}`,
+                  }}
+                  errorMessage="Nama dan No HP. sama dalam database"
+                  handleClickCTA={() => handleUpdateInput()}
+                />
                 <GridItem xs={12} sm={12} md={12}>
                   <Box display="flex" justifyContent="flex-end">
                     <GridContainer>

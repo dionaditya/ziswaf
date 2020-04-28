@@ -139,7 +139,7 @@ const initialState: IState = {
     },
     {
       label: "No HP CP",
-      name: "phone",
+      name: "contact_number",
       options: { filter: false, sort: false },
     },
   ],
@@ -372,13 +372,15 @@ const DonorController = ({ children }) => {
           ...filterStatus,
           filter: {
             ...filterStatus.filter,
+            school_id: userAccess.school.id
           }
         });
         setUserInfo(userAccess);
         setFilterStatus(prevState => ({
           ...prevState,
           filter: { 
-            ...prevState.filter
+            ...prevState.filter,
+            school_id: userAccess.school.id
           },
         }));
         if(listDonor.data.data !== null) {

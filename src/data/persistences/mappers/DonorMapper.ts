@@ -96,10 +96,11 @@ export class DonorMapper {
             item.pos_code,
             item.email,
             item.phone,
-            item.npwp,
+            item.npwp, 
             item.name,
             item.position,
-            item.info
+            item.info,
+            item.is_company ? item.phone : ''
           );
           resp.push(donor);
         } else {
@@ -107,7 +108,7 @@ export class DonorMapper {
             item.id,
             item.is_company ? "Perusahaan" : "Perorangan",
             donaturStatus[0][1],
-            item.company_name ? item.company_name : item.name,
+            item.is_company ? item.company_name : item.name,
             item.address,
             item.regency_name,
             item.province_name,
@@ -115,9 +116,10 @@ export class DonorMapper {
             item.email,
             item.phone,
             item.npwp,
-            item.name,
+            item.is_company ? item.name : '-',
             item.position,
-            item.info
+            item.info,
+            item.is_company ? item.phone : ''
           );
           resp.push(donor);
         }

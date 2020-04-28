@@ -18,8 +18,8 @@ import qs from 'qs'
 import moment from 'moment'
 
 export interface Cash {
-    type_id: number;
-    category_id: number;
+    type_id: any;
+    category_id: any;
     value: number;
     ref_number: string;
 }
@@ -109,8 +109,8 @@ const initialState: IState = {
         kwitansi: '',
         created_at: '',
         cash: {
-            type_id: 0,
-            category_id: 0,
+            type_id: '',
+            category_id: '',
             value: 0,
             ref_number: '',
         },
@@ -209,7 +209,6 @@ export const CorporateController = ({ children }) => {
             (async () => {
                 const donationDetail: any = await donationPresenter.getById(_.toNumber(transaction_id))
                 const employee: any = await employeePresenter.loadDataDetail(_.toNumber(query['?employee_id']))
-                console.log(employee)
 
                 setState(prevState => ({
                     ...prevState,
@@ -227,7 +226,7 @@ export const CorporateController = ({ children }) => {
                     ...prevState,
                     DonationInfo: {
                         ...state.DonationInfo,
-                        donor_id: donationParams.donor_id,
+                        donor_id: _.toNumber(donationParams.donor_id),
                         employee_id: _.toNumber(query.employee_id),
                         kwitansi: query.kwitansi,
                         created_at: query.tanggal
@@ -351,7 +350,7 @@ export const CorporateController = ({ children }) => {
                 const res = await corporatePresenter.store(new CreateDonorApiRequest(
                     state.DonaturInfo.name,
                     state.DonaturInfo.company_name,
-                    false,
+                    state.DonaturInfo.is_company,
                     state.DonaturInfo.position,
                     state.DonaturInfo.email,
                     state.DonaturInfo.address,
@@ -376,7 +375,7 @@ export const CorporateController = ({ children }) => {
                 const res = await corporatePresenter.store(new CreateDonorApiRequest(
                     state.DonaturInfo.name,
                     state.DonaturInfo.company_name,
-                    true,
+                    state.DonaturInfo.is_company,
                     state.DonaturInfo.position,
                     state.DonaturInfo.email,
                     state.DonaturInfo.address,
@@ -468,18 +467,37 @@ export const CorporateController = ({ children }) => {
         }
     }
 
-    const handlePostDonation = async (e, indexTab, setIndexTab) => {
+    const handlePostDonation = async (e) => {
         try {
             e.preventDefault()
-            const postDontation = await donationPresenter.storeManual(new CreateDonationApiRequest(
-                _.toNumber(state.DonationInfo.donor_id),
+            if(state.DonationInfo.donation_item === 1) {
+                  const postDontation = await donationPresenter.store(new CreateDonationApiRequest(
+                state.DonationInfo.donor_id,
                 state.DonationInfo.division_id,
                 state.DonationInfo.category_id,
                 state.DonationInfo.statement_category_id,
                 state.DonationInfo.description,
                 state.DonationInfo.donation_item,
-                _.toNumber(state.DonationInfo.employee_id),
+                state.DonationInfo.employee_id,
                 state.DonationInfo.cash,
+                null
+            ))
+            const transactionDetail = await donationPresenter.getById(postDontation.id)
+            setState(prevState => ({
+                ...prevState,
+                transaction: transactionDetail
+            }))
+            return ['success', transactionDetail]
+            } else {
+                  const postDontation = await donationPresenter.store(new CreateDonationApiRequest(
+                state.DonationInfo.donor_id,
+                state.DonationInfo.division_id,
+                state.DonationInfo.category_id,
+                state.DonationInfo.statement_category_id,
+                state.DonationInfo.description,
+                state.DonationInfo.donation_item,
+                state.DonationInfo.employee_id,
+                null,
                 state.DonationInfo.goods
             ))
             const transactionDetail = await donationPresenter.getById(postDontation.id)
@@ -487,10 +505,11 @@ export const CorporateController = ({ children }) => {
                 ...prevState,
                 transaction: transactionDetail
             }))
-            history.push(`/dashboard/upz-tanda-terima/${transactionDetail.id}?employee_id=${state.DonationInfo.employee_id}`)
-            return postDontation
+            return ['success', transactionDetail]
+            }
+               
         } catch (e) {
-            return false
+            return ['error', e]
         }
 
     }
@@ -539,7 +558,7 @@ export const CorporateController = ({ children }) => {
     const handleInputDonation = (e) => {
         const name = e.target.name
         const value = e.target.value
-        if (e.target.name === 'category_id') {
+       if (e.target.name === 'category_id') {
             const selectCategory = category.filter(val => val.id === e.target.value)
             setState(prevState => ({
                 ...prevState,
@@ -619,7 +638,7 @@ export const CorporateController = ({ children }) => {
     const handleCashInput = (e) => {
         const name = e.target.name
         const value = e.target.value
-        if (e.target.name === 'value') {
+       if (e.target.name === 'value') {
             setState(prevState => ({
                 ...prevState,
                 DonationInfo: {
@@ -631,7 +650,33 @@ export const CorporateController = ({ children }) => {
 
                 }
             }))
-        } else {
+        } else if(e.target.name === 'type_id') {
+            if(e.target.value === 0) {
+                setState(_prevState => ({
+                ..._prevState,
+                DonationInfo: {
+                    ..._prevState.DonationInfo,
+                    cash: {
+                        ..._prevState.DonationInfo.cash,
+                        category_id: 1,
+                        [name]: value
+                    }
+                }
+            }))
+            } else {
+                setState(_prevState => ({
+                ..._prevState,
+                DonationInfo: {
+                    ..._prevState.DonationInfo,
+                    cash: {
+                        ..._prevState.DonationInfo.cash,
+                        [name]: value
+                    }
+                }
+            }))
+            }
+
+        } else  {
             setState(_prevState => ({
                 ..._prevState,
                 DonationInfo: {
@@ -691,7 +736,6 @@ export const CorporateController = ({ children }) => {
     }
 
     const handleSubmit = (data, showComponent) => {
-        console.log(data)
         const receipt_date = moment(data.receipt_date).format('DD-MM-YYYY')
         if (showComponent === 0) {
             history.push(`/dashboard/upz/donor?is_company=${false}&kwitansi=${data.kwitansi}&tanggal=${receipt_date}&employee_id=${selectedEmployee.id}`)

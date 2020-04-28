@@ -12,7 +12,7 @@ export const ReportDonationContext = React.createContext<ReportDonationInterface
 export const { Provider: ReportDonationProvider, Consumer: ReportDonationConsumer } = ReportDonationContext
 
 const ReportDonationController = ({ children }) => {
-    const [state, setState] =  useState<ReportDonationInterface>(ReportDonationDefaultState)
+    const [state, setState] = useState<ReportDonationInterface>(ReportDonationDefaultState)
     const schoolPresenter: SchoolPresenter = container.resolve(SchoolPresenter)
     const cityPresenter: CityPresenter = container.resolve(CityPresenter)
     const categoryPresenter: CategoryPresenter = container.resolve(CategoryPresenter)
@@ -24,22 +24,23 @@ const ReportDonationController = ({ children }) => {
             return val['name'] === parseName
         })
 
-        if(label !== 'Semua') {
+        if (label !== 'Semua') {
             if (isThere.length > 0) {
                 const removeChecked = state[field].filter(item => {
                     return item['name'] !== parseName
                 })
-                setState(prevState  => ({ ...prevState, [field]: removeChecked }))
+                setState(prevState => ({ ...prevState, [field]: removeChecked }))
             } else {
-                setState(prevState  => ({   ...prevState, [field]: state[field].concat([{ name: parseName, label: label }]) }))
+                setState(prevState => ({ ...prevState, [field]: state[field].concat([{ name: parseName, label: label }]) }))
             }
         } else {
-            setState(prevState  => ({   ...prevState, [field]: [] }))
+            setState(prevState => ({ ...prevState, [field]: [] }))
         }
     }
 
     const handleSetState = (field, name, value) => {
-        setState({...state, 
+        setState({
+            ...state,
             [field]: {
                 ...state[field],
                 [name]: value
@@ -48,8 +49,8 @@ const ReportDonationController = ({ children }) => {
     }
 
     const handleFetchStatementDonation = async () => {
-        try{
-            setState(prevState  => ({...prevState, isLoadingFetchReport: true}))
+        try {
+            setState(prevState => ({ ...prevState, isLoadingFetchReport: true }))
             const filterCategorystatement = state['categoryDonationSelected'].filter(item => item['name'] !== 0);
             const filterCity = state['citySelected'].filter(item => item['name'] !== 0);
             const unitSelected = state['unitSelected'].filter(item => item['name'] !== 0);
@@ -70,12 +71,11 @@ const ReportDonationController = ({ children }) => {
             setState(prevState  => ({...prevState, isLoadingFetchReport: false, statementReportTotal: response}))
         } catch(error) {
             setState(prevState  => ({...prevState, isLoadingFetchReport: false}))
-            console.log("err", error);
         }
     }
     useEffect(() => {
         const getCityData = async () => {
-            try{
+            try {
                 const filterParamUnit = {
                     paging: {
                         page: 1,
@@ -83,7 +83,7 @@ const ReportDonationController = ({ children }) => {
                     },
                     filter: {
                         school: 1,
-                        is_transaction: 1 
+                        is_transaction: 1
                     },
                     sort: {
                         id: "ASC",
@@ -103,30 +103,29 @@ const ReportDonationController = ({ children }) => {
              }
             } catch(error) {
                 setState(prevState  => ({...prevState, cityDataLoading: false, isCityFetching: true}))
-                console.log("error", error)
             }
-         }
+        }
         getCityData()
     }, [state.unitSelected])
 
-    useEffect(() =>{
+    useEffect(() => {
         const getUnitData = async () => {
-            try{
-                setState(prevState  => ({...prevState, unitSelected: []}))
+            try {
+                setState(prevState => ({ ...prevState, unitSelected: [] }))
                 const getListSelectedRegency = state.citySelected;
                 const regency = getListSelectedRegency.map(item => item['name']).join(',')
                 const filterParamUnit = {
                     paging: {
                         page: 1,
                         limit: 500,
-                      },
-                      filter: {
+                    },
+                    filter: {
                         is_transaction: 1,
                         regency: regency
-                      },
-                      sort: {
+                    },
+                    sort: {
                         id: "ASC",
-                      },
+                    },
                 }
             setState(prevState  => ({...prevState, unitDataLoading: true}))
              const response: any = await schoolPresenter.loadData(filterParamUnit);
@@ -148,47 +147,45 @@ const ReportDonationController = ({ children }) => {
              }
             } catch(error) {
                 setState(prevState  => ({...prevState, unitDataLoading: false}))
-                console.log("error", error)
             }
-         }
-         getUnitData()
+        }
+        getUnitData()
     }, [state.citySelected])
 
-    useEffect(() =>{
+    useEffect(() => {
         const getStatment = async () => {
-            try{
+            try {
                 const filterParam = {
-                      filter: {
+                    filter: {
                         is_transaction: 1,
-                      },
-                      sort: {
+                    },
+                    sort: {
                         id: "ASC",
-                      },
+                    },
                 }
-                setState(prevState  => ({...prevState, categoryDonationDataLoading: true}))
-             const response: any = await categoryPresenter.getStatement(filterParam)
-                if(!isEmpty(response)) {
+                setState(prevState => ({ ...prevState, categoryDonationDataLoading: true }))
+                const response: any = await categoryPresenter.getStatement(filterParam)
+                if (!isEmpty(response)) {
                     const transformData = response.map(item => {
                         return {
                             name: item.id,
                             label: item.statement_category
                         }
                     })
-                    setState(prevState  => ({ ...prevState,  categoryDonationData: [{name: 0, label: "Semua"}].concat(transformData)}));
+                    setState(prevState => ({ ...prevState, categoryDonationData: [{ name: 0, label: "Semua" }].concat(transformData) }));
                 } else {
-                    setState(prevState  => ({...prevState, unitData: [{name: 0, label: "Semua"}]}))
+                    setState(prevState => ({ ...prevState, unitData: [{ name: 0, label: "Semua" }] }))
                 }
                 setState(prevState  => ({...prevState, categoryDonationDataLoading: false}))
             } catch(error) {
                 setState(prevState  => ({...prevState, categoryDonationDataLoading: false}))
-                console.log("error", error)
             }
-         }
-         getStatment()
+        }
+        getStatment()
     }, [state.citySelected, state.unitSelected])
 
     const handleClearFilter = () => {
-        setState(prevState  => ({
+        setState(prevState => ({
             ...prevState,
             unitSelected: [],
             citySelected: [],
@@ -203,24 +200,24 @@ const ReportDonationController = ({ children }) => {
 
     const handleCreateReport = () => {
         handleFetchStatementDonation()
-        setState(prevState  => ({
+        setState(prevState => ({
             ...prevState,
             reportStep: 'viewReport',
         }))
     }
 
     const handleModalFilter = (status) => {
-        setState(prevState  => ({
+        setState(prevState => ({
             ...prevState,
             modalFilter: status,
         }))
     }
 
     return (
-        <ReportDonationProvider value={{...state, handleModalFilter: handleModalFilter, handleMultiSelectedFilter: handleMultiSelectedFilter, handleSetState: handleSetState, handleClearFilter: handleClearFilter, handleCreateReport: handleCreateReport}}>
+        <ReportDonationProvider value={{ ...state, handleModalFilter: handleModalFilter, handleMultiSelectedFilter: handleMultiSelectedFilter, handleSetState: handleSetState, handleClearFilter: handleClearFilter, handleCreateReport: handleCreateReport }}>
             {children}
         </ReportDonationProvider>
     )
 }
 
-export default  ReportDonationController;
+export default ReportDonationController;

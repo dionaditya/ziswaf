@@ -188,7 +188,7 @@ const {
 
 
 export const UserListController = ({ children }) => {
-    const [state, dispatch] = useTracked();
+    const [state, dispatch] = useReducer(reducer, initialState);
     const [tableIndex, setTableIndex] = React.useState(0)
     const userPresenter: UserPresenter = container.resolve(UserPresenter)
     const schoolPresenter: SchoolPresenter = container.resolve(SchoolPresenter)
@@ -310,7 +310,7 @@ export const UserListController = ({ children }) => {
                     const userSortByColumn = await userPresenter.loadData({
                         ...filterStatus,
                         paging: {
-                            page: tableState.page,
+                            page: tableState.page+1,
                             limit: tableState.rowsPerPage
                         },
                     })
@@ -327,7 +327,7 @@ export const UserListController = ({ children }) => {
                     const userSortedByRows = await userPresenter.loadData({
                         ...filterStatus,
                         paging: {
-                            page: tableState.page,
+                            page: tableState.page+1,
                             limit: tableState.rowsPerPage
                         },
                     })
@@ -411,6 +411,13 @@ export const UserListController = ({ children }) => {
                 ...filterStatus
             })
             dispatch({ type: ActionType.setData, payload: listUser.data.data })
+            
+              setPagintion({
+                total: listUser.data.pagination.total,
+                page: listUser.data.pagination.current_page-1,
+                rowsPerPage: listUser.data.pagination.page_size
+            })
+            
 
             dispatch({ type: ActionType.setLoading, payload: false })
             dispatch({ type: ActionType.handleModalFilters })
@@ -466,10 +473,16 @@ export const UserListController = ({ children }) => {
                     payload: true
                 })
                 const listUser = await userPresenter.loadData({ filter: state.filterStatus })
+                  setPagintion({
+                total: listUser.data.pagination.total,
+                page: listUser.data.pagination.current_page-1,
+                rowsPerPage: listUser.data.pagination.page_size
+            })
                 dispatch({
                     type: ActionType.setData,
                     payload: listUser.data.data
                 })
+
                 dispatch({
                     type: ActionType.setLoading,
                     payload: false

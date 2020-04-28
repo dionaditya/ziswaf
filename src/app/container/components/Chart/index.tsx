@@ -39,12 +39,12 @@ export function MyChart({ type, width, colors, series, categories, role, categor
       tooltip: {
         enabled: true,
         y: {
-            formatter: (seriesName) => formatPrice(seriesName),
-            title: {
-                formatter: (seriesName) => seriesName,
-            },
+          formatter: (seriesName) => formatPrice(seriesName),
+          title: {
+            formatter: (seriesName) => seriesName,
+          },
         }
-    }
+      }
     },
     dataLabels: {
       enabled: false
@@ -188,6 +188,15 @@ export function ComboChartGeneral({ title, title2, type, width, color, dataProgn
     xaxis: {
       type: 'string',
     },
+    tooltip: {
+      enabled: true,
+      y: {
+        formatter: (seriesName) => formatPrice(seriesName),
+        title: {
+          formatter: (seriesName) => seriesName,
+        },
+      }
+    },
     colors: color,
     yaxis: [{
       title: {
@@ -241,6 +250,15 @@ export function ComboChartOperator({ title, type, width, color, dataTransaction,
       enabled: true,
       enabledOnSeries: [1],
     },
+    tooltip: {
+      enabled: true,
+      y: {
+        formatter: (seriesName) => formatPrice(seriesName),
+        title: {
+          formatter: (seriesName) => seriesName,
+        },
+      }
+    },
     labels: dataPerDayProp,
     xaxis: {
       type: 'string',
@@ -260,23 +278,22 @@ export function ComboChartOperator({ title, type, width, color, dataTransaction,
   };
   return (
     <div className="app">
-        <Chart
-          options={options}
-          series={options.series}
-          type={type}
-          width={width}
-        />
+      <Chart
+        options={options}
+        series={options.series}
+        type={type}
+        width={width}
+      />
     </div>
   )
 }
 
 export function ComboCharts({ title, title2, type, width, color, dataPrognosis, dataPerMonth, role, dataPerDay, dataPerDayProp }) {
-
   const options = {
     series: [{
       name: title,
       type: 'column',
-      data: role !== 2 ? dataPerMonth : dataPerDay
+      data: role !== 2 ? dataPerMonth : dataPerDay.map(val => val.total)
     }, {
       name: role === 1 ? title2 : '',
       type: 'line',
@@ -300,6 +317,15 @@ export function ComboCharts({ title, title2, type, width, color, dataPrognosis, 
     labels: role !== 2 ? [' January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] : dataPerDayProp,
     xaxis: {
       type: 'string',
+    },
+    tooltip: {
+      enabled: true,
+      y: {
+        formatter: (seriesName) => formatPrice(seriesName),
+        title: {
+          formatter: (seriesName) => seriesName,
+        },
+      }
     },
     colors: color,
     yaxis: [{

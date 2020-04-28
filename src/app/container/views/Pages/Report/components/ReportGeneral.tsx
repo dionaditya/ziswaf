@@ -5,7 +5,6 @@ import {
   ComboChartGeneral,
   ComboChartOperator,
 } from "@/app/container/components/Chart";
-import ArrowForwardSharp from "@material-ui/icons/ArrowForwardIosSharp";
 
 import Box from "@material-ui/core/Box";
 import formatPrice from "@/app/infrastructures/misc/Utils";
@@ -17,7 +16,6 @@ import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import Card from "@/app/container/commons/Card/Card.js";
 import CardHeader from "@/app/container/commons/Card/CardHeader.js";
 import CardBody from "@/app/container/commons/Card/CardBody.js";
-import { isEmpty } from "lodash";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -49,13 +47,8 @@ const useStyles = makeStyles((theme: Theme) =>
 const ReportGeneral = () => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
-  // const Location = useLocation()
   const controller = useContext(ReportContext);
   const ref = React.createRef<HTMLDivElement>();
-  const options = {
-    orientation: "landscape",
-    unit: "in",
-  };
 
   const cardInfoZiswaf = (
     color,
@@ -93,8 +86,8 @@ const ReportGeneral = () => {
               {controller.role !== 2
                 ? formatPrice(controller.generalReport[fieldAdmin] || 0)
                 : formatPrice(
-                    controller.generalReportOperator[fieldOperator] || 0
-                  )}
+                  controller.generalReportOperator[fieldOperator] || 0
+                )}
             </>
           )}
         </span>
@@ -192,6 +185,7 @@ const ReportGeneral = () => {
           justifyContent: "center",
           alignItems: "center",
           height: "7vh",
+          width: "13vw",
           marginBottom: 20,
           boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.06",
         }}
@@ -279,9 +273,9 @@ const ReportGeneral = () => {
   const dataDonation = [
     {
       color: "#063EFD",
-      title: "Zakat Mall",
+      title: "Zakat Maal",
       fieldAdmin: "totalZakatMaal",
-      fieldOperator: "total_zakat_mall",
+      fieldOperator: "total_zakat_maal",
       percent: "zakatMaalPersent",
     },
     {
@@ -392,17 +386,17 @@ const ReportGeneral = () => {
                         dataPerDayProp={Object.keys(controller.tableRetailOp)}
                       />
                     ) : (
-                      <ComboChartOperator
-                        title="Realisasi Retail"
-                        width="100%"
-                        type="line"
-                        color={["#00923F"]}
-                        dataTransaction={Object.values(
-                          controller.tableRetailOp
-                        )}
-                        dataPerDayProp={Object.keys(controller.tableRetailOp)}
-                      />
-                    )}
+                        <ComboChartOperator
+                          title="Realisasi Retail"
+                          width="100%"
+                          type="line"
+                          color={["#00923F"]}
+                          dataTransaction={Object.values(
+                            controller.tableRetailOp
+                          )}
+                          dataPerDayProp={Object.keys(controller.tableRetailOp)}
+                        />
+                      )}
                   </CardBody>
                 </Card>
               </GridItem>
@@ -504,21 +498,21 @@ const ReportGeneral = () => {
                 </span>
               </GridItem>
               <GridItem xs={12} sm={12} md={12}>
-                <Box style={{ padding: "10px 0px" }}>
+                <Box style={{ padding: "20px 0px" }}>
                   <HSBar
                     height={10}
                     data={[
                       {
-                        value: controller.role === 1 ? controller.divPercent.percentUpz || 0 : controller.divisionReportOperator.total_percent_upzDivision || 0,
-                        color: "#F2685B",
+                        value: controller.divPercent.percentRetail || 0 ,
+                        color: "#F7685B",
                       },
                       {
-                        value: controller.role === 1 ? controller.divPercent.percentRetail || 0 : controller.divisionReportOperator.total_percent_retailDivision || 0,
-                        color: "#50D47A",
+                        value: controller.divPercent.percentCorporate || 0 ,
+                        color: "#2ED47A",
                       },
                       {
-                        value: controller.role === 1 ? controller.divPercent.percentCorporate || 0 : controller.divisionReportOperator.total_percent_corporateDivision || 0,
-                        color: "#F6B946",
+                        value: controller.divPercent.percentUpz || 0 ,
+                        color: "#FFB946",
                       },
                     ]}
                   />
@@ -530,15 +524,6 @@ const ReportGeneral = () => {
                     {cardPerdivision(
                       "#F7685B",
                       "Terkumpul dari Div.Ritel",
-                      "totalUpz",
-                      "total_upz",
-                      controller.divPercent.percentUpz || 0
-                    )}
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={4}>
-                    {cardPerdivision(
-                      "#2ED47A",
-                      "Terkumpul dari Div.Corp",
                       "totalRetail",
                       "total_retail",
                       controller.divPercent.percentRetail || 0
@@ -546,11 +531,20 @@ const ReportGeneral = () => {
                   </GridItem>
                   <GridItem xs={12} sm={12} md={4}>
                     {cardPerdivision(
-                      "#FFB946",
-                      "Terkumpul dari Div.UPZ",
+                      "#2ED47A",
+                      "Terkumpul dari Div.Corp",
                       "totalCorporate",
                       "total_corporate",
                       controller.divPercent.percentCorporate || 0
+                    )}
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={4}>
+                    {cardPerdivision(
+                      "#FFB946",
+                      "Terkumpul dari Div.UPZ",
+                      "totalUpz",
+                      "total_upz",
+                      controller.divPercent.percentUpz || 0
                     )}
                   </GridItem>
                 </GridContainer>
@@ -580,7 +574,7 @@ const ReportGeneral = () => {
           }}
           onClick={() => controller.setReportType('division')}
         >
-          <span style={{marginRight: 10}}>Selanjutnya</span>
+          <span style={{ marginRight: 10 }}>Selanjutnya</span>
           <i className="material-icons" style={{ fontSize: 18 }}>
             arrow_forward
           </i>

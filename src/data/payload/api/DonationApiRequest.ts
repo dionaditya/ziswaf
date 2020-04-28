@@ -22,13 +22,13 @@ export class CreateDonationApiRequest implements CreateDonationRequestInterface 
     private description: string;
     private donation_item: number;
     private employee_id: any;
-    private cash: Cash;
-    private goods: Goods;
+    private cash: Cash | null;
+    private goods: Goods | null;
 
     constructor(
         donor_id: number, division_id: number, category_id: number,
         statement_category_id: number, description: string, donation_item: number, employee_id: any,
-        cash: Cash, goods: Goods
+        cash: Cash | null, goods: Goods | null
     ) {
         this.donor_id = donor_id
         this.division_id = division_id
@@ -49,7 +49,11 @@ export class CreateDonationApiRequest implements CreateDonationRequestInterface 
                 if (val === 'employee_id') {
                     return null
                 } else {
-                    transformData[val] = data[val]
+                    if(data[val] === null) {
+                        return null
+                    } else {
+                         transformData[val] = data[val]
+                    }
                 }
             })
             return transformData

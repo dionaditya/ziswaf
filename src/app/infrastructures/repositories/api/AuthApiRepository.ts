@@ -21,7 +21,8 @@ export class AuthApiRepository implements AuthRepositoryInterface {
         this.endpoints = endpoints
     }
 
-    public async login(payload: LoginRequestInterface): Promise<AuthData> {
+    public async login(payload: LoginRequestInterface) {
+      
         const response = await this.service.invoke(
             "post",
             this.endpoints.loginUrl(),

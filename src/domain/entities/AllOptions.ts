@@ -76,7 +76,7 @@ export let DonorTableColumn: [string, string][] = [
   ["npwp", "No NPWP"],
   ["name", "Nama CP"],
   ["position", "Jabatan CP"],
-  ["phone", "No HP CP"],
+  ["contact_number", "No HP CP"],
   ["info", "Info"],
 ];
 
@@ -84,6 +84,7 @@ export const nonSortAbleDonorColumn = [
   'pos_code',
   'npwp',
   'phone',
+  'contact_number'
 ]
 
 export let StudentListTableColumn: [string, string][] = [
@@ -249,7 +250,6 @@ export const DonationTableColumns = [
   ["item_id", "Tunai / Non Tunai"],
   ["status", "Status"],
   ["kwitansi", "No Kwitansi"],
-  ["donor_category", "Kategori Sumber"],
   ["phone", "No HP"],
   ["regency", "Kota"],
   ["school_id", "Unit"],
@@ -276,3 +276,16 @@ export const statement_category = [
 ];
 
 export const donatur_category = [[0, "Perorangan"], [1, "Perusahaan"]];
+
+
+export const Division =  [
+  [1, 'UPZ'],
+  [2, 'RETAIL'],
+  [3, 'CORPORATE']
+]
+
+
+export const PaymentTypeFilter = [
+  [1, 'TUNAI'],
+  [2, 'NON TUNAI']
+]

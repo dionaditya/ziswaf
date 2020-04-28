@@ -27,7 +27,7 @@ export class EmployeeMapper extends BaseResponseMapper {
                     val.email,
                     val.address,
                     _.isNil(employeeStatus[0]) ? "Salah Status / Data Broken, Hubungi Teknisi" : employeeStatus[0][1],
-                    moment(val.registered_year).format('dddd, DD MM YYYY').toString(),
+                    moment(val.registered_year).format('dddd, DD MMMM YYYY').toString(),
                     val.pos_code,
                     val.province_name,
                     val.regency_name,
@@ -37,6 +37,8 @@ export class EmployeeMapper extends BaseResponseMapper {
         }
        
     }
+
+
 
 
     public convertEmployeeFromApi(result: AxiosResponse<any>): Employee | null {
@@ -61,11 +63,6 @@ export class EmployeeMapper extends BaseResponseMapper {
             data.image,  
         )
     }
-
-    // public requestStudentToApi(result: AxiosResponse<any>): StudentApiRequestResponse{
-    //     const { data } = result
-    //     return data
-    // }
-
-
 }
+
+

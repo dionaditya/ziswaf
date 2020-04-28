@@ -610,7 +610,7 @@ const EmployeeInputSection = () => {
                                 value={province_id}
                                 data={controller.province}
                                 name="province_id"
-                                placeholder="Pilih Provinsi"
+                                placeholder={controller.employeeInput.province_id || 'Pilih Provinsi'}
                                 label="Pilih Provinsi"
                               /> :
                               <Controller
@@ -621,7 +621,7 @@ const EmployeeInputSection = () => {
                                     value={province_id}
                                     data={controller.province}
                                     name="province_id"
-                                    placeholder="Pilih Provinsi"
+                                   placeholder={controller.employeeInput.province_id || 'Pilih Provinsi'}
                                     label="Pilih Provinsi"
                                   />
                                 }
@@ -671,7 +671,7 @@ const EmployeeInputSection = () => {
                                 data={controller.city}
                                 name="regency_id"
                                 label="Pilih Kota"
-                                placeholder="Pilih Kota"
+                                placeholder={controller.employeeInput.regency_id || 'Pilih Kota'}
                               /> :
                               <Controller
                                 as={
@@ -691,7 +691,7 @@ const EmployeeInputSection = () => {
                                     data={controller.city}
                                     name="regency_id"
                                     label="Pilih Kota"
-                                    placeholder="Pilih Kota"
+                                    placeholder={controller.employeeInput.regency_id || 'Pilih Kota'}
                                   />
                                 }
                                 name="regency_id"
@@ -898,7 +898,7 @@ const EmployeeInputSection = () => {
                                       async
                                       isDisabled
                                       onChange={onChange}
-                                      value={controller.userInfo.school_id}
+                                      value={controller.userInfo.school.id}
                                       data={[
                                         {
                                           id: controller.userInfo.school.id,
@@ -989,9 +989,10 @@ const EmployeeInputSection = () => {
                             <label htmlFor="registered_year" style={{ fontSize: '12px', fontWeight: 'bold' }}>Tahun Masuk</label>
                             {queryString["?detail"] !== undefined ?
                               <KeyboardDatePicker
-                                disableToolbar
+                                autoOk
                                 variant="inline"
-                                disabled={true}
+                                views={['year', 'date', 'month']}
+                                disabled={true}                                            
                                 format="dd-MM-yyyy"
                                 inputVariant="outlined"
                                 style={{
@@ -1002,7 +1003,7 @@ const EmployeeInputSection = () => {
                                     ? "Pilih Tahun Masuk"
                                     : moment(registered_year).toString()
                                 }
-                                id="registered_year  "
+                                id="registered_year"
                                 label=""
                                 value={
                                   registered_year === null
@@ -1028,7 +1029,7 @@ const EmployeeInputSection = () => {
                               <Controller
                                 as={
                                   <KeyboardDatePicker
-                                    disableToolbar
+                                     views={['year', 'date', 'month']}
                                     autoOk
                                     variant="inline"
                                     format="dd/MM/yyyy"

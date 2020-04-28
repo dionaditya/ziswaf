@@ -178,25 +178,13 @@ export const EmployeeInputController = ({ children }) => {
                 let employeeData = await employeePresenter.loadDataDetail(_.toNumber(queryString['?detail']))
                 let listProvincePresenter = await provincePresenter.loadData()
                 let listSchoolPresenter = await schoolPresenter.loadData()
-                console.log(employeeData.data.data)
-                let provinceId = listProvincePresenter.filter(val => val.name === employeeData.data.data.province_name)
-                let city = await cityPresenter.loadData({
-                    filter: {
-                        province_id: provinceId[0].id
-                    }
-                })
+                let city = await cityPresenter.loadData()
                 let schoolId: any = listSchoolPresenter.data.data.filter(val => val.name === employeeData.data.data.school_name)
-                let regencyId = city.filter(val => val.name === employeeData.data.data.regency_name)
                 if (_.isNil(schoolId) === false) {
-                    const employeeTransformData = {
-                        ...employeeData.data.data,
-                        province_name: provinceId[0].id,
-                        regency_name: regencyId[0].id,
-                        school_name: schoolId[0].id
-                    }
+                  
                     dispatch({
                         type: ActionType.setEmployeeData,
-                        payload: employeeTransformData
+                        payload: employeeData.data.data
                     })
 
                     dispatch({
@@ -219,24 +207,13 @@ export const EmployeeInputController = ({ children }) => {
                 let employeeData = await employeePresenter.loadDataDetail(_.toNumber(id))
                 let listProvincePresenter = await provincePresenter.loadData()
                 let listSchoolPresenter = await schoolPresenter.loadData()
-                let provinceId = listProvincePresenter.filter(val => val.name === employeeData.data.data.province_name)
-                let city = await cityPresenter.loadData({
-                    filter: {
-                        province_id: provinceId[0].id
-                    }
-                })
+                let city = await cityPresenter.loadData()
                 let schoolId: any = listSchoolPresenter.data.data.filter(val => val.name === employeeData.data.data.school_name)
-                let regencyId = city.filter(val => val.name === employeeData.data.data.regency_name)
                 if (_.isNil(schoolId) === false) {
-                    const employeeTransformData = {
-                        ...employeeData.data.data,
-                        province_name: provinceId[0].id,
-                        regency_name: regencyId[0].id,
-                        school_name: schoolId[0].id
-                    }
+                
                     dispatch({
                         type: ActionType.setEmployeeData,
-                        payload: employeeTransformData
+                        payload: employeeData.data.data
                     })
 
                     dispatch({

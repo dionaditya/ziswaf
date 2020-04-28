@@ -18,6 +18,9 @@ import Checkbox from "@material-ui/core/Checkbox";
 import CircleChecked from "@material-ui/icons/CheckCircleOutline";
 import CircleCheckedFilled from "@material-ui/icons/CheckCircle";
 import CircleUnchecked from "@material-ui/icons/RadioButtonUnchecked";
+import { useToasts } from "react-toast-notifications";
+import { useHistory } from "react-router-dom";
+import _ from "lodash";
 
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 
@@ -33,6 +36,11 @@ const DonationInput = ({ index, setIndex }) => {
   const [showComponent, setShowComponent] = useState(0);
 
   const controller = useContext(CorporateContext);
+  const { addToast } = useToasts();
+  const history = useHistory();
+  const [error, setError] = useState(false);
+  const [errorDonation, setErrorDonation] = useState(false);
+  const [errorGoods, setErrorGoods] = useState(false);
 
   const onChange = (e) => {
     controller.handleInputDonation(e);
@@ -44,12 +52,69 @@ const DonationInput = ({ index, setIndex }) => {
     controller.handleInputDonation(e);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    controller.handlePostDonation(e, index, setIndex);
-  };
+  const handleSubmit = async (e) => {
+    if (
+      controller.DonationInfo.category_id !== 0 &&
+      controller.DonationInfo.statement_category_id !== 0
+    ) {
+      setErrorDonation(false);
 
-  console.log(controller.DonationInfo.donation_item);
+      if (controller.DonationInfo.donation_item === 1) {
+        if (_.isNumber(controller.DonationInfo.cash.category_id)) {
+          setError(false);
+          const [status, response] = await controller.handlePostDonation(e);
+          if (status === "success") {
+            addToast("Data donasi telah tersimpan", { appearance: "success" });
+            setTimeout(() => {
+              history.push(
+                `/dashboard/upz-tanda-terima/${response.id}?employee_id=${controller.DonationInfo.employee_id}`
+              );
+            }, 500);
+          } else {
+            if (
+              response.response.status === 400 ||
+              response.response.status === 402
+            ) {
+              addToast(response.response.data.message, { appearance: "error" });
+            } else {
+              addToast(response.response.data.message, { appearance: "error" });
+            }
+          }
+        } else {
+          setError(true);
+        }
+      } else {
+        if (
+          controller.DonationInfo.goods.category_id !== 0 &&
+          controller.DonationInfo.goods.status !== 0
+        ) {
+          setErrorGoods(false);
+          const [status, response] = await controller.handlePostDonation(e);
+          if (status === "success") {
+            addToast("Data donasi telah tersimpan", { appearance: "success" });
+            setTimeout(() => {
+              history.push(
+                `/dashboard/upz-tanda-terima/${response.id}?employee_id=${controller.DonationInfo.employee_id}`
+              );
+            }, 500);
+          } else {
+            if (
+              response.response.status === 400 ||
+              response.response.status === 402
+            ) {
+              addToast(response.response.data.message, { appearance: "error" });
+            } else {
+              addToast(response.response.data.message, { appearance: "error" });
+            }
+          }
+        } else {
+          setErrorGoods(true);
+        }
+      }
+    } else {
+      setErrorDonation(true);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -91,6 +156,11 @@ const DonationInput = ({ index, setIndex }) => {
                             name="statement_category_id"
                             label="Jenis Donasi"
                           />
+                          {errorDonation && (
+                            <p style={{ color: "red", fontSize: "12px" }}>
+                              Belum memilih jenis donasi
+                            </p>
+                          )}
                           <label htmlFor="info" className="black-text">
                             Deskripsi Donasi
                           </label>
@@ -167,11 +237,13 @@ const DonationInput = ({ index, setIndex }) => {
                   {controller.DonationInfo.donation_item === 1 ? (
                     <CashType
                       controller={controller}
+                      error={error}
                       onChange={controller.handleCashInput}
                     />
                   ) : (
                     <GoodsType
                       controller={controller}
+                      error={errorGoods}
                       onChange={controller.handleGoodsInput}
                     />
                   )}
@@ -201,39 +273,3 @@ const DonationInput = ({ index, setIndex }) => {
 };
 
 export default DonationInput;
-
-// {
-//                        controller.DonationInfo.donation_item === 1 ? (
-//                          <Radio
-//                            name="donation_item"
-//                            value={1}
-//                            checked
-//                            onChange={handleChange} />
-//                        ) : (
-//                            <Radio
-//                              name="donation_item"
-//                              value={1}
-//                              onChange={handleChange} />
-//                          )
-//                      }
-//                      <span>Uang</span>
-
-// <label>
-//                    {
-//                      controller.DonationInfo.donation_item === 2 ? (
-//                        <Radio
-//                          name="donation_item"
-//                          value={2}
-//                          checked
-//                          onChange={handleChange}
-//                        />
-//                      ) : (
-//                          <Radio
-//                            name="donation_item"
-//                            value={2}
-//                            onChange={handleChange}
-//                          />
-//                        )
-//                    }
-//                    <span>Barang/Natura</span>
-//                  </label>

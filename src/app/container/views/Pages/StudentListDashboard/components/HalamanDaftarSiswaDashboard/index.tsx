@@ -129,7 +129,7 @@ const StudentListDashboardPage = () => {
                 }}
                 color="transparent"
                 onClick={(e) =>
-                  controller.handleResetFilter(controller.dispatch)
+                  controller.handleResetFilter(e)
                 }
               >
                 {<CircularProgress size={16} className={classes.loadingReset} />}
@@ -143,9 +143,7 @@ const StudentListDashboardPage = () => {
                 color="transparent"
                 onClick={async (e) => {
                   setLoading(true);
-                  await controller.handleResetFilter(e)(controller.dispatch)(
-                    ActionType.resetFilter
-                  );
+                  await controller.handleResetFilter(controller.dispatch)
                   setLoading(false);
                 }}
               >

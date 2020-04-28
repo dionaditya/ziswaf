@@ -589,7 +589,6 @@ const DonorInput = ({ index, setIndex }) => {
                             onChange(value[0]);
                             return value[0].target.value;
                           }}
-                          rules={{ required: true }}
                           control={control}
                           defaultValue={info}
                         />

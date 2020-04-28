@@ -6,6 +6,7 @@ import "moment/locale/id";
 import { makeStyles, createStyles, Theme, Modal, Box } from "@material-ui/core";
 import GridContainer from "@/app/container/commons/Grid/GridContainer";
 import GridItem from "@/app/container/commons/Grid/GridItem";
+import { NominalFormat } from '@/app/infrastructures/misc/NominalFormat';
 
 function getModalStyle() {
   const top = 50;
@@ -336,7 +337,7 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
                             >
                               NOMINAL
                             </span>
-                            <p className="black-text">{total}</p>
+                            <p className="black-text">{NominalFormat(total)}</p>
                           </div>
                           </GridItem>
                           <GridItem xs={12} sm={12} md={12}>

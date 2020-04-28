@@ -62,6 +62,7 @@ const Retail: React.FC<{}> = () => {
   return (
     <React.Fragment>
       <RetailController>
+      <ToastProvider>
         <div className="row">
           <div className="col s12 l12 m12">
             <BackNav title="Input Retail Ziswaf" />
@@ -74,6 +75,8 @@ const Retail: React.FC<{}> = () => {
               <TabContent value={value} setValue={setValue} />} />
           </div>
         </div>
+      </ToastProvider>
+        
       </RetailController>
     </React.Fragment>
   );

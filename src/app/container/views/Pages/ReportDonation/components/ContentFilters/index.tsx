@@ -239,10 +239,10 @@ const ContentFilters: React.FC<{}> = () => {
                     controller.categoryDonationDataLoading
                       ? "Loading..."
                       : handleFieldSelected(
-                          "categoryDonationSelected",
-                          "categoryDonationData",
-                          0
-                        ).label
+                        "categoryDonationSelected",
+                        "categoryDonationData",
+                        0
+                      ).label
                   }
                   options={categoryDonationData}
                   disabled={controller.categoryDonationDataLoading}

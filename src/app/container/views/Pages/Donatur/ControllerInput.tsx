@@ -44,6 +44,7 @@ interface InitialState {
   setCheckbox: Function;
   loading: boolean;
   isDetailSession: boolean
+  postUpdateData: Function
 }
 
 const initialState = {
@@ -84,7 +85,8 @@ const initialState = {
   handleInput: () => {},
   setCheckbox: () => {},
   isDetailSession: false,
-  loading: false
+  loading: false,
+  postUpdateData:() => {}
 };
 
 export const DonorContext = React.createContext<InitialState>(initialState);
@@ -125,7 +127,10 @@ export const DonorController = ({ children }) => {
   React.useEffect(() => {
     if(id !== undefined) {
       (async () => {
+        setLoading(true)
         const donorData = await donorPresenter.getById(parseInt(id))
+         const province = await provincePresenter.loadData();
+        const city = await cityPresenter.loadData()
         setName(donorData.name)
         setCompanyName(donorData.company_name)
         setCompany(donorData.is_company)
@@ -138,14 +143,12 @@ export const DonorController = ({ children }) => {
         setPosCode(donorData.pos_code)
         setInfo(donorData.info)
         setCheckbox(donorData.status)
-        const province = await provincePresenter.loadData();
-        const city = await cityPresenter.loadData()
-        const cityId = await cityPresenter.loadData({search: donorData.regency_id})
-        const provinceId = await provincePresenter.loadData({search: donorData.province_id})
-        setProvinceId(provinceId[0].id)
-        setRegencyId(cityId[0].id)
+  
+        setProvinceId(donorData.province_id)
+        setRegencyId(donorData.regency_id)
         setProvince(province)
         setRegency(city)
+         setLoading(false)
       })()  
       if(query['?is_detail'] !== undefined) {
         setDetailSession(true)
@@ -198,8 +201,8 @@ export const DonorController = ({ children }) => {
             Number(npwp),
             Number(posCode),
             info,
-            Number(provinceId),
-            Number(regencyId)
+            provinceId,
+            regencyId
           )
         );
         return resp
@@ -207,15 +210,18 @@ export const DonorController = ({ children }) => {
         const resp = await donorPresenter.update(
           new UpdateDonorApiRequest(
             name,
+            companyName,
+            isCompany,
+            position,
             email,
             address,
             phone,
-            status,
-            npwp,
+            Number(status),
+            Number(npwp),
             Number(posCode),
             info,
-            Number(provinceId),
-            Number(regencyId)
+            provinceId,
+            regencyId
           ), Number(id)
         );
        return resp
@@ -227,18 +233,18 @@ export const DonorController = ({ children }) => {
         const resp = await donorPresenter.store(
           new CreateDonorApiRequest(
             name,
-            companyName,
+            '',
             false,
             position,
             email,
             address,
             phone,
-            Number(status),
+            Number(checkbox),
             Number(npwp),
             Number(posCode),
             info,
-            Number(provinceId),
-            Number(regencyId)
+            provinceId,
+            regencyId
           )
         );
         return resp
@@ -246,15 +252,18 @@ export const DonorController = ({ children }) => {
         const resp = await donorPresenter.update(
           new UpdateDonorApiRequest(
             name,
+            '',
+            false,
+            position,
             email,
             address,
             phone,
-            status,
-            npwp,
+            Number(checkbox),
+            Number(npwp),
             Number(posCode),
             info,
-            Number(provinceId),
-            Number(regencyId)
+            provinceId,
+            regencyId
           ), Number(id)
         );
        return resp
@@ -276,6 +285,30 @@ export const DonorController = ({ children }) => {
       setStatus(e.target.value);
     }
   };
+
+  const postUpdateData = async () => {
+        try {
+            const res = await donorPresenter.storeNewData(new CreateDonorApiRequest(
+            name,
+            companyName,
+            isCompany,
+            position,
+            email,
+            address,
+            phone,
+            Number(status),
+            Number(npwp),
+            Number(posCode),
+            info,
+            provinceId,
+            regencyId
+            ))
+            return res
+        } catch (error) {
+            return false
+        }
+    }
+
 
   return (
     <DonorProvider
@@ -313,7 +346,8 @@ export const DonorController = ({ children }) => {
         handleInput,
         setCheckbox,
         loading,
-        isDetailSession
+        isDetailSession,
+        postUpdateData
       }}
     >
       {children}

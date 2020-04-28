@@ -116,6 +116,7 @@ export class DonorWithSort {
   name: string;
   position: string;
   info: string;
+  contact_number: string;
 
   constructor(
     id: number,
@@ -131,7 +132,9 @@ export class DonorWithSort {
     npwp: number,
     name: string,
     position: string,
-    info: string
+    info: string,
+    contact_number: string
+
   ) {
     this.id = id;
     this.is_company = is_company;
@@ -147,5 +150,6 @@ export class DonorWithSort {
     this.name = name;
     this.position = position;
     this.info = info;
+    this.contact_number = contact_number
   }
 }

@@ -9,6 +9,7 @@ export class DashboardOperatorData {
   public totalInfaq: number;
   public totalKurban: number;
   public totalOther: number;
+  public totalTransactionLastYear?: TotalTransactionLastYearData;
   constructor(
     total: number,
     totalRowCount: number,
@@ -19,7 +20,8 @@ export class DashboardOperatorData {
     totalZakatFitrah: number,
     totalInfaq: number,
     totalKurban: number,
-    totalOther: number
+    totalOther: number,
+    totalTransactionLastYear?: TotalTransactionLastYearData
   ) {
     this.total = total;
     this.totalRowCount = totalRowCount;
@@ -31,6 +33,37 @@ export class DashboardOperatorData {
     this.totalInfaq = totalInfaq;
     this.totalKurban = totalKurban;
     this.totalOther = totalOther;
+    this.totalTransactionLastYear = totalTransactionLastYear
+  }
+}
+
+export class TotalTransactionLastYearData {
+  public totalUp: number;
+  public totalDown: number;
+  public countUp: number;
+  public countDown: number;
+  public donorUp: number;
+  public donorDown: number;
+  public newDonorUp: number;
+  public newDonorDown: number;
+  constructor(
+    totalUp: number,
+    totalDown: number,
+    countUp: number,
+    countDown: number,
+    donorUp: number,
+    donorDown: number,
+    newDonorUp: number,
+    newDonorDown: number
+  ) {
+    this.totalUp = totalUp;
+    this.totalDown = totalDown;
+    this.countUp = countUp;
+    this.countDown = countDown;
+    this.donorUp = donorUp;
+    this.donorDown = donorDown;
+    this.newDonorUp = newDonorUp;
+    this.newDonorDown = newDonorDown;
   }
 }
 
@@ -57,6 +90,21 @@ export class ZiswafPersentData {
     this.otherPersent = otherPersent;
   }
 }
+
+export class TotalPercentageData {
+  public percentUpz
+  public percentRetail
+  public percentCorporate
+  constructor(
+    percentUpz: number,
+    percentRetail: number,
+    percentCorporate: number,
+  ) {
+    this.percentUpz = percentUpz
+    this.percentRetail = percentRetail
+    this.percentCorporate = percentCorporate
+  }
+}
 export class CommonReportData {
   public total: number
   public total_row_count: number
@@ -76,6 +124,7 @@ export class CommonReportData {
   public total_retail: number
   public total_corporate: number
   public total_upz: number
+  public total_division_percentage: TotalPercentageData;
   public total_ziswaf_percent?: ZiswafPersentData
 
   constructor(
@@ -97,6 +146,7 @@ export class CommonReportData {
     total_retail: number,
     total_corporate: number,
     total_upz: number,
+    total_division_percentage: TotalPercentageData,
     total_ziswaf_percent: ZiswafPersentData,
   ) {
     this.total = total
@@ -117,6 +167,7 @@ export class CommonReportData {
     this.total_retail = total_retail
     this.total_corporate = total_corporate
     this.total_upz = total_upz
+    this.total_division_percentage = total_division_percentage
     this.total_ziswaf_percent = total_ziswaf_percent
   }
 }

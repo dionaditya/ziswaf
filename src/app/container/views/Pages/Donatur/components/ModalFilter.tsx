@@ -13,6 +13,14 @@ import GridItem from "@/app/container/commons/Grid/GridItem";
 import { Typography } from "@material-ui/core";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
+
+const asyncDefaultValue = {
+  name: 'SEMUA',
+  id: ""
+}
+
+const nonasyncDefaultValue = ["", "SEMUA"]
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     title: {
@@ -68,10 +76,13 @@ const ModalFilter = () => {
                     }));
                   }}
                   value={school_id}
-                  data={controller.school}
+                  data={[
+                    asyncDefaultValue,
+                    ...controller.school
+                    ]}
                   name="school_id"
                   label="UNIT"
-                  placeholder="UNIT"
+                  placeholder={controller.loading ? "loading..." : "SEMUA"}
                 />
               ) : (
                 <SelectWithSearch
@@ -87,7 +98,7 @@ const ModalFilter = () => {
                   ]}
                   name="school_id"
                   label="Unit"
-                  placeholder={controller.loading ? "loading..." : "UNIT"}
+                  placeholder={controller.loading ? "loading..." : "SEMUA"}
                 />
               )}
             </GridItem>
@@ -114,10 +125,13 @@ const ModalFilter = () => {
                   }));
                 }}
                 value={regency}
-                data={controller.regency}
+                data={[
+                  asyncDefaultValue,
+                  ...controller.regency
+                  ]}
                 name="regency"
                 label="Kota"
-                placeholder={controller.loading ? "loading..." : "KOTA"}
+                placeholder={controller.loading ? "loading..." : "SEMUA"}
               />
             </GridItem>
             <GridItem
@@ -144,9 +158,12 @@ const ModalFilter = () => {
                 }}
                 value={donor_category}
                 name="donor_category"
-                data={donatur_category}
+                data={[
+                  nonasyncDefaultValue,
+                  ...donatur_category
+                  ]}
                 label="Kategori Donatur"
-                placeholder="KATEGORI DONATUR"
+                placeholder="SEMUA"
               />
             </GridItem>
             <GridItem
@@ -173,8 +190,11 @@ const ModalFilter = () => {
                 }}
                 value={status}
                 name="status"
-                data={CoorporateStatus}
-                placeholder="STATUS"
+                data={[
+                  nonasyncDefaultValue,
+                  ...CoorporateStatus
+                  ]}
+                placeholder="SEMUA"
               />
             </GridItem>
           </GridContainer>

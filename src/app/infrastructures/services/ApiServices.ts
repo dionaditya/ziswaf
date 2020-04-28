@@ -17,13 +17,20 @@ export default class ApiService implements ApiServiceInterface {
             timeout: 50000
         });
         if (process.env.NODE_ENV || process.env.REACT_APP_BASE_URL) {
+            this.client.interceptors.request.use(conf => {
+                console.log(conf)
+                return conf
+            })
             this.client.interceptors.response.use(resp => {
                 return resp;
             }, function (error) {
+                 console.log('error', error.response)
+
                 if (error.response.status === 403) {
                     removeAuthCredential()
                     history.push('/login')
                 }
+                return Promise.reject(error)
             });
         }
     }

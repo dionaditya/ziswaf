@@ -18,8 +18,8 @@ import qs from 'qs'
 
 
 export interface Cash {
-    type_id: number;
-    category_id: number;
+    type_id: any;
+    category_id: any;
     value: number;
     ref_number: string;
 }
@@ -40,8 +40,8 @@ export interface Donation {
     description: string;
     donation_item: number;
     employee_id: any;
-    cash: Cash;
-    goods: Goods;
+    cash: any;
+    goods: any;
 }
 interface IState {
     setState: Function,
@@ -99,8 +99,8 @@ const initialState: IState = {
         donation_item: 1,
         employee_id: '',
         cash: {
-            type_id: 0,
-            category_id: 0,
+            type_id: '',
+            category_id: '',
             value: 0,
             ref_number: '',
         },
@@ -193,14 +193,12 @@ export const RetailController = ({ children }) => {
 
         if (isDonation && isDonation.path === '/dashboard/retail-input/:id') {
             (async () => {
-                const donorDetail: any = await retailPresenter.getById(_.toNumber(donationParams.id))
                 setState(prevState => ({
                     ...prevState,
                     DonationInfo: {
                         ...state.DonationInfo,
-                        donor_id: donorDetail.id,
+                        donor_id: Number(donationParams.id)
                     },
-                    donor: donorDetail
                 }))
             })()
         }
@@ -292,7 +290,8 @@ export const RetailController = ({ children }) => {
     const handlePostDonation = async (e, indexTab, setIndexTab) => {
         try {
             e.preventDefault()
-            const postDontation = await donationPresenter.store(new CreateDonationApiRequest(
+            if(state.DonationInfo.donation_item === 1) {
+                  const postDontation = await donationPresenter.store(new CreateDonationApiRequest(
                 state.DonationInfo.donor_id,
                 state.DonationInfo.division_id,
                 state.DonationInfo.category_id,
@@ -301,6 +300,24 @@ export const RetailController = ({ children }) => {
                 state.DonationInfo.donation_item,
                 state.DonationInfo.employee_id,
                 state.DonationInfo.cash,
+                null
+            ))
+            const transactionDetail = await donationPresenter.getById(postDontation.id)
+            setState(prevState => ({
+                ...prevState,
+                transaction: transactionDetail
+            }))
+            return ['success', transactionDetail]
+            } else {
+                  const postDontation = await donationPresenter.store(new CreateDonationApiRequest(
+                state.DonationInfo.donor_id,
+                state.DonationInfo.division_id,
+                state.DonationInfo.category_id,
+                state.DonationInfo.statement_category_id,
+                state.DonationInfo.description,
+                state.DonationInfo.donation_item,
+                state.DonationInfo.employee_id,
+                null,
                 state.DonationInfo.goods
             ))
             const transactionDetail = await donationPresenter.getById(postDontation.id)
@@ -308,10 +325,11 @@ export const RetailController = ({ children }) => {
                 ...prevState,
                 transaction: transactionDetail
             }))
-            history.push(`/dashboard/retail-tanda-terima/${transactionDetail.id}`)
-            return postDontation
+            return ['success', transactionDetail]
+            }
+          
         } catch (e) {
-            return false
+            return ['error', e]
         }
 
     }
@@ -360,6 +378,7 @@ export const RetailController = ({ children }) => {
     const handleInputDonation = (e) => {
         const name = e.target.name
         const value = e.target.value
+
         if (e.target.name === 'category_id') {
             const selectCategory = category.filter(val => val.id === e.target.value)
             setState(prevState => ({
@@ -375,10 +394,11 @@ export const RetailController = ({ children }) => {
                 ..._prevState,
                 DonationInfo: {
                     ..._prevState.DonationInfo,
-                    donation_item: _.toNumber(e.target.value)
+                    donation_item: _.toNumber(e.target.value),
                 }
             }))
-        } else {
+          
+        }  else {
             setState(prevState => ({
                 ...prevState,
                 DonationInfo: {
@@ -445,7 +465,33 @@ export const RetailController = ({ children }) => {
 
                 }
             }))
-        } else {
+        } else if(e.target.name === 'type_id') {
+            if(e.target.value === 0) {
+                setState(_prevState => ({
+                ..._prevState,
+                DonationInfo: {
+                    ..._prevState.DonationInfo,
+                    cash: {
+                        ..._prevState.DonationInfo.cash,
+                        category_id: 1,
+                        [name]: value
+                    }
+                }
+            }))
+            } else {
+                setState(_prevState => ({
+                ..._prevState,
+                DonationInfo: {
+                    ..._prevState.DonationInfo,
+                    cash: {
+                        ..._prevState.DonationInfo.cash,
+                        [name]: value
+                    }
+                }
+            }))
+            }
+
+        } else  {
             setState(_prevState => ({
                 ..._prevState,
                 DonationInfo: {

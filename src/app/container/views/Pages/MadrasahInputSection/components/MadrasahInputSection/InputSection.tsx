@@ -389,7 +389,7 @@ const SectionInput = () => {
                           data={controller.province || ""}
                           name="province"
                           label="Provinsi"
-                          placeholder="Pilih Provinsi"
+                          placeholder={controller.inputSchoolData.province_id || 'Pilih Provinsi'}
                         />
                       }
                       name="province_id"
@@ -434,7 +434,7 @@ const SectionInput = () => {
                           data={controller.city}
                           name="regency"
                           label="Kota"
-                          placeholder="Pilih Kota"
+                          placeholder={controller.inputSchoolData.regency_id || 'Pilih Kota'}
                         />
                       }
                       name="regency_id"

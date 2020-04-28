@@ -3,7 +3,7 @@ export interface CreateDonorRequestInterface {
 }
 
 export interface UpdateDonorRequestInterface {
-  toJson(): string;
+  toJson(): any;
 }
 
 export interface DeleteDonorRequestInterface {

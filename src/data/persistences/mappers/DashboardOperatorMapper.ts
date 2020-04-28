@@ -18,6 +18,8 @@ import {
   RetailDivision,
   CorporateDivision,
   PercentData,
+  TotalPercentageData,
+  TotalTransactionLastYearData,
 } from "@/domain/entities/DashboardOperator";
 import { singleton } from "tsyringe";
 
@@ -41,7 +43,17 @@ export class DashboardOperatorMapper {
           item.data.dashboard_operator.total_zakat_fitrah,
           item.data.dashboard_operator.total_infaq,
           item.data.dashboard_operator.total_kurban,
-          item.data.dashboard_operator.total_other
+          item.data.dashboard_operator.total_other,
+          new TotalTransactionLastYearData(
+            item.data.dashboard_operator.total_transaction_last_month.total_up,
+            item.data.dashboard_operator.total_transaction_last_month.total_down,
+            item.data.dashboard_operator.total_transaction_last_month.count_up,
+            item.data.dashboard_operator.total_transaction_last_month.count_down,
+            item.data.dashboard_operator.total_transaction_last_month.donor_up,
+            item.data.dashboard_operator.total_transaction_last_month.donor_down,
+            item.data.dashboard_operator.total_transaction_last_month.new_donor_up,
+            item.data.dashboard_operator.total_transaction_last_month.new_donor_down,
+          )
         ),
         new CommonReportData(
           item.data.common_report.total,
@@ -62,6 +74,11 @@ export class DashboardOperatorMapper {
           item.data.common_report.total_retail,
           item.data.common_report.total_corporate,
           item.data.common_report.total_upz,
+          new TotalPercentageData(
+            item.data.common_report.total_division_percent.total_division_upz_percent,
+            item.data.common_report.total_division_percent.total_division_retail_percent,
+            item.data.common_report.total_division_percent.total_division_corporate_percent
+          ),          
           new ZiswafPersentData(
             item.data.common_report.total_ziswaf_percent.zakat_maal_percent,
             item.data.common_report.total_ziswaf_percent.zakat_fitrah_percent,

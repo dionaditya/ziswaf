@@ -74,7 +74,7 @@ const ModalContentItems = () => {
                             data={controller.school}
                             name="school_id"
                             label="UNIT MADRASAH"
-                            placeholder="UNIT MADRASAH"
+                            placeholder="SEMUA"
                           />
                         </>
                       ) : (
@@ -96,7 +96,7 @@ const ModalContentItems = () => {
                             data={controller.school}
                             name="school_id"
                             label="UNIT MADRASAH"
-                            placeholder="UNIT MADRASAH"
+                            placeholder="SEMUA UNIT MADRASAH"
                           />
                         </>
                       )}
@@ -121,7 +121,7 @@ const ModalContentItems = () => {
                         data={controller.province}
                         name="province"
                         label="PROVINSI MADRASAH"
-                        placeholder="PROVINSI MADRASAH"
+                        placeholder="SEMUA PROVINSI"
                       />
                     </Box>
                   </GridItem>
@@ -146,7 +146,7 @@ const ModalContentItems = () => {
                     data={controller.regency}
                     name="regency"
                     label="KOTA MADRASAH"
-                    placeholder="KOTA MADRASAH"
+                    placeholder="SEMUA KOTA"
                   />
                     </Box>
                   </GridItem>
@@ -169,7 +169,7 @@ const ModalContentItems = () => {
                     name="sosial_status"
                     data={StudentStatus}
                     label="STATUS SOSIAL"
-                    placeholder="STATUS SOSIAL"
+                    placeholder="SEMUA"
                   />
                     </Box>
                   </GridItem>

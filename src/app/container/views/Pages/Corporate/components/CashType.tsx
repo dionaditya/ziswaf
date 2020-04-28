@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const JenisUang = ({ controller, onChange }) => {
+const JenisUang = ({ controller, onChange, error }) => {
   const classes = useStyles();
   const {
     type_id,
@@ -98,10 +98,15 @@ const JenisUang = ({ controller, onChange }) => {
                         name="category_id"
                         onChange={onChange}
                         value={category_id}
-                        data={CashCategories.slice(1, -1)}
+                        data={CashCategories.slice(1, CashCategories.length)}
                         label="Non Tunai"
                       />
                     )}
+                       {error && (
+                        <p style={{ color: "red", fontSize: "12px" }}>
+                          "Belum memilih tipe pembayaran non tunai"
+                        </p>
+                      )}
                   </GridItem>
                   <GridItem xs={12} sm={12} md={12}>
                     <label className={classes.label}>Besar Nominal</label>

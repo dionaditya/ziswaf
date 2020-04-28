@@ -15,6 +15,19 @@ import {
 } from "@material-ui/pickers";
 import _ from "lodash";
 
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import { green } from "@material-ui/core/colors";
+
+const innerTheme = createMuiTheme({
+  palette: {
+    primary: {
+      main: green[500],
+    },
+  },
+});
+
+
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     title: {
@@ -50,7 +63,8 @@ const ModalContentItems = () => {
 
   return (
     <GridContainer>
-      <GridItem xs={12} sm={12} md={12}>
+      <ThemeProvider theme={innerTheme}>
+          <GridItem xs={12} sm={12} md={12}>
         <GridContainer>
           <GridItem
             xs={12}
@@ -86,7 +100,7 @@ const ModalContentItems = () => {
                 async
                 isDisabled
                 onChange={handleChange}
-                value={controller.userInfo.school_id}
+                value={controller.userInfo.school.id}
                 data={[
                   {
                     id: controller.userInfo.school.id,
@@ -210,13 +224,11 @@ const ModalContentItems = () => {
           >
             <label htmlFor="registered_year_start">Mulai</label>
             <KeyboardDatePicker
-              disableToolbar
               variant="inline"
               format="dd-MM-yyyy"
               style={{
                 width: "100%",
               }}
-              maxDate={moment(register_end).toDate()}
               inputVariant="outlined"
               placeholder={
                 register_start === null
@@ -254,7 +266,6 @@ const ModalContentItems = () => {
           >
             <label htmlFor="registered_year_start">Hingga</label>
             <KeyboardDatePicker
-                disableToolbar
                 variant="inline"
                 format="dd-MM-yyyy"
                 minDate={moment(register_start).toDate()}
@@ -289,6 +300,8 @@ const ModalContentItems = () => {
           </GridItem>
         </GridContainer>
       </GridItem>
+      </ThemeProvider>>
+    
     </GridContainer>
   );
 };

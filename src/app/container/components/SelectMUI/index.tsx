@@ -64,7 +64,6 @@ export default function SimpleSelect(props) {
           width: '100%'
         }}>
           <FormControl className={classes.formControl}>
-            {label && <InputLabel id="demo-simple-select-label black-text">{label}</InputLabel>}
             <Select
               labelId="demo-simple-select-label"
               id={name}
@@ -90,7 +89,6 @@ export default function SimpleSelect(props) {
   return (
     <div>
       <FormControl className={classes.formControl}>
-        {label && <InputLabel id="demo-simple-select-label black-text">{label}</InputLabel>}
         <Select
           labelId="demo-simple-select-label"
           id={name}

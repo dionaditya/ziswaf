@@ -1,4 +1,5 @@
 import { createEmployeeInterface, deleteEmployeeInterface } from '../contracts/EmployeeContract'
+import _ from 'lodash'
 
 export class EmployeeApiRequest implements createEmployeeInterface {
     school_id: number
@@ -11,8 +12,8 @@ export class EmployeeApiRequest implements createEmployeeInterface {
     status: number
     registered_year: string
     pos_code: number
-    province_id: number
-    regency_id: number
+    province_id: any
+    regency_id: any
     image?: any
 
 
@@ -27,8 +28,8 @@ export class EmployeeApiRequest implements createEmployeeInterface {
         status: number,
         registered_year: string,
         pos_code: number,
-        province_id: number,
-        regency_id: number,
+        province_id: any,
+        regency_id: any,
         image?: any,
     ) {
         this.school_id = school_id
@@ -56,7 +57,16 @@ export class EmployeeApiRequest implements createEmployeeInterface {
                     const [file, name] = data[val]
                     formData.append(val, file, name)
                 } else {
-                    formData.append(val, data[val])
+                    if(val === 'province_id' || val === 'regency_id') {
+                        if(_.isNumber(data[val])) {
+                             formData.append(val, data[val])
+                        } else {
+                            return null
+                        }
+                    } else {
+                        formData.append(val, data[val])
+                    }
+                    
                 }
             } else {
                 return null
@@ -78,8 +88,8 @@ export class EmployeeApiRequestWithoutImage implements createEmployeeInterface {
     status: number
     registered_year:string
     pos_code: number
-    province_id: number
-    regency_id: number
+    province_id: any
+    regency_id: any
 
 
     constructor(
@@ -93,8 +103,8 @@ export class EmployeeApiRequestWithoutImage implements createEmployeeInterface {
         status: number,
         registered_year: string,
         pos_code: number,
-        province_id: number,
-        regency_id: number,
+        province_id: any,
+        regency_id: any
     ) {
         this.school_id = school_id
         this.name = name
@@ -115,8 +125,17 @@ export class EmployeeApiRequestWithoutImage implements createEmployeeInterface {
         const data = this
         const formData = new FormData()
         Object.keys(data).forEach(val => {
-            if(data[val] !== null) {
-                formData.append(val, data[val])
+            if(data[val] !== null || data[val] !== '')  {
+                if(val === 'province_id' || val === 'regency_id') {
+                    if(_.isNumber(data[val])) {
+                        formData.append(val, data[val])
+                    } else {
+                        return null
+                    }
+                } else {
+                      formData.append(val, data[val])
+                }
+              
             } else {
                 return null
             }

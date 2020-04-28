@@ -61,14 +61,24 @@ const DataTableReportPencapaianDivisi = ({
   const prognosisUpz = data.totalPrognosisUpz;
   const totalPrognosis = prognosisRetail + prognosisCorporate + prognosisUpz;
 
-  const valueRetail = role === 1 ? dashboardData.totalRetail : generalOperator.total_retail;
-  const valueCorporate = role === 1 ? dashboardData.totalCorporate : generalOperator.total_corporate;
-  const valueUpz = role === 1 ? dashboardData.totalUpz : generalOperator.total_upz;
+  const valueRetail =
+    role === 1 ? dashboardData.totalRetail : generalOperator.total_retail;
+  const valueCorporate =
+    role === 1 ? dashboardData.totalCorporate : generalOperator.total_corporate;
+  const valueUpz =
+    role === 1 ? dashboardData.totalUpz : generalOperator.total_upz;
   const totalValue = valueRetail + valueCorporate + valueUpz;
 
-  const percentageRetail = role === 1 ? data.totalPersentRetail : dataOperator.total_percent_retailDivision;
-  const percentageCorporate = role === 1 ? data.totalPersentCorporate : dataOperator.total_percent_corporateDivision;
-  const percentageUpz = role === 1 ? data.totalPersentUpz : dataOperator.total_percent_upzDivision;
+  const percentageRetail =
+    role === 1
+      ? data.totalPersentRetail
+      : dataOperator.total_percent_retailDivision;
+  const percentageCorporate =
+    role === 1
+      ? data.totalPersentCorporate
+      : dataOperator.total_percent_corporateDivision;
+  const percentageUpz =
+    role === 1 ? data.totalPersentUpz : dataOperator.total_percent_upzDivision;
   const totalPercent = percentageRetail + percentageCorporate + percentageUpz;
 
   const selisihRetail = valueRetail - prognosisRetail;
@@ -105,13 +115,15 @@ const DataTableReportPencapaianDivisi = ({
             <p className={classes.labels}>Terkumpul</p>
           </Box>
           {role === 1 && (
-            <Box className={classes.tabHeader}>
-              <p className={classes.labels}>Selisih</p>
-            </Box>
+            <>
+              <Box className={classes.tabHeader}>
+                <p className={classes.labels}>Selisih</p>
+              </Box>
+              <Box className={classes.tabHeader}>
+                <p className={classes.labels}>Pencapaian</p>
+              </Box>
+            </>
           )}
-          <Box className={classes.tabHeader}>
-            <p className={classes.labels}>Pencapaian</p>
-          </Box>
         </GridContainer>
       </GridItem>
       <GridItem xs={12} sm={12} md={12} style={{ margin: "0px 15px 0px 15px" }}>
@@ -138,13 +150,15 @@ const DataTableReportPencapaianDivisi = ({
             <p className={classes.subLabel}>{formatPrice(valueRetail || 0)}</p>
           </Box>
           {role === 1 && (
-            <Box className={classes.tabBody}>
-              <p className={classes.subLabel}>{formatPrice(selisihRetail)}</p>
-            </Box>
+            <>
+              <Box className={classes.tabBody}>
+                <p className={classes.subLabel}>{formatPrice(selisihRetail)}</p>
+              </Box>
+              <Box className={classes.tabBody}>
+                <p className={classes.subLabel}>{percentageRetail}%</p>
+              </Box>
+            </>
           )}
-          <Box className={classes.tabBody}>
-            <p className={classes.subLabel}>{percentageRetail}%</p>
-          </Box>
         </GridContainer>
       </GridItem>
       <GridItem xs={12} sm={12} md={12} style={{ margin: "0px 15px 0px 15px" }}>
@@ -171,15 +185,17 @@ const DataTableReportPencapaianDivisi = ({
             <p className={classes.subLabel}>{formatPrice(valueCorporate)}</p>
           </Box>
           {role === 1 && (
-            <Box className={classes.tabBody}>
-              <p className={classes.subLabel}>
-                {formatPrice(selisihCorporate)}
-              </p>
-            </Box>
+            <>
+              <Box className={classes.tabBody}>
+                <p className={classes.subLabel}>
+                  {formatPrice(selisihCorporate)}
+                </p>
+              </Box>
+              <Box className={classes.tabBody}>
+                <p className={classes.subLabel}>{percentageCorporate}%</p>
+              </Box>
+            </>
           )}
-          <Box className={classes.tabBody}>
-            <p className={classes.subLabel}>{percentageCorporate}%</p>
-          </Box>
         </GridContainer>
       </GridItem>
       <GridItem xs={12} sm={12} md={12} style={{ margin: "0px 15px 0px 15px" }}>
@@ -204,13 +220,16 @@ const DataTableReportPencapaianDivisi = ({
             <p className={classes.subLabel}>{formatPrice(valueUpz)}</p>
           </Box>
           {role === 1 && (
-            <Box className={classes.tabBody}>
-              <p className={classes.subLabel}>{formatPrice(selisihUpz)}</p>
-            </Box>
+            <>
+              <Box className={classes.tabBody}>
+                <p className={classes.subLabel}>{formatPrice(selisihUpz)}</p>
+              </Box>
+
+              <Box className={classes.tabBody}>
+                <p className={classes.subLabel}>{percentageUpz}%</p>
+              </Box>
+            </>
           )}
-          <Box className={classes.tabBody}>
-            <p className={classes.subLabel}>{percentageUpz}%</p>
-          </Box>
         </GridContainer>
       </GridItem>
       <GridItem xs={12} sm={12} md={12} style={{ margin: "0px 15px 0px 15px" }}>
@@ -224,7 +243,9 @@ const DataTableReportPencapaianDivisi = ({
           }}
         >
           <Box className={classes.tabBody}>
-            <p className={classes.subLabelFooter}>NASIONAL</p>
+            <p className={classes.subLabelFooter}>
+              {role === 1 ? "NASIONAL" : "TOTAL"}
+            </p>
           </Box>
           {role === 1 && (
             <Box className={classes.tabBody}>
@@ -237,15 +258,17 @@ const DataTableReportPencapaianDivisi = ({
             <p className={classes.subLabelFooter}>{formatPrice(totalValue)}</p>
           </Box>
           {role === 1 && (
-            <Box className={classes.tabBody}>
-              <p className={classes.subLabelFooter}>
-                {formatPrice(totalSelisih)}
-              </p>
-            </Box>
+            <>
+              <Box className={classes.tabBody}>
+                <p className={classes.subLabelFooter}>
+                  {formatPrice(totalSelisih)}
+                </p>
+              </Box>
+              <Box className={cx(classes.tabBody, { width: "10%" })}>
+                <p className={classes.subLabelFooter}>{totalPercent}%</p>
+              </Box>
+            </>
           )}
-          <Box className={cx(classes.tabBody, { width: "10%" })}>
-            <p className={classes.subLabelFooter}>{totalPercent}%</p>
-          </Box>
         </GridContainer>
       </GridItem>
     </GridContainer>

@@ -1,5 +1,5 @@
 import { createSchooInterface, deleteSchoolInterface } from '../contracts/SchoolContract'
-
+import _ from 'lodash'
 
 export class SchoolApiRequest implements createSchooInterface {
     name: string;
@@ -8,8 +8,8 @@ export class SchoolApiRequest implements createSchooInterface {
     pos_code: number;
     description: string;
     user_id: number;
-    province_id: number;
-    regency_id: number;
+    province_id: any;
+    regency_id: any;
     opened_at: string;
     address: string;
 
@@ -20,8 +20,8 @@ export class SchoolApiRequest implements createSchooInterface {
         pos_code: number,
         description: string,
         user_id: number,
-        province_id: number,
-        regency_id: number,
+        province_id: any,
+        regency_id: any,
         opened_at: string,
         address: string
 
@@ -39,7 +39,25 @@ export class SchoolApiRequest implements createSchooInterface {
     }
     
     public toJson() {
-        return JSON.stringify(this)
+        const data= {...this} 
+        const transformData = {}
+        Object.keys(data).forEach(val => {
+            if(data[val] !== null || '') {
+                if(val === 'province_id' || val === 'regency_id') {
+
+                     if(_.isNumber(data[val])) {
+                          transformData[val] = data[val]
+                      } else {
+                          return null
+                      }
+                } else {
+                    transformData[val] = data[val]
+                }
+            } else {
+               return null
+            }
+        })
+        return data
     }
 }
 

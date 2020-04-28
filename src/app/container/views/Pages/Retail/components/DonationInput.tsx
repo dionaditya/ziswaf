@@ -17,6 +17,9 @@ import Checkbox from "@material-ui/core/Checkbox";
 import CircleChecked from "@material-ui/icons/CheckCircleOutline";
 import CircleCheckedFilled from "@material-ui/icons/CheckCircle";
 import CircleUnchecked from "@material-ui/icons/RadioButtonUnchecked";
+import { useHistory } from "react-router-dom";
+import { useToasts } from "react-toast-notifications";
+import _ from "lodash";
 
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 
@@ -58,6 +61,11 @@ const DonationInput = ({ index, setIndex }) => {
   const [showComponent, setShowComponent] = useState("cash");
   const classes = useStyles();
   const controller = useContext(RetailContext);
+  const history = useHistory();
+  const { addToast } = useToasts();
+  const [error, setError] = useState(false);
+  const [errorDonation, setErrorDonation] = useState(false);
+  const [errorGoods, setErrorGoods] = useState(false)
 
   const onChange = (e) => {
     controller.handleInputDonation(e);
@@ -70,8 +78,67 @@ const DonationInput = ({ index, setIndex }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    controller.handlePostDonation(e);
+    if (
+      controller.DonationInfo.category_id !== 0 &&
+      controller.DonationInfo.statement_category_id !== 0
+    ) {
+      setErrorDonation(false);
+
+      if(controller.DonationInfo.donation_item === 1) {
+        if (_.isNumber(controller.DonationInfo.cash.category_id)) {
+          console.log('hai')
+          setError(false);
+          const [status, response] = await controller.handlePostDonation(e);
+          if (status === "success") {
+            addToast("Data donasi telah tersimpan", { appearance: "success" });
+            setTimeout(() => {
+              history.push(`/dashboard/retail-tanda-terima/${response.id}`);
+            }, 500);
+          } else {
+            if (
+              response.response.status === 400 ||
+              response.response.status === 402
+            ) {
+              addToast(response.response.data.message, { appearance: "error" });
+            } else {
+              addToast(response.response.data.message, { appearance: "error" });
+            }
+          }
+        } else {
+          setError(true);
+        }
+      } else {
+        if (controller.DonationInfo.goods.category_id !== 0 && controller.DonationInfo.goods.status !== 0) {
+          console.log('yo')
+          setErrorGoods(false);
+          const [status, response] = await controller.handlePostDonation(e);
+          if (status === "success") {
+            addToast("Data donasi telah tersimpan", { appearance: "success" });
+            setTimeout(() => {
+              history.push(`/dashboard/retail-tanda-terima/${response.id}`);
+            }, 500);
+          } else {
+            if (
+              response.response.status === 400 ||
+              response.response.status === 402
+            ) {
+              addToast(response.response.data.message, { appearance: "error" });
+            } else {
+              addToast(response.response.data.message, { appearance: "error" });
+            }
+          }
+        } else {
+          console.log('fish')
+          setErrorGoods(true);
+        }
+      }
+    
+    } else {
+      setErrorDonation(true);
+    }
   };
+
+  console.log(controller.DonationInfo)
 
   return (
     <React.Fragment>
@@ -107,6 +174,11 @@ const DonationInput = ({ index, setIndex }) => {
                             name="statement_category_id"
                             label="Kategori Donasi"
                           />
+                          {errorDonation && (
+                            <p style={{ color: "red", fontSize: "12px" }}>
+                              Belum memilih jenis donasi
+                            </p>
+                          )}
                           <label className={classes.label}>
                             Deskripsi Donasi
                           </label>
@@ -126,56 +198,55 @@ const DonationInput = ({ index, setIndex }) => {
                           <h3 className="black-text">Bentuk Donasi</h3>
                         </Box>
                         <FormControlLabel
-                              control={
-                                <Checkbox
-                                  icon={<CircleUnchecked />}
-                                  color="primary"
-                                  checkedIcon={<CircleCheckedFilled />}
-                                  checked={
-                                    controller.DonationInfo.donation_item === 1
-                                      ? true
-                                      : false
-                                  }
-                                  onChange={(e) => {
-                                    const data = {
-                                      target: {
-                                        name: "donation_item",
-                                        value: 1,
-                                      },
-                                    };
-                                    handleChange(data);
-                                  }}
-                                  name="donation_item"
-                                />
+                          control={
+                            <Checkbox
+                              icon={<CircleUnchecked />}
+                              color="primary"
+                              checkedIcon={<CircleCheckedFilled />}
+                              checked={
+                                controller.DonationInfo.donation_item === 1
+                                  ? true
+                                  : false
                               }
-                              label="Uang"
+                              onChange={(e) => {
+                                const data = {
+                                  target: {
+                                    name: "donation_item",
+                                    value: 1,
+                                  },
+                                };
+                                handleChange(data);
+                              }}
+                              name="donation_item"
                             />
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  icon={<CircleUnchecked />}
-                                  color="primary"
-                                  checkedIcon={<CircleCheckedFilled />}
-                                  checked={
-                                    controller.DonationInfo.donation_item === 2
-                                      ? true
-                                      : false
-                                  }
-                                  onChange={(e) => {
-                                    const data = {
-                                      target: {
-                                        name: "donation_item",
-                                        value: 2,
-                                      },
-                                    };
-                                    handleChange(data);
-                                  }}
-                                  name="donation_item"
-                                />
+                          }
+                          label="Uang"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              icon={<CircleUnchecked />}
+                              color="primary"
+                              checkedIcon={<CircleCheckedFilled />}
+                              checked={
+                                controller.DonationInfo.donation_item === 2
+                                  ? true
+                                  : false
                               }
-                              label="Barang"
+                              onChange={(e) => {
+                                const data = {
+                                  target: {
+                                    name: "donation_item",
+                                    value: 2,
+                                  },
+                                };
+                                handleChange(data);
+                              }}
+                              name="donation_item"
                             />
-                       
+                          }
+                          label="Barang"
+                        />
                       </GridItem>
                     </GridContainer>
                   </CardBody>
@@ -185,11 +256,13 @@ const DonationInput = ({ index, setIndex }) => {
                 {controller.DonationInfo.donation_item === 1 ? (
                   <CashType
                     controller={controller}
+                    error={error}
                     onChange={controller.handleCashInput}
                   />
                 ) : (
                   <GoodsType
                     controller={controller}
+                    error={errorGoods}
                     onChange={controller.handleGoodsInput}
                   />
                 )}

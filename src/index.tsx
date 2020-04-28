@@ -1,12 +1,24 @@
 import { hot } from 'react-hot-loader/root';
 import "reflect-metadata";
-import React from "react";
+import React, { Suspense } from 'react';
 import ReactDOM from "react-dom";
 import "./index.css";
-import App from "./App";
 import * as serviceWorker from "./serviceWorker";
+import LoadingPage from './LoadingPage';
 
-const Root = hot(App)
+
+const App = React.lazy(() => import('./App'))
+
+const AppComponent = () => {
+    return(
+        <Suspense fallback={<LoadingPage />}>
+            <App />
+        </Suspense>
+    )
+  
+}
+
+const Root = hot(AppComponent)
 
 ReactDOM.render(<Root />, document.getElementById("root"));
 

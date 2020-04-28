@@ -28,6 +28,8 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
+import {useLocation} from 'react-router-dom'
+import qs from 'qs'
 
 const innerTheme = createMuiTheme({
   palette: {
@@ -81,6 +83,14 @@ const DonorInput = ({ index, setIndex }) => {
     control,
   } = useForm();
   const [error, setError] = React.useState(false);
+  const location = useLocation()
+
+  function useQuery() {
+    const location = useLocation()
+    return qs.parse(location.search)
+  }
+  
+  let query = useQuery()
 
   const {
     company_name,
@@ -113,7 +123,7 @@ const DonorInput = ({ index, setIndex }) => {
       { email: email },
       { name: name },
     ]);
-  }, []);
+  }, [location.pathname]);
 
   React.useEffect(() => {
     setValue([
@@ -130,7 +140,7 @@ const DonorInput = ({ index, setIndex }) => {
       { email: email },
       { name: name },
     ]);
-  }, [controller.selected, controller.selectedDonatur, ]);
+  }, [controller.selected, controller.selectedDonatur, location.pathname]);
 
   const errorMessage = {
     empty: "Data ini tidak boleh kosong",
@@ -190,7 +200,7 @@ const DonorInput = ({ index, setIndex }) => {
     }
   };
 
-  console.log(controller.DonaturInfo);
+  const company = query['?is_company'] === 'true'
 
   return (
     <React.Fragment>
@@ -251,7 +261,7 @@ const DonorInput = ({ index, setIndex }) => {
                               ? "Pilih Status Perusahaan"
                               : "Pilih Status"}
                           </label>
-                          {controller.DonaturInfo.is_company ? (
+                          { company  ? (
                             <>
                               <Controller
                                 as={
@@ -398,7 +408,7 @@ const DonorInput = ({ index, setIndex }) => {
                           )}
 
                           <div className="row">
-                            {controller.DonaturInfo.is_company ? (
+                            {company ? (
                               <div className="col s12" style={{
                                   marginTop: '15px',
                                   marginBottom: '15px'
@@ -711,7 +721,7 @@ const DonorInput = ({ index, setIndex }) => {
                             Kontak Donatur
                           </label>
                         </GridItem>
-                        {controller.DonaturInfo.is_company ? (
+                        {company ? (
                           <>
                             <GridItem xs={12} sm={12} md={12}>
                               <label
@@ -903,7 +913,6 @@ const DonorInput = ({ index, setIndex }) => {
                                 onChange(value[0]);
                                 return value[0].target.value;
                               }}
-                              rules={{ required: true }}
                               control={control}
                               defaultValue={info}
                             />
@@ -1028,7 +1037,7 @@ const DonorInput = ({ index, setIndex }) => {
                                   type="text"
                                   disabled={controller.selected}
                                   placeholder="No NPWP"
-                                
+                     
                                   inputRef={register}
                                   onChange={onChange}
                                 />
@@ -1062,7 +1071,6 @@ const DonorInput = ({ index, setIndex }) => {
                                     onChange(value[0]);
                                     return value[0].target.value;
                                   }}
-                                  rules={{ required: true }}
                                   control={control}
                                   defaultValue={info}
                                 />

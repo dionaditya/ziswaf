@@ -40,7 +40,7 @@ const SummaryDashboardReport = ({ summary, dataCompare }) => {
 
   return (
     <GridContainer style={{ marginTop: 10 }}>
-      <GridItem xs={12} sm={12} md={4} style={{marginTop: 10}}>
+      <GridItem xs={12} sm={12} md={4} style={{ marginTop: 10 }}>
         <div
           style={{
             display: "flex",
@@ -88,31 +88,31 @@ const SummaryDashboardReport = ({ summary, dataCompare }) => {
                 </span>
               </div>
             ) : (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <i
-                  className="material-icons prefix"
-                  style={{ color: "#00ED42" }}
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
                 >
-                  keyboard_arrow_up
+                  <i
+                    className="material-icons prefix"
+                    style={{ color: "#00ED42" }}
+                  >
+                    keyboard_arrow_up
                 </i>
-                <span style={{ marginLeft: 10, color: "#FFF" }}>
-                  {!dataCompare.totalUp ? 0 : dataCompare.totalUp} %
+                  <span style={{ marginLeft: 10, color: "#FFF" }}>
+                    {!dataCompare.totalUp ? 0 : dataCompare.totalUp} %
                 </span>
-              </div>
-            )}
+                </div>
+              )}
           </div>
         </div>
       </GridItem>
       <GridItem xs={12} sm={12} md={8}>
         <GridContainer>
-          <GridItem xs={12} sm={6} md={4} style={{marginTop: 10}}>
+          <GridItem xs={12} sm={6} md={4} style={{ marginTop: 10 }}>
             <div
               className="card accent-4 valign-wrappertext-center center-align"
               style={{
@@ -159,29 +159,29 @@ const SummaryDashboardReport = ({ summary, dataCompare }) => {
                     </span>
                   </div>
                 ) : (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <i
-                      className="material-icons prefix lighten-1"
-                      style={{ color: "#00ED42" }}
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
                     >
-                      keyboard_arrow_up
+                      <i
+                        className="material-icons prefix lighten-1"
+                        style={{ color: "#00ED42" }}
+                      >
+                        keyboard_arrow_up
                     </i>
-                    <span style={{ color: "#00ED42", marginLeft: 10 }}>
-                      {formatNumbers(dataCompare.countUp)}{" "}
-                    </span>
-                  </div>
-                )}
+                      <span style={{ color: "#00ED42", marginLeft: 10 }}>
+                        {formatNumbers(dataCompare.countUp)}{" "}
+                      </span>
+                    </div>
+                  )}
               </div>
             </div>
           </GridItem>
-          <GridItem xs={6} sm={6} md={4} style={{marginTop: 10}}>
+          <GridItem xs={6} sm={6} md={4} style={{ marginTop: 10 }}>
             <div
               className="card valign-wrappertext-center center-align"
               style={{
@@ -229,29 +229,29 @@ const SummaryDashboardReport = ({ summary, dataCompare }) => {
                     </span>
                   </div>
                 ) : (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <i
-                      className="material-icons prefix lighten-1"
-                      style={{ color: "#00ED42" }}
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
                     >
-                      keyboard_arrow_up
+                      <i
+                        className="material-icons prefix lighten-1"
+                        style={{ color: "#00ED42" }}
+                      >
+                        keyboard_arrow_up
                     </i>
-                    <span style={{ color: "#00ED42", marginLeft: 10 }}>
-                      {formatNumbers(dataCompare.donorUp)}{" "}
-                    </span>
-                  </div>
-                )}
+                      <span style={{ color: "#00ED42", marginLeft: 10 }}>
+                        {formatNumbers(dataCompare.donorUp)}{" "}
+                      </span>
+                    </div>
+                  )}
               </div>
             </div>
           </GridItem>
-          <GridItem xs={6} sm={6} md={4} style={{marginTop: 10}}>
+          <GridItem xs={6} sm={6} md={4} style={{ marginTop: 10 }}>
             <div
               style={{
                 display: "flex",
@@ -297,22 +297,24 @@ const SummaryDashboardReport = ({ summary, dataCompare }) => {
                     </span>
                   </div>
                 ) : (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <i className="material-icons prefix green-text lighten-1">
-                      keyboard_arrow_up
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <i className="material-icons prefix green-text lighten-1"
+                        style={{ color: "#00ED42" }}
+                      >
+                        keyboard_arrow_up
                     </i>
-                    <span style={{ color: "#00ED42", marginLeft: 10 }}>
-                      {formatNumbers(dataCompare.newDonorUp)}{" "}
-                    </span>
-                  </div>
-                )}
+                      <span style={{ color: "#00ED42", marginLeft: 10 }}>
+                        {formatNumbers(dataCompare.newDonorUp)}{" "}
+                      </span>
+                    </div>
+                  )}
               </div>
             </div>
           </GridItem>

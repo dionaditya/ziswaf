@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const Content = () => {
   const classes = useStyles();
   const controller = useContext(DashboardContext);
-  
+    
   const handleFilterUnit = (value) => {
     controller.role !== 2
       ? controller.setFilterParamAdmin((prevState) => ({
@@ -124,6 +124,8 @@ const Content = () => {
     value: controller.filterParam.filter.school_id,
   };
   const showColor = controller.selectedSeries.map((val) => val.color);
+  const showColorOPerator = controller.operatorData.map((val) => val.color);
+
 
 
   return (
@@ -260,8 +262,8 @@ const Content = () => {
                     <DonationTypeChartLegend
                       colors={controller.colors}
                       series={controller.dataSeries}
-                      selected={controller.selectedSeries}
-                      onClick={controller.handleClick}
+                      selected={controller.role !== 2 ? controller.selectedSeries : controller.operatorData}
+                      onClick={controller.role !== 2 ? controller.handleClick : controller.handleClickOperator}
                     />
                   </Box>
                 </GridItem>
@@ -317,10 +319,10 @@ const Content = () => {
                 type="line"
                 width="100%"
                 role={controller.role}
-                series={controller.selectedSeries}
+                series={controller.role !== 2 ? controller.selectedSeries : controller.operatorData}
                 categories={controller.categories}
                 categoriesPerday={controller.categoriesPerDay}
-                colors={showColor}
+                colors={controller.role !== 2 ? showColor : showColorOPerator}
               />
             </div>
           </Card>

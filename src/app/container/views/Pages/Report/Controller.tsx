@@ -109,7 +109,6 @@ export const ReportController = ({ children }) => {
   const fetchReportData = async () => {
     const { school: school_name, role } = getUserInfo()
     const idSchool = school_name?.id;
-    const nameSchool = school_name?.name;
 
     const regencySelected = role === 1 ? state.filterData.citySelected.map(item => item['name']).join(',') : '';
     const schoolSelected = role === 1 ? state.filterData.unitSelected.map(item => item['name']).join(',') : idSchool;
@@ -123,6 +122,7 @@ export const ReportController = ({ children }) => {
     }
 
 
+    console.log("role", role)
     if (role === 1) {
       try {
         setLoading(true)
@@ -160,12 +160,14 @@ export const ReportController = ({ children }) => {
         setTabelUpzOperatorPerDay(resOperator.data?.divisionReport?.total_upz_per_dayDivision)
         setTabelRetailOperatorPerDay(resOperator.data?.divisionReport?.total_retail_per_dayDivision)
         setTabelCorpOperatorPerDay(resOperator.data?.divisionReport?.total_corporate_per_day)
+        setDivisionPercent(resOperator.data?.commonReport?.total_division_percentage)
         setLoading(false)
       } catch (error) {
         setMessage(error)
       }
     }
   }
+  
 
   const { school: school_name, } = getUserInfo()
   const idSchool = school_name?.id;
@@ -402,7 +404,7 @@ export const ReportController = ({ children }) => {
       '/transaction/export-pdf?filter[regency]=' +
       regencySelected + '&filter[school_id]=' + schoolSelected +
       '&filter[start_date]=' + startDate +
-      '&filter[end_date]=' + endDate
+      '&filter[end_date]=' + endDate + '&filter[role]=' + role
       
       window.open(pdfRef, '_blank')
   }

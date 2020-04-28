@@ -1,9 +1,9 @@
 export interface createSchooInterface {
-    toJson(): string;
+    toJson(): any;
 }
   
 export interface updateSchooInterface {
-    toJson(): string;
+    toJson(): any;
 }
   
 export interface deleteSchoolInterface {

@@ -47,6 +47,11 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: "flex-end",
       alignItems: "center",
     },
+    wrapper_menu: {
+      display: "flex",
+      flexDirection: 'row',
+      minWidth: "100%",
+    },
   })
 );
 
@@ -187,8 +192,7 @@ const HalamanDaftarUserDashboard = () => {
     setName((prevState) => event.target.value);
   };
 
-  return useMemo(() => {
-    return (
+ return (
       <>
         <ModalFilterUser controller={controller} actionType={ActionType} handleChange={(e) => handleChange(e)}/>
         <ModalChangePassword
@@ -289,17 +293,17 @@ const HalamanDaftarUserDashboard = () => {
                 column={controller.displayColumns}
               >
                 <CustomizedMenus>
-                  <div
-                    className="wrapper-menu"
+                  <Box
+                    className={classes.wrapper_menu}
                     onClick={() => handleDetail(controller.tabIndex)}
                   >
                     <ListItemIcon>
                       <DetailIcon fontSize="small" />
                     </ListItemIcon>
                     <ListItemText primary="Detail" />
-                  </div>
-                  <div
-                    className="wrapper-menu"
+                  </Box>
+                  <Box
+                    className={classes.wrapper_menu}
                     onClick={(e) =>
                       controller.handleModalChangePassword(e)(
                         controller.dispatch
@@ -310,25 +314,25 @@ const HalamanDaftarUserDashboard = () => {
                       <EditIcon fontSize="small" />
                     </ListItemIcon>
                     <ListItemText primary="Ganti password" />
-                  </div>
-                  <div
-                    className="wrapper-menu"
+                  </Box>
+                  <Box
+                    className={classes.wrapper_menu}
                     onClick={(e) => controller.handleDeactivated(e)}
                   >
                     <ListItemIcon>
                       <PeopleIcon fontSize="small" />
                     </ListItemIcon>
                     <ListItemText primary="Deaktifkan" />
-                  </div>
-                  <div
-                    className="wrapper-menu"
+                  </Box>
+                  <Box
+                    className={classes.wrapper_menu}
                     onClick={(e) => setDialogOpen(true)}
                   >
                     <ListItemIcon>
                       <DeleteIcon fontSize="small" />
                     </ListItemIcon>
                     <ListItemText primary="Delete" />
-                  </div>
+                  </Box>
                 </CustomizedMenus>
               </TableDataSiswa>
             </Box>
@@ -336,7 +340,6 @@ const HalamanDaftarUserDashboard = () => {
         </GridContainer>
       </>
     );
-  }, [controller]);
 };
 
 export default HalamanDaftarUserDashboard;

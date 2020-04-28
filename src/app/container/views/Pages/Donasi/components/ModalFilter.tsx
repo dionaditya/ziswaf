@@ -6,7 +6,7 @@ import Modal from "@/app/container/commons/Modal/index.js";
 import SelectWithSearch, {
   SelectWithSearchWithDebounced,
 } from "@/app/container/components/SelectWithSearch";
-import { statement_category, DonationCategory } from "@/domain/entities/AllOptions";
+import { statement_category, DonationCategory, donatur_category, Division, PaymentTypeFilter} from "@/domain/entities/AllOptions";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { makeStyles, Theme, createStyles, Box } from '@material-ui/core';
 import DatePicker from "react-datepicker";
@@ -17,6 +17,12 @@ import GridContainer from '@/app/container/commons/Grid/GridContainer';
 import GridItem from '@/app/container/commons/Grid/GridItem';
 import Button from "@/app/container/commons/CustomButtons/Button.tsx";
 
+const asyncDefaultValue = {
+  name: 'SEMUA',
+  id: ""
+}
+
+const nonasyncDefaultValue = ["", "SEMUA"]
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -130,7 +136,7 @@ const ModalFilter = ({ showModal, setShowModal }) => {
               {controller.userInfo.role === 2 ? (
                 <SelectWithSearch
                   async
-                  value={controller.userInfo.school_id}
+                  value={controller.userInfo.school.id}
                   data={[
                     {
                       id: controller.userInfo.school.id,
@@ -164,7 +170,10 @@ const ModalFilter = ({ showModal, setShowModal }) => {
                     async
                     isDisabled={false}
                     value={controller.filterParam.filter.school_id}
-                    data={controller.school}
+                    data={[
+                      asyncDefaultValue,
+                      ...controller.school
+                      ]}
                     name="school_id"
                     label="SEMUA"
                     placeholder="SEMUA"
@@ -190,7 +199,10 @@ const ModalFilter = ({ showModal, setShowModal }) => {
                   }));
                 }}
                 value={controller.filterParam.filter.regency}
-                data={controller.regency}
+                data={[
+                   asyncDefaultValue,
+                   ...controller.regency
+                  ]}
                 name="regency"
                 label="SEMUA"
                 placeholder="SEMUA"
@@ -210,8 +222,8 @@ const ModalFilter = ({ showModal, setShowModal }) => {
                 async={false}
                 value={controller.filterParam.filter.donor_category}
                 data={[
-                  [0, "PERORANGAN"],
-                  [1, "PERUSAHAAN"],
+                  nonasyncDefaultValue,
+                  ...donatur_category
                 ]}
                 onChange={(e) =>
                   controller.setFilterParam((prevState) => ({
@@ -238,9 +250,8 @@ const ModalFilter = ({ showModal, setShowModal }) => {
                 async={false}
                 value={controller.filterParam.filter.division_id}
                 data={[
-                  [1, 'UPZ'],
-                  [2, 'RETAIL'],
-                  [3, 'CORPORATE']
+                  nonasyncDefaultValue,
+                  ...Division
                 ]}
                 onChange={(e) =>
                   controller.setFilterParam((prevState) => ({
@@ -270,7 +281,10 @@ const ModalFilter = ({ showModal, setShowModal }) => {
               <SelectWithSearch
                 async={false}
                 value={controller.filterParam.filter.category_id}
-                data={DonationCategory}
+                data={[
+                  nonasyncDefaultValue,
+                  ...DonationCategory
+                  ]}
                 onChange={(e) =>
                   controller.setFilterParam((prevState) => ({
                     ...prevState,
@@ -291,13 +305,13 @@ const ModalFilter = ({ showModal, setShowModal }) => {
             <Box style={{ width: "100%" }}>
               <label htmlFor="end-date" className="black-text">
                 TUNAI / NON TUNAI
-                       </label>
+               </label>
               <SelectWithSearch
                 async={false}
                 value={controller.filterParam.filter.category_type}
                 data={[
-                  [1, "TUNAI"],
-                  [2, "NON TUNAI"],
+                  nonasyncDefaultValue,
+                  ...PaymentTypeFilter
                 ]}
                 onChange={(e) =>
                   controller.setFilterParam((prevState) => ({

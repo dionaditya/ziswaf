@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+  import React, { useState, useEffect, useMemo } from 'react'
 import { container } from "tsyringe";
 import { DashboardAdminPresenter } from "@/app/infrastructures/Presenter/DashboardAdmin/Presenter";
 import { DashboardOperatorPresenter } from "@/app/infrastructures/Presenter/DashboardOperator/Presenter";
@@ -7,7 +7,7 @@ import { getUserInfo } from '@/app/infrastructures/misc/Cookies';
 import moment from 'moment';
 import 'moment/locale/id'
 import { useDebounce } from 'use-lodash-debounce';
-import { createContainer } from 'react-tracked' 
+import { createContainer } from 'react-tracked'
 
 
 
@@ -74,16 +74,22 @@ export interface IState {
   idSchool: number | null,
   getSchoolData: Function,
   setLabelSearch: Function,
-  labelSearch: string
+  labelSearch: string,
+  dataOperatorPerDay: any,
+  setDataOperatorPerDay: Function
+  selectedSeriesOperator: any
+  handleClickOperator: Function
+  operatorData: any
+  setOperatorData: Function
 }
 
 const { status, role, username, school: school_name, } = getUserInfo()
 const idSchool = school_name?.id;
 const nameSchool = school_name?.name;
 
-const selected = moment().startOf('year').subtract(1,'ms').add(1, 'day').format()
+const selected = moment().startOf('year').subtract(1, 'ms').add(1, 'day').format()
 const selectedEnd = moment().endOf('year').toDate()
-const dayNow = moment(new Date()).startOf('month').subtract(1,'ms').add(1, 'day').format()
+const dayNow = moment(new Date()).startOf('month').subtract(1, 'ms').add(1, 'day').format()
 const dayNextMonth = moment(new Date()).endOf('month').toDate()
 
 const startDateByRole = role !== 2 ? selected : dayNow
@@ -97,6 +103,15 @@ const initialState: IState = {
   selectedSeries: [
     {
       name: 'Total Ziswaf Permonth',
+      total: 0,
+      compareData: 0,
+      data: [],
+      color: '#2C39C2'
+    },
+  ],
+  selectedSeriesOperator: [
+    {
+      name: 'Total Ziswaf Perday',
       total: 0,
       compareData: 0,
       data: [],
@@ -175,6 +190,19 @@ const initialState: IState = {
   getSchoolData: () => { },
   labelSearch: '',
   setLabelSearch: () => { },
+  dataOperatorPerDay: [],
+  setDataOperatorPerDay: () => { },
+  handleClickOperator: () => { },
+  operatorData: [
+    {
+      name: 'Total Ziswaf Perday',
+      total: 0,
+      compareData: 0,
+      data: [],
+      color: '#2C39C2'
+    },
+  ],
+  setOperatorData: () => { }
 }
 
 interface FilterParams {
@@ -204,7 +232,7 @@ export const DashboardController = ({ children }) => {
   const [dataDivisionReport, setDataDivisionReport] = useState<any>({})
   const [dataNominalReport, setDataNominalReport] = useState<any>({})
   const [dataPrognosisUpz, setDataPrognosisUpz] = useState<any>({})
-  const [dataPrognosisRetail, setDataPrognosisRetail]     = useState<any>({})
+  const [dataPrognosisRetail, setDataPrognosisRetail] = useState<any>({})
   const [dataPrognosisCorporate, setDataPrognosisCorporate] = useState<any>({})
   const [dataUpzPerMonth, setDataUpzPerMonth] = useState<any>({})
   const [dataRetailPerMonth, setDataRetailPerMonth] = useState<any>({})
@@ -217,6 +245,7 @@ export const DashboardController = ({ children }) => {
   const [dataAdminKurban, setDataAdminKurban] = useState<any>([])
   const [dataAdminOther, setDataAdminOther] = useState<any>([])
   const [dataAdminWakaf, setDataAdminWakaf] = useState<any>([])
+  const [dataOperatorPerDay, setDataOperatorPerDay] = useState<any>([])
   const [dataOperatorZakatMaal, setDataOperatorZakatMaal] = useState<any>([])
   const [dataOperatorFitrah, setDataOperatorZakatFitrah] = useState<any>([])
   const [dataOperatorInfaq, setDataOperatorInfaq] = useState<any>([])
@@ -232,23 +261,15 @@ export const DashboardController = ({ children }) => {
   const [endDate, setEndDate] = useState(new Date());
   const [labelDataSelect, setLabelDataSelect] = useState(null);
   const [labelSearch, setLabelSearch] = useState('');
-
-
-
-  const adminPermonth = dataAdminPermonth.map(val => val.total)
-
-  useEffect(() => {
-    if (initialState.selectedSeries[0].data.length < 1) {
-      setState(prevState => ({
-        ...prevState,
-        selectedSeries: [{
-          ...prevState.selectedSeries[0],
-          data: adminPermonth
-        }]
-      })) 
-
-    } 
-  }, [dataAdminPermonth])
+  const [operatorData, setOperatorData] = useState([
+    {
+      name: 'Total Ziswaf Perday',
+      total: 0,
+      compareData: 0,
+      data: [],
+      color: '#2C39C2'
+    },
+  ])
 
   const [filterParam, setFilterParam] = useState<any>(initialState.filterParam)
   const [filterParamAdmin, setFilterParamAdmin] = useState<any>(initialState.filterParamAdmin)
@@ -281,28 +302,59 @@ export const DashboardController = ({ children }) => {
     }
   }
 
+  const adminPermonth = dataAdminPermonth.map(val => val.total)
+  const operatorPerDay = dataOperatorPerDay.map(val => val.total)
+
   useEffect(() => {
     if (role === 1) {
-        onGetData();
+      if (initialState.selectedSeries[0].data.length < 1) {
+        setState(prevState => ({
+          ...prevState,
+          selectedSeries: [{
+            ...prevState.selectedSeries[0],
+            data: adminPermonth
+          }]
+        }))
+      }
+    }
+  }, [dataAdminPermonth])
 
-    } 
+  useEffect(() => {
+    if (role === 2) {
+      if (initialState.operatorData[0].data.length < 1) {
+        const operator = [
+          {
+            name: 'Total Ziswaf Perday',
+            total: 0,
+            compareData: 0,
+            data: operatorPerDay,
+            color: '#2C39C2'
+          },
+        ]
+        setOperatorData(operator)
+      }
+    }
+  }, [dataOperatorPerDay])
+
+  useEffect(() => {
+    if (role === 1) {
+      getSchoolData("");
+    }
 
   }, [filterParamAdmin]);
 
   useEffect(() => {
     if (role === 1) {
-        getSchoolData("")
-        onGetDataDashboardOperator();
+      onGetData();
       setState(prevState => ({
         ...prevState,
         selectedSeries: initialState.selectedSeries
       }))
-    } 
-  }, []);
+    }
+  }, [filterParamAdmin]);
 
   useEffect(() => {
     if (role === 2) {
-      onGetDataDashboardOperator();
       setState(prevState => ({
         ...prevState,
         setFilterParam: {
@@ -313,18 +365,18 @@ export const DashboardController = ({ children }) => {
             shchool_name: nameSchool,
           }
         },
-        selectedSeries: initialState.selectedSeries
+        selectedSeries: state.selectedSeriesOperator
       }))
-
-   
     }
+    onGetDataDashboardOperator();
   }, [filterParam]);
 
 
   const onGetData = async () => {
     try {
       setState(prevState => ({
-        ...prevState,loading: true}))
+        ...prevState, loading: true
+      }))
 
       const dashboardData = await dashboardAdminPresenter.getAll(filterParamAdmin);
       setData(dashboardData);
@@ -337,7 +389,7 @@ export const DashboardController = ({ children }) => {
       setDataAdminWakaf(dashboardData.data?.dashboardAdmin?.wakafPerMonth)
       setDataDashboard(dashboardData.data?.dashboardAdmin)
       setDataCommonReport(dashboardData.data?.commonReport)
-      setDataDivisionReport(dashboardData.data?.divisionReport)      
+      setDataDivisionReport(dashboardData.data?.divisionReport)
       setDataNominalReport(dashboardData.data?.nominalReport)
       setDataPrognosisUpz(dashboardData.data?.prognosisUpz)
       setDataPrognosisRetail(dashboardData.data?.prognosisRetail)
@@ -346,11 +398,12 @@ export const DashboardController = ({ children }) => {
       setDataRetailPerMonth(dashboardData.data?.retailPerMonth)
       setDataCorporatePerMonth(dashboardData.data?.corporatePerMonth)
       setDataTransactionPerMonth(dashboardData.data?.commonReport?.totalTransactionPerMonth)
-        setDataPrognosisPerMonth(dashboardData.data?.commonReport?.totalPrognosisPerMonth)
-        setDataCompare(dashboardData.data?.dashboardAdmin?.totalTransactionLastYear)
+      setDataPrognosisPerMonth(dashboardData.data?.commonReport?.totalPrognosisPerMonth)
+      setDataCompare(dashboardData.data?.dashboardAdmin?.totalTransactionLastYear)
       setDataZiswafPersent(dashboardData.data?.commonReport?.totalZiswafPersent)
       setState(prevState => ({
-        ...prevState,loading: false}))
+        ...prevState, loading: false
+      }))
     } catch (error) {
       setData([]);
       setDataAdminPermonth([])
@@ -375,7 +428,8 @@ export const DashboardController = ({ children }) => {
       setDataCompare([])
       setDataZiswafPersent([])
       setState(prevState => ({
-        ...prevState,loading: false}))
+        ...prevState, loading: false
+      }))
     }
   };
 
@@ -395,13 +449,16 @@ export const DashboardController = ({ children }) => {
 
   const onGetDataDashboardOperator = async () => {
     setState(prevState => ({
-      ...prevState,loading: true}))
+      ...prevState, loading: true
+    }))
     const presenter = await container.resolve(DashboardOperatorPresenter);
     presenter.getAllData(filterParam)
       .then((res) => {
         setState(prevState => ({
-          ...prevState,loading: false}))
-    
+          ...prevState, loading: false
+        }))
+
+        setDataOperatorPerDay(res.data?.totalZiswafPerDay)
         setDataDashboardOperator(res.data?.dashboardOperator)
         setDataOperatorZakatMaal(res.data?.zakatMaalPerDay)
         setDataOperatorZakatFitrah(res.data?.zakatFitrahPerDay)
@@ -409,14 +466,17 @@ export const DashboardController = ({ children }) => {
         setDataOperatorKurban(res.data?.kurbanPerDay)
         setDataOperatorOther(res.data?.otherPerDay)
         setDataOperatorWakaf(res.data?.wakafPerDay)
-      setDataCommonReport(res.data?.commonReport)
-      setDataDivisionReport(res.data?.divisionReport)
-      setDataNominalReport(res.data?.nominalReport)
+        setDataCommonReport(res.data?.commonReport)
+        setDataDivisionReport(res.data?.divisionReport)
+        setDataNominalReport(res.data?.nominalReport)
+        setDataCompare(res.data?.dashboardOperator?.totalTransactionLastYear)
       })
       .catch((error) => {
         setState(prevState => ({
-          ...prevState,loading: false}))
-          setDataDashboardOperator({})
+          ...prevState, loading: false
+        }))
+        setDataOperatorPerDay([])
+        setDataDashboardOperator({})
         setDataOperatorZakatMaal([])
         setDataOperatorZakatFitrah([])
         setDataOperatorInfaq([])
@@ -442,6 +502,18 @@ export const DashboardController = ({ children }) => {
         ...state,
         selectedSeries: [...state.selectedSeries, selected],
       })
+    }
+  }
+
+  const _handleClickOperator = (e, selected) => {
+    const isThere = operatorData.filter(value => value.name === selected.name)
+    if (isThere.length > 0) {
+      const operator = operatorData.filter(value => value.name !== selected.name)
+      setOperatorData(operator)
+    }
+    else {
+      const temp = [...operatorData, selected]
+      setOperatorData(temp)
     }
   }
 
@@ -503,12 +575,12 @@ export const DashboardController = ({ children }) => {
     'Nov',
     'Des'
   ].map(val => `${val} ${currentYear}`)
-  const categoriesPerDay = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] 
+  const categoriesPerDay = dataOperatorPerDay.map((val, i) => i)
 
   const series = [
     {
       name: 'Zakat Maal',
-      total: role === 1 ? dataDashboard.totalZakatMaal :  dataDashboardOperator.totalZakatMaal,
+      total: role === 1 ? dataDashboard.totalZakatMaal : dataDashboardOperator.totalZakatMaal,
       compareData: role === 1 ? dataCommonReport.totalZiswafPersent && dataCommonReport.totalZiswafPersent.zakatMaalPersent : dataCommonReport.total_ziswaf_percent && dataCommonReport.total_ziswaf_percent.zakatMaalPersent,
       data: role === 1 ? dataAdminZakatMaal.map(val => val.total) : dataOperatorZakatMaal.map(val => val.total),
       color: "#3DB15B"
@@ -516,41 +588,40 @@ export const DashboardController = ({ children }) => {
     {
       name: 'Zakat Fitrah',
       total: role === 1 ? dataDashboard.totalZakatFitrah : dataDashboardOperator.totalZakatFitrah,
-   compareData: role === 1 ? dataCommonReport.totalZiswafPersent && dataCommonReport.totalZiswafPersent.zakatFitrahPersent : dataCommonReport.total_ziswaf_percent && dataCommonReport.total_ziswaf_percent.zakatFitrahPersent,
+      compareData: role === 1 ? dataCommonReport.totalZiswafPersent && dataCommonReport.totalZiswafPersent.zakatFitrahPersent : dataCommonReport.total_ziswaf_percent && dataCommonReport.total_ziswaf_percent.zakatFitrahPersent,
       data: role === 1 ? dataAdminFitrah.map(val => val.total) : dataOperatorFitrah.map(val => val.total),
       color: "#FFB946"
     },
     {
       name: 'Infaq/Shadaqah',
       total: role === 1 ? dataDashboard.totalInfaq : dataDashboardOperator.totalInfaq,
-  compareData:role === 1 ? dataCommonReport.totalZiswafPersent && dataCommonReport.totalZiswafPersent.infaqPersent :  dataCommonReport.total_ziswaf_percent && dataCommonReport.total_ziswaf_percent.infaqPersent,
+      compareData: role === 1 ? dataCommonReport.totalZiswafPersent && dataCommonReport.totalZiswafPersent.infaqPersent : dataCommonReport.total_ziswaf_percent && dataCommonReport.total_ziswaf_percent.infaqPersent,
       data: role === 1 ? dataAdminInfaq.map(val => val.total) : dataOperatorInfaq.map(val => val.total),
       color: "#BFC94C"
     },
     {
       name: 'Wakaf',
       total: role === 1 ? dataDashboard.totalWakaf : dataDashboardOperator.totalWakaf,
-     compareData: role === 1 ? dataCommonReport.totalZiswafPersent && dataCommonReport.totalZiswafPersent.waqafPersent :  dataCommonReport.total_ziswaf_percent && dataCommonReport.total_ziswaf_percent.waqafPersent,
+      compareData: role === 1 ? dataCommonReport.totalZiswafPersent && dataCommonReport.totalZiswafPersent.waqafPersent : dataCommonReport.total_ziswaf_percent && dataCommonReport.total_ziswaf_percent.waqafPersent,
       data: role === 1 ? dataAdminWakaf.map(val => val.total) : dataOperatorWakaf.map(val => val.total),
       color: "#F7685B"
     },
     {
       name: 'Penerimaan lain',
-      total: role === 1 ? dataDashboard.totalOther : dataDashboardOperator.totalOther, 
-    compareData: role === 1 ? dataCommonReport.totalZiswafPersent && dataCommonReport.totalZiswafPersent.otherPersent : dataCommonReport.total_ziswaf_percent && dataCommonReport.total_ziswaf_percent.otherPersent,
+      total: role === 1 ? dataDashboard.totalOther : dataDashboardOperator.totalOther,
+      compareData: role === 1 ? dataCommonReport.totalZiswafPersent && dataCommonReport.totalZiswafPersent.otherPersent : dataCommonReport.total_ziswaf_percent && dataCommonReport.total_ziswaf_percent.otherPersent,
       data: role === 1 ? dataAdminOther.map(val => val.total) : dataOperatorOther.map(val => val.total),
       color: '#E546FF'
     },
     {
       name: 'Kurban',
       total: role === 1 ? dataDashboard.totalKurban : dataDashboardOperator.totalKurban,
-    compareData: role === 1 ? dataCommonReport.totalZiswafPersent && dataCommonReport.totalZiswafPersent.qurabnPersent : dataCommonReport.total_ziswaf_percent && dataCommonReport.total_ziswaf_percent.qurbanPersent,
+      compareData: role === 1 ? dataCommonReport.totalZiswafPersent && dataCommonReport.totalZiswafPersent.qurbanPersent : dataCommonReport.total_ziswaf_percent && dataCommonReport.total_ziswaf_percent.qurbanPersent,
       data: role === 1 ? dataAdminKurban.map(val => val.total) : dataOperatorKurban.map(val => val.total),
       color: '#5BEEF7'
     },
   ]
 
-   
 
   return (
     <DashboardProvider
@@ -581,7 +652,7 @@ export const DashboardController = ({ children }) => {
         handleClick: _handleClick,
         dataPerMonthRetail,
         dataPerMonthUpz,
-        dataPerMonthCorporate,   
+        dataPerMonthCorporate,
         school,
         fetchingButton,
         dataOperatorZakatMaal,
@@ -619,19 +690,25 @@ export const DashboardController = ({ children }) => {
         idSchool,
         labelSearch,
         setLabelSearch,
+        dataOperatorPerDay,
+        setDataOperatorPerDay,
+        selectedSeriesOperator: state.selectedSeriesOperator,
+        handleClickOperator: _handleClickOperator,
+        operatorData,
+        setOperatorData
       }}>
       {children}
     </DashboardProvider>
   );
- 
+
 };
 
-export const AppProvider = ({children}) => {
-    return(
-      <Provider>
-         <DashboardController>
-             {children}
-         </DashboardController>
-      </Provider>
-      )
+export const AppProvider = ({ children }) => {
+  return (
+    <Provider>
+      <DashboardController>
+        {children}
+      </DashboardController>
+    </Provider>
+  )
 }

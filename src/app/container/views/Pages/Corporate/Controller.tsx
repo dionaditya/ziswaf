@@ -16,8 +16,8 @@ import { useHistory, useRouteMatch, useParams, useLocation } from 'react-router-
 import { getUserInfo } from '@/app/infrastructures/misc/Cookies'
 import qs from 'qs'
 export interface Cash {
-    type_id: number;
-    category_id: number;
+    type_id: any;
+    category_id: any;
     value: number;
     ref_number: string;
 }
@@ -97,8 +97,8 @@ const initialState: IState = {
         donation_item: 1,
         employee_id: '',
         cash: {
-            type_id: 0,
-            category_id: 0,
+            type_id: '',
+            category_id: '',
             value: 0,
             ref_number: '',
         },
@@ -192,14 +192,12 @@ export const CorporateController = ({ children }) => {
 
         if (isDonation && isDonation.path === '/dashboard/corporate-transaction/:donor_id') {
             (async () => {
-                const donorDetail: any = await corporatePresenter.getById(_.toNumber(donationParams.donor_id))
                 setState(prevState => ({
                     ...prevState,
                     DonationInfo: {
                         ...state.DonationInfo,
-                        donor_id: donorDetail.id,
+                        donor_id: Number(donationParams.donor_id)
                     },
-                    donor: donorDetail
                 }))
             })()
         }
@@ -285,7 +283,8 @@ export const CorporateController = ({ children }) => {
     const handlePostDonation = async (e, indexTab, setIndexTab) => {
         try {
             e.preventDefault()
-            const postDontation = await donationPresenter.store(new CreateDonationApiRequest(
+              if(state.DonationInfo.donation_item === 1) {
+                  const postDontation = await donationPresenter.store(new CreateDonationApiRequest(
                 state.DonationInfo.donor_id,
                 state.DonationInfo.division_id,
                 state.DonationInfo.category_id,
@@ -294,18 +293,36 @@ export const CorporateController = ({ children }) => {
                 state.DonationInfo.donation_item,
                 state.DonationInfo.employee_id,
                 state.DonationInfo.cash,
-                state.DonationInfo.goods
+                null
             ))
             const transactionDetail = await donationPresenter.getById(postDontation.id)
-            const donorDetail: any = await corporatePresenter.getById(_.toNumber(donationParams.donor_id))
             setState(prevState => ({
                 ...prevState,
                 transaction: transactionDetail
             }))
-            history.push(`/dashboard/corporate-tanda-terima/${transactionDetail.id}`)
-            return postDontation
+            return ['success', transactionDetail]
+            } else {
+                  const postDontation = await donationPresenter.store(new CreateDonationApiRequest(
+                state.DonationInfo.donor_id,
+                state.DonationInfo.division_id,
+                state.DonationInfo.category_id,
+                state.DonationInfo.statement_category_id,
+                state.DonationInfo.description,
+                state.DonationInfo.donation_item,
+                state.DonationInfo.employee_id,
+                null,
+                state.DonationInfo.goods
+            ))
+            const transactionDetail = await donationPresenter.getById(postDontation.id)
+            setState(prevState => ({
+                ...prevState,
+                transaction: transactionDetail
+            }))
+            return ['success', transactionDetail]
+            }
+     
         } catch (e) {
-            return false
+            return ['error', e]
         }
 
     }
@@ -424,7 +441,7 @@ export const CorporateController = ({ children }) => {
     const handleCashInput = (e) => {
         const name = e.target.name
         const value = e.target.value
-        if (e.target.name === 'value') {
+          if (e.target.name === 'value') {
             setState(prevState => ({
                 ...prevState,
                 DonationInfo: {
@@ -436,7 +453,33 @@ export const CorporateController = ({ children }) => {
 
                 }
             }))
-        } else {
+        } else if(e.target.name === 'type_id') {
+            if(e.target.value === 0) {
+                setState(_prevState => ({
+                ..._prevState,
+                DonationInfo: {
+                    ..._prevState.DonationInfo,
+                    cash: {
+                        ..._prevState.DonationInfo.cash,
+                        category_id: 1,
+                        [name]: value
+                    }
+                }
+            }))
+            } else {
+                setState(_prevState => ({
+                ..._prevState,
+                DonationInfo: {
+                    ..._prevState.DonationInfo,
+                    cash: {
+                        ..._prevState.DonationInfo.cash,
+                        [name]: value
+                    }
+                }
+            }))
+            }
+
+        } else  {
             setState(_prevState => ({
                 ..._prevState,
                 DonationInfo: {

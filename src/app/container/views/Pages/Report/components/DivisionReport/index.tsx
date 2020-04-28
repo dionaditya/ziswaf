@@ -1,8 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useContext } from "react";
 import { ComboCharts } from "@/app/container/components/Chart";
-import DatePicker from "react-datepicker";
-import Pdf from "react-to-pdf";
 import "react-datepicker/dist/react-datepicker.css";
 import DataTableReportPencapaianDivisi from "@/app/container/components/ReportDataTables/PencapaianDivisi";
 import { ReportContext } from "../../Controller";
@@ -73,12 +71,7 @@ const stackprogress = (color, percent) => {
 };
 const LaporanDivisi = () => {
   const classes = useStyles();
-  const [value, setValue] = useState(1);
   const controller = useContext(ReportContext);
-
-  const handleChange = (e, value) => {
-    setValue(value);
-  };
 
   return (
     <GridContainer style={{ paddingLeft: window.innerWidth > 959 ? 20 : 0 }}>
@@ -153,7 +146,7 @@ const LaporanDivisi = () => {
                           controller.PrognosisRetail
                         )}
                         dataPerMonth={Object.values(controller.retailPermonth)}
-                        dataPerDay={Object.values(controller.tableRetailOp)}
+                        dataPerDay={controller.tableRetailOp}
                         dataPerDayProp={Object.keys(controller.tableRetailOp)}
                       />
                     </Box>
@@ -186,7 +179,7 @@ const LaporanDivisi = () => {
                         dataPerMonth={Object.values(
                           controller.corporatePermonth
                         )}
-                        dataPerDay={Object.values(controller.tableCoprOp)}
+                        dataPerDay={controller.tableCoprOp}
                         dataPerDayProp={Object.keys(controller.tableCoprOp)}
                       />
                     </Box>
@@ -215,7 +208,7 @@ const LaporanDivisi = () => {
                         color={["#6697C8", "#1976D2"]}
                         dataPrognosis={Object.values(controller.prognosisUpz)}
                         dataPerMonth={Object.values(controller.upzPermonth)}
-                        dataPerDay={Object.values(controller.tableUpzOp)}
+                        dataPerDay={controller.tableUpzOp}
                         dataPerDayProp={Object.keys(controller.tableUpzOp)}
                       />
                     </Box>

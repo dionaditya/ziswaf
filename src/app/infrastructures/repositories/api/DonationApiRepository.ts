@@ -55,7 +55,8 @@ export class DonationApiRepository implements DonationRepositoryInterface {
     }
 
 
-    public async store(payload: CreateDonationRequestInterface): Promise<DonationDetail> {
+    public async store(payload: CreateDonationRequestInterface): Promise<DonationDetail | any> {
+
             const resp = await this.service.invoke(
                 'post', 
                 this.endpoints.managerDonation(), 
@@ -64,6 +65,7 @@ export class DonationApiRepository implements DonationRepositoryInterface {
             );
 
             return this.mapper.convertCreateDonationListFromApi(resp)
+           
     }
 
     public async storeManual(payload: CreateDonationRequestInterface): Promise<DonationDetail> {

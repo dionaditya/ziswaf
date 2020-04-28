@@ -1,11 +1,17 @@
 import React, { useState } from "react";
 import { Input, Textarea } from "@/app/container/components/index";
 import SelectOptions from "@/app/container/components/SelectOptions";
-import SimpleSelect from '@/app/container/components/SelectMUI';
-import { GoodsCategories, GoodsStatus } from '@/domain/entities/AllOptions';
-import GridContainer from '@/app/container/commons/Grid/GridContainer';
-import GridItem from '@/app/container/commons/Grid/GridItem';
-import { Box, makeStyles, Theme, createStyles, TextField } from '@material-ui/core';
+import SimpleSelect from "@/app/container/components/SelectMUI";
+import { GoodsCategories, GoodsStatus } from "@/domain/entities/AllOptions";
+import GridContainer from "@/app/container/commons/Grid/GridContainer";
+import GridItem from "@/app/container/commons/Grid/GridItem";
+import {
+  Box,
+  makeStyles,
+  Theme,
+  createStyles,
+  TextField,
+} from "@material-ui/core";
 import Card from "@/app/container/commons/Card/Card.js";
 import CardHeader from "@/app/container/commons/Card/CardHeader.js";
 import CardBody from "@/app/container/commons/Card/CardBody.js";
@@ -22,19 +28,18 @@ const useStyles = makeStyles((theme: Theme) =>
     formContainer: {
       marginRight: theme.spacing(2),
     },
-  }),
+  })
 );
 
-
-const JenisBarang = ({ controller, onChange }) => {
-  const classes = useStyles()
+const JenisBarang = ({ controller, onChange, error }) => {
+  const classes = useStyles();
   const {
     category_id,
     description,
     quantity,
     value,
-    status
-  } = controller.DonationInfo.goods
+    status,
+  } = controller.DonationInfo.goods;
   return (
     <React.Fragment>
       <GridContainer>
@@ -48,9 +53,7 @@ const JenisBarang = ({ controller, onChange }) => {
                 <GridItem xs={12} sm={12} md={12}>
                   <form>
                     <Box display="flex" flexDirection="column">
-                      <label className={classes.label}>
-                        Jenis Barang
-                    </label>
+                      <label className={classes.label}>Jenis Barang</label>
                       <SimpleSelect
                         onChange={onChange}
                         value={category_id}
@@ -59,9 +62,12 @@ const JenisBarang = ({ controller, onChange }) => {
                         data={GoodsCategories}
                         label="Jenis Barang"
                       />
-                      <label className={classes.label}>
-                        Deskripsi Barang
-                     </label>
+                      {error && category_id === 0 && (
+                        <p style={{ color: "red", fontSize: "12px" }}>
+                          Belum memilih jenis donasi barang
+                        </p>
+                      )}
+                      <label className={classes.label}>Deskripsi Barang</label>
                       <Textarea
                         className="text-area"
                         id="description"
@@ -70,18 +76,16 @@ const JenisBarang = ({ controller, onChange }) => {
                         value={description}
                         onChange={onChange}
                         style={{
-                          minHeight: "100px"
+                          minHeight: "100px",
                         }}
                       />
-                      <label className={classes.label}>
-                        Jumlah Barang
-                      </label>
+                      <label className={classes.label}>Jumlah Barang</label>
                       <Box className={classes.formContainer}>
                         <TextField
                           id="quantity"
                           name="quantity"
                           variant="outlined"
-                          style={{ width: '100%'}}
+                          style={{ width: "100%" }}
                           type="number"
                           placeholder="Jumlah Barang"
                           value={quantity}
@@ -90,27 +94,25 @@ const JenisBarang = ({ controller, onChange }) => {
                       </Box>
                       <label className={classes.label}>
                         Estimasi Nilai Barang
-                     </label>
+                      </label>
                       <Box className={classes.formContainer}>
-                            <InputMask
-                        defaultValue={value}
-                        placeholder="Rp. 0"
-                        type="text"
-                        onChange={(value) => {
-                          const e = {
-                            target: {
-                              name: "value",
-                              value: value,
-                            },
-                          };
-                          onChange(e);
-                        }}
-                      />ange={onChange}
+                        <InputMask
+                          defaultValue={value}
+                          placeholder="Rp. 0"
+                          type="text"
+                          onChange={(value) => {
+                            const e = {
+                              target: {
+                                name: "value",
+                                value: value,
+                              },
+                            };
+                            onChange(e);
+                          }}
                         />
+          
                       </Box>
-                      <label className={classes.label}>
-                        Status Barang
-                    </label>
+                      <label className={classes.label}>Status Barang</label>
                       <SimpleSelect
                         async={false}
                         onChange={onChange}
@@ -120,6 +122,11 @@ const JenisBarang = ({ controller, onChange }) => {
                         label="Status Barang"
                       />
                     </Box>
+                    {error && status === 0 && (
+                      <p style={{ color: "red", fontSize: "12px" }}>
+                        Belum memilih status barang
+                      </p>
+                    )}
                   </form>
                 </GridItem>
               </GridContainer>

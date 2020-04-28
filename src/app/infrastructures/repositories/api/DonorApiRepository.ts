@@ -100,7 +100,7 @@ export class DonorApiRepository implements DonorRepositoryInterface {
 
 
   public async update(
-    payload: UpdateDonorRequestInterface,
+    payload,
     id: number
   ): Promise<any> {
     try {
@@ -108,11 +108,16 @@ export class DonorApiRepository implements DonorRepositoryInterface {
         "put",
         this.endpoints.managerDonor(id),
         {},
-        payload
+        payload.toJson()
       );
-      return resp != null;
+      
+      console.log(payload, payload.toJson())
+      return ['success', {
+        ...resp,
+        data: { ...resp.data, data: this.mapper.convertDonorDetailsFromApi(resp) }
+      }]
     } catch (e) {
-      return false;
+      return ['error',  e.response ]
     }
   }
 

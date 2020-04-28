@@ -155,7 +155,7 @@ export class Endpoints {
     return `users/change-password/${id}?type=${type}`;
   }
   getDashboardAdmin(): string {
-    return "/transaction/report";
+    return "manager/transaction/report";
   }
 
   getDashboardOperator(): string {

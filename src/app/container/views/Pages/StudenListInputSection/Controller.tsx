@@ -478,13 +478,13 @@ export const StudentListInputController = ({ children }) => {
                         moment(birth_of_date_father).toISOString(),
                         father_occupation,
                         father_phone,
-                        father_status - 1,
+                        father_status,
                         mother_name,
                         place_of_birth_mother,
                         moment(birth_of_date_mother).toISOString(),
                         mother_occupation,
                         mother_phone,
-                        mother_status - 1,
+                        mother_status,
                         image,
     
                     ))
@@ -566,13 +566,13 @@ export const StudentListInputController = ({ children }) => {
                         moment(birth_of_date_father).toISOString(),
                         father_occupation,
                         father_phone,
-                        father_status - 1,
+                        father_status,
                         mother_name,
                         place_of_birth_mother,
                         moment(birth_of_date_mother).toISOString(),
                         mother_occupation,
                         mother_phone,
-                        mother_status - 1,
+                        mother_status,
     
                     ))
                     return postStudent
@@ -665,13 +665,13 @@ export const StudentListInputController = ({ children }) => {
                         moment(birth_of_date_father).toISOString(),
                         father_occupation,
                         father_phone,
-                        father_status - 1,
+                        father_status,
                         mother_name,
                         place_of_birth_mother,
                         moment(birth_of_date_mother).toISOString(),
                         mother_occupation,
                         mother_phone,
-                        mother_status - 1,
+                        mother_status,
                         image,
                     ), parseInt(id))
                     return updateStudent
@@ -753,13 +753,13 @@ export const StudentListInputController = ({ children }) => {
                         moment(birth_of_date_father).toISOString(),
                         father_occupation,
                         father_phone,
-                        father_status - 1,
+                        father_status,
                         mother_name,
                         place_of_birth_mother,
                         moment(birth_of_date_mother).toISOString(),
                         mother_occupation,
                         mother_phone,
-                        mother_status - 1,
+                        mother_status,
                     ), parseInt(id))
                     return updateStudent
                 }

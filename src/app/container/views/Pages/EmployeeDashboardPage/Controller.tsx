@@ -531,7 +531,7 @@ export const StudentListController = ({ children }) => {
 
   const handleModal = (e: any) => {
     return (dispatch: any) => async (actiontype: any) => {
-      dispatch({ type: actiontype });
+      dispatch({type: ActionType.handleModal})
       if (state.statusModal === false) {
         const province = await provincePresenter.loadData();
         const city = await cityPresenter.loadData();
@@ -732,6 +732,8 @@ export const StudentListController = ({ children }) => {
       });
     }
   };
+
+
 
  
   return (

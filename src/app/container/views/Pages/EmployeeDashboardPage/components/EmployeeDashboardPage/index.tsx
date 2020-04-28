@@ -118,7 +118,7 @@ const EmployeeDashboardPage = () => {
         <ModalBody>
           <ModalContentItems />
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter>  
           {isLoading ? (
             <Button
               disabled

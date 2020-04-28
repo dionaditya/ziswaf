@@ -11,6 +11,7 @@ import CardBody from "@/app/container/commons/Card/CardBody.js";
 import Button from "@/app/container/commons/CustomButtons/Button.tsx"
 import { Box, Button as ButtonPdf, makeStyles, Theme, createStyles } from '@material-ui/core';
 import ModalDetail from './ModalDetail';
+import { NominalFormat } from '@/app/infrastructures/misc/NominalFormat';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -192,7 +193,7 @@ const Receipt = ({ index, setIndex }) => {
                       <p className="black-text">{item_type || "-"}</p>
                     </div>
                        {
-                        item_type === "uang" ? (
+                        item_type === "Uang" ? (
                           <div>
                             <div className="row mb-4">
                               <span
@@ -216,7 +217,7 @@ const Receipt = ({ index, setIndex }) => {
                               >
                                 JUMLAH
                          </span>
-                              <p className="black-text">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(total)}</p>
+                              <p className="black-text">{NominalFormat(total)}</p>
                             </div>
                             <div className="row mb-4">
                               <span
