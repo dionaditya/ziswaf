@@ -1,12 +1,12 @@
 import React from 'react'
-import AskarKauny from "@/app/container/assets/img/ziswaf/loginImage.png";
+import AskarKauny from "@/app/container/assets/img/ziswaf/loginImage.jpg";
 
 const LoadingPage = () => {
 
     React.useEffect(() => {
         setTimeout(() => {
 
-        }, 500)
+        }, 50)
     }, [])
 
     return(
