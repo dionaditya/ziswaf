@@ -2,6 +2,12 @@ import React from 'react'
 import AskarKauny from "@/app/container/assets/img/ziswaf/loginImage.png";
 
 const LoadingPage = () => {
+
+    React.useEffect(() => {
+        setTimeout(() => {
+
+        }, 1000)
+    }, [])
     return(
         <div style={{
             display: 'flex',
