@@ -511,7 +511,7 @@ export const StudentListController = ({ children }) => {
               limit: tableState.rowsPerPage,
             },
           });
-          if (employeeSorted !== null) {
+          if (employeeSortedByRows.data.data !== null) {
             dispatch({
               type: ActionType.setData,
               payload: employeeSortedByRows.data.data,
@@ -732,6 +732,7 @@ export const StudentListController = ({ children }) => {
       });
     }
   };
+  
 
 
 

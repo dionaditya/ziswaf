@@ -23,7 +23,7 @@ import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import GridContainer from "@/app/container/commons/Grid/GridContainer";
 import GridItem from "@/app/container/commons/Grid/GridItem";
 import Button from "@/app/container/commons/CustomButtons/Button.tsx";
-import { Search, Add } from "@material-ui/icons";
+import { Search, Add, Sort } from "@material-ui/icons";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import Box from "@material-ui/core/Box";
 import IconButton from "@material-ui/core/IconButton";
@@ -40,7 +40,7 @@ const listColumnOptions = EmployeeDataTable.map((val) => {
   return {
     name: val[0],
     label: val[1],
-  };                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+  };
 });
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme: Theme) =>
     wrapper: {
       width: "100%",
       minWidth: "100%",
-    },                                                                                                                                                                                                          
+    },
     container: {
       padding: "0px 0px",
     },
@@ -82,10 +82,10 @@ const EmployeeDashboardPage = () => {
 
   const controller = React.useContext(StudentListDashboardContext);
 
-  const handleDeleteData =  async (e) => {
-    setLoading(true)
+  const handleDeleteData = async (e) => {
+    setLoading(true);
     const isSuccess = await controller.handleDelete(e);
-    setLoading(false)
+    setLoading(false);
     if (isSuccess) {
       setSuccess(true);
       setDialogOpen(false);
@@ -118,7 +118,7 @@ const EmployeeDashboardPage = () => {
         <ModalBody>
           <ModalContentItems />
         </ModalBody>
-        <ModalFooter>  
+        <ModalFooter>
           {isLoading ? (
             <Button
               disabled
@@ -148,8 +148,8 @@ const EmployeeDashboardPage = () => {
                   ActionType.resetFilter
                 );
                 setTimeout(() => {
-                  setLoading(false)
-                }, 300)
+                  setLoading(false);
+                }, 300);
               }}
             >
               Reset
@@ -184,8 +184,8 @@ const EmployeeDashboardPage = () => {
                   ActionType.handleCTA
                 );
                 setTimeout(() => {
-                  setLoading(false)
-                }, 300)
+                  setLoading(false);
+                }, 300);
               }}
             >
               Terapkan Filter
@@ -296,10 +296,13 @@ const EmployeeDashboardPage = () => {
           </GridItem>
           <GridItem xs={12} sm={12} md={6}>
             <Box display="flex" justifyContent="flex-end" mb={4} mt={2}>
-              <Link to="/dashboard/personel-input" style={{
-                textDecoration: 'none',
-                color: '#fff'
-              }}>
+              <Link
+                to="/dashboard/personel-input"
+                style={{
+                  textDecoration: "none",
+                  color: "#fff",
+                }}
+              >
                 <Button
                   style={{
                     backgroundColor: "#6DB400",
@@ -328,11 +331,25 @@ const EmployeeDashboardPage = () => {
             >
               <CustomizedMenus>
                 <Link
+                  to={`/dashboard/info-personel?detail=${controller.tableIndex}`}
+                  style={{
+                    textDecoration: "none",
+                    color: "#000",
+                  }}
+                >
+                  <Box className={classes.wrapper_menu}>
+                    <ListItemIcon>
+                      <Sort fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText primary="Detail" />
+                  </Box>
+                </Link>
+                <Link
                   to={`/dashboard/personel-input/${controller.tableIndex}`}
                   className="black-text"
                   style={{
-                    textDecoration: 'none',
-                    color: '#000'
+                    textDecoration: "none",
+                    color: "#000",
                   }}
                 >
                   <Box className={classes.wrapper_menu}>
@@ -342,7 +359,10 @@ const EmployeeDashboardPage = () => {
                     <ListItemText primary="Edit" />
                   </Box>
                 </Link>
-                <Box className={classes.wrapper_menu} onClick={e => setDialogOpen(true)}>
+                <Box
+                  className={classes.wrapper_menu}
+                  onClick={(e) => setDialogOpen(true)}
+                >
                   <ListItemIcon>
                     <DeleteIcon fontSize="small" />
                   </ListItemIcon>

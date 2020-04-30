@@ -102,6 +102,15 @@ export function ChartCategories({ type, width, colors, series, categories }) {
         offsetX: -5
       },
       xaxis: {},
+      tooltip: {
+        enabled: true,
+        y: {
+          formatter: (seriesName) => formatPrice(seriesName),
+          title: {
+            formatter: (seriesName) => seriesName,
+          },
+        }
+      }
     },
     dataLabels: {
       enabled: false

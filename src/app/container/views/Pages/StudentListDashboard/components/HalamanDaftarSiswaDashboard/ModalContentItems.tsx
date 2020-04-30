@@ -23,6 +23,14 @@ import { Typography } from '@material-ui/core';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import MomentUtils from '@date-io/date-fns';
 
+
+const asyncDefaultValue = {
+  name: 'SEMUA',
+  id: ""
+}
+
+const nonasyncDefaultValue = ["", "SEMUA"]
+
 const transformData = age.map(val => {
   return  [val[0], val[1].toString()]
 })
@@ -70,8 +78,13 @@ const ModalContentItems = () => {
                             async
                             isDisabled
                             onChange={handleChange}
-                            value={school_id}
-                            data={controller.school}
+                            value={controller.userInfo.school.id}
+                            data={[
+                              {
+                                id: controller.userInfo.school.id,
+                                name: controller.userInfo.school.name,
+                              },
+                            ]}
                             name="school_id"
                             label="UNIT MADRASAH"
                             placeholder="SEMUA"
@@ -93,10 +106,13 @@ const ModalContentItems = () => {
                               }));
                             }}
                             value={school_id}
-                            data={controller.school}
+                            data={[
+                              asyncDefaultValue,
+                              ...controller.school
+                            ]}
                             name="school_id"
                             label="UNIT MADRASAH"
-                            placeholder="SEMUA UNIT MADRASAH"
+                            placeholder={controller.loading ? "Loading..." : "SEMUA UNIT"}
                           />
                         </>
                       )}
@@ -118,10 +134,13 @@ const ModalContentItems = () => {
                           handleChange(e)
                         }}
                         value={province}
-                        data={controller.province}
+                        data={[
+                          asyncDefaultValue,
+                          ...controller.province
+                        ]}
                         name="province"
                         label="PROVINSI MADRASAH"
-                        placeholder="SEMUA PROVINSI"
+                        placeholder={controller.loading ? "Loading..." : "SEMUA PROVINSI"}
                       />
                     </Box>
                   </GridItem>
@@ -143,10 +162,13 @@ const ModalContentItems = () => {
                       }));
                     }}
                     value={regency}
-                    data={controller.regency}
+                    data={[
+                      asyncDefaultValue,
+                      ...controller.regency
+                    ]}
                     name="regency"
                     label="KOTA MADRASAH"
-                    placeholder="SEMUA KOTA"
+                    placeholder={controller.loading ? "Loading..." : "SEMUA KOTA"}
                   />
                     </Box>
                   </GridItem>
@@ -167,7 +189,10 @@ const ModalContentItems = () => {
                     }}
                     value={sosial_status}
                     name="sosial_status"
-                    data={StudentStatus}
+                    data={[
+                      nonasyncDefaultValue,
+                      ...StudentStatus
+                    ]}
                     label="STATUS SOSIAL"
                     placeholder="SEMUA"
                   />
@@ -201,7 +226,10 @@ const ModalContentItems = () => {
                       }}
                       value={controller.filterStatus.filter.age_start}
                       name="age_start"
-                      data={transformData}
+                      data={[
+                        nonasyncDefaultValue,
+                        ...transformData
+                      ]}
                       label="Mulai"
                       placeholder="Mulai"
                     />
@@ -224,7 +252,10 @@ const ModalContentItems = () => {
                       }}
                       value={controller.filterStatus.filter.age_end}
                       name="age_end"
-                      data={transformData}
+                      data={[
+                        nonasyncDefaultValue,
+                        ...transformData
+                      ]}
                       label="Hingga"
                       placeholder="Hingga"
                     />

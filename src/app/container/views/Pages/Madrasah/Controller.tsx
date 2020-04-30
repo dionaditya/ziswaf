@@ -784,7 +784,7 @@ export const MadrasahController = ({ children }) => {
             ...prevState,
             rowsPerPage: tableState.rowsPerPage,
           }));
-          if (schoolSorted !== null) {
+          if (schoolSortedByRows.data.data !== null) {
             dispatch({
               type: ActionType.setData,
               payload: schoolSortedByRows.data.data,

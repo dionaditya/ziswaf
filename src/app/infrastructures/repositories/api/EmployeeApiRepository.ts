@@ -75,7 +75,7 @@ export class EmployeeApiRepository implements EmployeeRepositoryInterface {
             )
             return response 
         } catch (e) {
-            return e.toJSON()
+            return e.response
         }
     }
 

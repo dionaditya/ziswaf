@@ -56,7 +56,7 @@ export class EmployeeMapper extends BaseResponseMapper {
             data.email,
             data.address,
             data.status,
-            moment(data.registered_year).format('dddd, DD MMMM YYYY').toString(),
+            moment(data.registered_year).toDate(),
             data.pos_code,
             data.province_name,
             data.regency_name,

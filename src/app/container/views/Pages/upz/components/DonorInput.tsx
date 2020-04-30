@@ -647,7 +647,7 @@ const DonorInput = ({ index, setIndex }) => {
                               </p>
                             )}
                           <div className="col s8">
-                            {controller.DonaturInfo.is_company ? (
+                            {company ? (
                               <div>
                                 <label
                                   htmlFor="comp-email"

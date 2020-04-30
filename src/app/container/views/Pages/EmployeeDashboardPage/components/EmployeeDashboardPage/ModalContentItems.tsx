@@ -18,6 +18,13 @@ import _ from "lodash";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
 
+const asyncDefaultValue = {
+  name: 'SEMUA',
+  id: ""
+}
+
+const nonasyncDefaultValue = ["", "SEMUA"]
+
 const innerTheme = createMuiTheme({
   palette: {
     primary: {
@@ -90,7 +97,10 @@ const ModalContentItems = () => {
                 }));
               }}
               value={controller.filterStatus.filter.school_id}
-              data={controller.school}
+              data={[
+                asyncDefaultValue,
+                ...controller.school
+              ]}
               name="school_id"
               label="UNIT MADRASAH"
               placeholder="UNIT MADRASAH"
@@ -135,7 +145,10 @@ const ModalContentItems = () => {
                 }));
               }}
               value={province}
-              data={controller.province}
+              data={[
+                asyncDefaultValue,
+                ...controller.province
+              ]}
               name="province"
               label="SEMUA PROVINSI"
               placeholder="SEMUA PROVINSI"
@@ -163,7 +176,10 @@ const ModalContentItems = () => {
                 }));
               }}
               value={regency}
-              data={controller.regency}
+              data={[
+                asyncDefaultValue,
+                ...controller.regency
+              ]}
               name="regency"
               placeholder="SEMUA KOTA"
               label="SEMUA KOTA"
@@ -193,7 +209,10 @@ const ModalContentItems = () => {
               value={status}
               name="status"
               placeholder="STATUS PEGAWAI"
-              data={EmployeeStatus}
+              data={[
+                nonasyncDefaultValue,
+                ...EmployeeStatus
+              ]}
               label="STATUS PEGAWAI"
             />
           </GridItem>

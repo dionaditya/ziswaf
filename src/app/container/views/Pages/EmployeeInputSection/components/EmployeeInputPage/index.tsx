@@ -31,7 +31,7 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/date-fns";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import qs from 'qs';
+import qs from "qs";
 
 const innerTheme = createMuiTheme({
   palette: {
@@ -89,7 +89,6 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-
 const errorMessage = {
   name: "Nama Lengkap tidak boleh kosong",
   school_id: "Belum memilih asal unit",
@@ -105,7 +104,6 @@ const errorMessage = {
   regency_id: "Belum memilih kota asal",
 };
 
-
 const EmployeeInputSection = () => {
   const controller = React.useContext(EmployeeInputContext);
   const [previewImage, setPreviewImage] = useState("");
@@ -113,11 +111,8 @@ const EmployeeInputSection = () => {
   const [loading, setLoading] = useState(false);
   const location = useLocation();
   const [isSubmit, setSubmit] = React.useState(false);
-  const [processing, setProccessing] = React.useState(false)
+  const [processing, setProccessing] = React.useState(false);
   const queryString: number = qs.parse(location.search);
-  
-  
-
 
   const [error, setError] = useState({
     province: false,
@@ -218,7 +213,7 @@ const EmployeeInputSection = () => {
   } = controller.employeeInput;
 
   React.useEffect(() => {
-    setProccessing(true)
+    setProccessing(true);
     setValue([
       { school_id: school_id },
       { name: name },
@@ -235,8 +230,10 @@ const EmployeeInputSection = () => {
       { regency_id: regency_id },
       { id: id },
     ]);
-    setProccessing(false)
+    setProccessing(false);
   }, [controller.employeeInput]);
+
+
 
   return (
     <MuiPickersUtilsProvider utils={MomentUtils}>
@@ -279,64 +276,72 @@ const EmployeeInputSection = () => {
 
                         <label htmlFor="icon-button-file">
                           {image.length > 0 ||
-                            controller.ImagePreview !== "" ? (
-                              <img
-                                style={{
-                                  borderRadius: "10px",
-                                  border: "2px solid transparent",
-                                }}
-                                src={controller.ImagePreview}
-                                width="150px"
-                                height="150px"
-                              />
-                            ) : (
-                              <Box className={classes.image_box}>
-                                <IconButton
-                                  color="primary"
-                                  aria-label="upload picture"
-                                  component="span"
-                                >
-                                  <IconButton>
-                                    <Image />
-                                  </IconButton>
-                                </IconButton>
-                              </Box>
-                            )}
-                        </label>
-
-                        <input
-                          accept="image/*"
-                          style={{
-                            display: "none",
-                          }}
-                          id="icon-button-file"
-                          type="file"
-                          name="file-upload"
-                          onChange={handleFIle}
-                        />
-
-                        <label htmlFor="icon-button-file">
-                          {queryString["?detail"] !== undefined ?
-                            <div /> :
-                            <Button
+                          controller.ImagePreview !== "" ? (
+                            <img
                               style={{
-                                color: "#00923F",
-                                marginLeft: "-12px",
+                                borderRadius: "10px",
+                                border: "2px solid transparent",
                               }}
-                              color="transparent"
-                              onClick={(e) => null}
-                            >
-                              Tambahkan Foto
-                          </Button>}
+                              src={controller.ImagePreview}
+                              width="150px"
+                              height="150px"
+                            />
+                          ) : (
+                            <Box className={classes.image_box}>
+                              <IconButton
+                                color="primary"
+                                aria-label="upload picture"
+                                component="span"
+                              >
+                                <IconButton>
+                                  <Image />
+                                </IconButton>
+                              </IconButton>
+                            </Box>
+                          )}
                         </label>
+
+                        {queryString["?detail"] !== undefined ? (
+                          <div />
+                        ) : (
+                          <Button
+                            style={{
+                              color: "#00923F",
+                              marginLeft: "-12px",
+                            }}
+                            raised
+                            component="label"
+                            id="icon-button-file"
+                            color="transparent"
+                            onClick={(e) => null}
+                          >
+                            Tambahkan Foto
+                            <input
+                              accept="image/*"
+                              style={{
+                                display: "none",
+                              }}
+                              id="icon-button-file"
+                              type="file"
+                              name="file-upload"
+                              onChange={handleFIle}
+                            />
+                          </Button>
+                        )}
+                        {controller.loading && "Loading ..."  }
                       </Box>
                     </GridItem>
                     <GridItem xs={12} sm={12} md={6}>
+                      {controller.loading && "Loading ..."  }
                       <GridContainer className={classes.marginBottom}>
                         <GridItem xs={12} sm={12} md={12} mb={4}>
                           <Box className={classes.marginBottom}>
-                            <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Nama Lengkap</label>
-                            {queryString["?detail"] !== undefined ?
+                            <label
+                              style={{ fontSize: "12px", fontWeight: "bold" }}
+                            >
+                              Nama Lengkap
+                            </label>
+                            {queryString["?detail"] !== undefined ? (
                               <TextField
                                 label=""
                                 disabled={true}
@@ -347,20 +352,32 @@ const EmployeeInputSection = () => {
                                 type="text"
                                 id={
                                   errors &&
-                                    errors.name &&
-                                    errors.name.type === "required"
+                                  errors.name &&
+                                  errors.name.type === "required"
                                     ? "filled-error-helper-text"
                                     : "name"
                                 }
                                 name="name"
-                                InputProps={processing ? { classes: { input: classes.input }, endAdornment: <CircularProgress className={classes.loadingReset} size={14} /> } : { classes: { input: classes.input } }}
+                                InputProps={
+                                  processing
+                                    ? {
+                                        classes: { input: classes.input },
+                                        endAdornment: (
+                                          <CircularProgress
+                                            className={classes.loadingReset}
+                                            size={14}
+                                          />
+                                        ),
+                                      }
+                                    : { classes: { input: classes.input } }
+                                }
                                 onChange={onChange}
-                                placeholder='Nama Lengkap'
+                                placeholder="Nama Lengkap"
                                 inputRef={register({
                                   required: "Tidak boleh kosong",
                                 })}
                               />
-                              :
+                            ) : (
                               <TextField
                                 label=""
                                 style={{
@@ -370,20 +387,32 @@ const EmployeeInputSection = () => {
                                 type="text"
                                 id={
                                   errors &&
-                                    errors.name &&
-                                    errors.name.type === "required"
+                                  errors.name &&
+                                  errors.name.type === "required"
                                     ? "filled-error-helper-text"
                                     : "name"
                                 }
                                 name="name"
-                                InputProps={processing ? { classes: { input: classes.input }, endAdornment: <CircularProgress className={classes.loadingReset} size={14} /> } : { classes: { input: classes.input } }}
+                                InputProps={
+                                  processing
+                                    ? {
+                                        classes: { input: classes.input },
+                                        endAdornment: (
+                                          <CircularProgress
+                                            className={classes.loadingReset}
+                                            size={14}
+                                          />
+                                        ),
+                                      }
+                                    : { classes: { input: classes.input } }
+                                }
                                 onChange={onChange}
-                                placeholder='Nama Lengkap'
+                                placeholder="Nama Lengkap"
                                 inputRef={register({
                                   required: "Tidak boleh kosong",
                                 })}
                               />
-                            }
+                            )}
 
                             {errors &&
                               errors.name &&
@@ -398,47 +427,57 @@ const EmployeeInputSection = () => {
                       <GridContainer className={classes.marginBottom}>
                         <GridItem xs={12} sm={12} md={6}>
                           <Box className={classes.marginBottom}>
-                            <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Tempat Lahir</label>
-                            {queryString["?detail"] !== undefined ?
+                            <label
+                              style={{ fontSize: "12px", fontWeight: "bold" }}
+                            >
+                              Tempat Lahir
+                            </label>
+                            {queryString["?detail"] !== undefined ? (
                               <TextField
                                 name="place_of_birth"
                                 type="text"
                                 disabled={true}
-                                placeholder='Tempat Lahir'
+                                placeholder="Tempat Lahir"
                                 style={{
                                   width: "100%",
                                 }}
                                 variant="outlined"
                                 onChange={onChange}
                                 inputRef={register({ required: true })}
-                                InputProps={{ classes: { input: classes.input } }}
+                                InputProps={{
+                                  classes: { input: classes.input },
+                                }}
                                 id={
                                   errors &&
-                                    errors.place_of_birth &&
-                                    errors.place_of_birth.type === "required"
+                                  errors.place_of_birth &&
+                                  errors.place_of_birth.type === "required"
                                     ? "filled-error-helper-text"
                                     : "name"
                                 }
-                              /> :
+                              />
+                            ) : (
                               <TextField
                                 name="place_of_birth"
                                 type="text"
-                                placeholder='Tempat Lahir'
+                                placeholder="Tempat Lahir"
                                 style={{
                                   width: "100%",
                                 }}
                                 variant="outlined"
                                 onChange={onChange}
                                 inputRef={register({ required: true })}
-                                InputProps={{ classes: { input: classes.input } }}
+                                InputProps={{
+                                  classes: { input: classes.input },
+                                }}
                                 id={
                                   errors &&
-                                    errors.place_of_birth &&
-                                    errors.place_of_birth.type === "required"
+                                  errors.place_of_birth &&
+                                  errors.place_of_birth.type === "required"
                                     ? "filled-error-helper-text"
                                     : "name"
                                 }
-                              />}
+                              />
+                            )}
                             {errors &&
                               errors.place_of_birth &&
                               errors.place_of_birth.type === "required" && (
@@ -450,31 +489,39 @@ const EmployeeInputSection = () => {
                         </GridItem>
                         <GridItem xs={12} sm={12} md={6} mb={4}>
                           <Box className={classes.marginBottom}>
-                            <label htmlFor="place_of_birth" style={{ fontSize: '12px', fontWeight: 'bold' }}>
+                            <label
+                              htmlFor="place_of_birth"
+                              style={{ fontSize: "12px", fontWeight: "bold" }}
+                            >
                               Tanggal Lahir
                             </label>
-                            {queryString["?detail"] !== undefined ?
+                            {queryString["?detail"] !== undefined ? (
                               <TextField
                                 name="birth_of_date"
                                 type="text"
                                 disabled={true}
-                                placeholder='Tanggal Lahir'
+                                placeholder="Tanggal Lahir"
                                 style={{
                                   width: "100%",
                                 }}
                                 variant="outlined"
                                 onChange={onChange}
-                                value={moment(birth_of_date).format("DD MMMM YYYY")}
+                                value={moment(birth_of_date).format(
+                                  "DD MMMM YYYY"
+                                )}
                                 inputRef={register({ required: true })}
-                                InputProps={{ classes: { input: classes.input } }}
+                                InputProps={{
+                                  classes: { input: classes.input },
+                                }}
                                 id={
                                   errors &&
-                                    errors.birth_of_date &&
-                                    errors.birth_of_date.type === "required"
+                                  errors.birth_of_date &&
+                                  errors.birth_of_date.type === "required"
                                     ? "filled-error-helper-text"
                                     : "name"
                                 }
-                              /> :
+                              />
+                            ) : (
                               <Controller
                                 as={
                                   <KeyboardDatePicker
@@ -530,7 +577,8 @@ const EmployeeInputSection = () => {
                                     ? null
                                     : moment(birth_of_date).toDate()
                                 }
-                              />}
+                              />
+                            )}
                             {errors &&
                               errors.birth_of_date &&
                               errors.birth_of_date.type === "required" && (
@@ -544,8 +592,13 @@ const EmployeeInputSection = () => {
                       <GridContainer>
                         <GridItem xs={12} sm={12} md={12} mb={4}>
                           <Box className={classes.marginBottom}>
-                            <label htmlFor="" style={{ fontSize: '12px', fontWeight: 'bold' }}>Alamat</label>
-                            {queryString["?detail"] !== undefined ?
+                            <label
+                              htmlFor=""
+                              style={{ fontSize: "12px", fontWeight: "bold" }}
+                            >
+                              Alamat
+                            </label>
+                            {queryString["?detail"] !== undefined ? (
                               <TextField
                                 type="text"
                                 style={{
@@ -561,7 +614,8 @@ const EmployeeInputSection = () => {
                                 rows={4}
                                 id="standard-textarea"
                                 variant="outlined"
-                              /> :
+                              />
+                            ) : (
                               <Controller
                                 as={
                                   <TextField
@@ -588,7 +642,8 @@ const EmployeeInputSection = () => {
                                   return e[0].target.value;
                                 }}
                                 defaultValue=""
-                              />}
+                              />
+                            )}
                             {errors &&
                               errors.address &&
                               errors.address.type === "required" && (
@@ -602,17 +657,25 @@ const EmployeeInputSection = () => {
                       <GridContainer className={classes.marginBottom}>
                         <GridItem xs={12} sm={12} md={12} mb={4}>
                           <Box className={classes.marginBottom}>
-                            <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Pilih Provinsi</label>
-                            {queryString["?detail"] !== undefined ?
+                            <label
+                              style={{ fontSize: "12px", fontWeight: "bold" }}
+                            >
+                              Pilih Provinsi
+                            </label>
+                            {queryString["?detail"] !== undefined ? (
                               <SelectWithSearch
                                 async
                                 isDisabled={true}
                                 value={province_id}
                                 data={controller.province}
                                 name="province_id"
-                                placeholder={controller.employeeInput.province_id || 'Pilih Provinsi'}
+                                placeholder={
+                                  controller.employeeInput.province_id ||
+                                  "Pilih Provinsi"
+                                }
                                 label="Pilih Provinsi"
-                              /> :
+                              />
+                            ) : (
                               <Controller
                                 as={
                                   <SelectWithSearch
@@ -621,7 +684,10 @@ const EmployeeInputSection = () => {
                                     value={province_id}
                                     data={controller.province}
                                     name="province_id"
-                                   placeholder={controller.employeeInput.province_id || 'Pilih Provinsi'}
+                                    placeholder={
+                                      controller.employeeInput.province_id ||
+                                      "Pilih Provinsi"
+                                    }
                                     label="Pilih Provinsi"
                                   />
                                 }
@@ -639,7 +705,8 @@ const EmployeeInputSection = () => {
                                   return selectedValue[0].value;
                                 }}
                                 defaultValue={province_id}
-                              />}
+                              />
+                            )}
                             {errors &&
                               errors.province_id &&
                               errors.province_id.type === "required" && (
@@ -653,8 +720,12 @@ const EmployeeInputSection = () => {
                       <GridContainer className={classes.marginBottom}>
                         <GridItem xs={12} sm={12} md={6} mb={4}>
                           <Box className={classes.marginBottom}>
-                            <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Pilih Kota</label>
-                            {queryString["?detail"] !== undefined ?
+                            <label
+                              style={{ fontSize: "12px", fontWeight: "bold" }}
+                            >
+                              Pilih Kota
+                            </label>
+                            {queryString["?detail"] !== undefined ? (
                               <SelectWithSearch
                                 async
                                 isDisabled={true}
@@ -671,8 +742,12 @@ const EmployeeInputSection = () => {
                                 data={controller.city}
                                 name="regency_id"
                                 label="Pilih Kota"
-                                placeholder={controller.employeeInput.regency_id || 'Pilih Kota'}
-                              /> :
+                                placeholder={
+                                  controller.employeeInput.regency_id ||
+                                  "Pilih Kota"
+                                }
+                              />
+                            ) : (
                               <Controller
                                 as={
                                   <SelectWithSearch
@@ -691,7 +766,10 @@ const EmployeeInputSection = () => {
                                     data={controller.city}
                                     name="regency_id"
                                     label="Pilih Kota"
-                                    placeholder={controller.employeeInput.regency_id || 'Pilih Kota'}
+                                    placeholder={
+                                      controller.employeeInput.regency_id ||
+                                      "Pilih Kota"
+                                    }
                                   />
                                 }
                                 name="regency_id"
@@ -708,7 +786,8 @@ const EmployeeInputSection = () => {
                                   return value[0].value;
                                 }}
                                 defaultValue={regency_id}
-                              />}
+                              />
+                            )}
                             {errors &&
                               errors.regency_id &&
                               errors.regency_id.type === "required" && (
@@ -720,8 +799,13 @@ const EmployeeInputSection = () => {
                         </GridItem>
                         <GridItem xs={12} sm={12} md={6}>
                           <Box className={classes.marginBottom}>
-                            <label htmlFor="" style={{ fontSize: '12px', fontWeight: 'bold' }}>Kode Pos</label>
-                            {queryString["?detail"] !== undefined ?
+                            <label
+                              htmlFor=""
+                              style={{ fontSize: "12px", fontWeight: "bold" }}
+                            >
+                              Kode Pos
+                            </label>
+                            {queryString["?detail"] !== undefined ? (
                               <TextField
                                 style={{
                                   width: "100%",
@@ -731,16 +815,19 @@ const EmployeeInputSection = () => {
                                 onChange={onChange}
                                 disabled={true}
                                 placeholder="Kode Pos"
-                                InputProps={{ classes: { input: classes.input } }}
+                                InputProps={{
+                                  classes: { input: classes.input },
+                                }}
                                 id={
                                   errors &&
-                                    errors.pos_code &&
-                                    errors.pos_code.type === "required"
+                                  errors.pos_code &&
+                                  errors.pos_code.type === "required"
                                     ? "filled-error-helper-text"
                                     : "name"
                                 }
                                 inputRef={register({ required: true })}
-                              /> :
+                              />
+                            ) : (
                               <TextField
                                 style={{
                                   width: "100%",
@@ -749,16 +836,19 @@ const EmployeeInputSection = () => {
                                 name="pos_code"
                                 onChange={onChange}
                                 placeholder="Kode Pos"
-                                InputProps={{ classes: { input: classes.input } }}
+                                InputProps={{
+                                  classes: { input: classes.input },
+                                }}
                                 id={
                                   errors &&
-                                    errors.pos_code &&
-                                    errors.pos_code.type === "required"
+                                  errors.pos_code &&
+                                  errors.pos_code.type === "required"
                                     ? "filled-error-helper-text"
                                     : "name"
                                 }
                                 inputRef={register({ required: true })}
-                              />}
+                              />
+                            )}
                             {errors &&
                               errors.pos_code &&
                               errors.pos_code.type === "required" && (
@@ -788,7 +878,15 @@ const EmployeeInputSection = () => {
                           <Box className={classes.marginBottom}>
                             {controller.isUpdateSession ? (
                               <>
-                                <label htmlFor="" style={{ fontSize: '12px', fontWeight: 'bold' }}>ID Pegawai</label>
+                                <label
+                                  htmlFor=""
+                                  style={{
+                                    fontSize: "12px",
+                                    fontWeight: "bold",
+                                  }}
+                                >
+                                  ID Pegawai
+                                </label>
                                 <TextField
                                   name="id"
                                   id="id"
@@ -811,8 +909,13 @@ const EmployeeInputSection = () => {
                       <GridContainer className={classes.marginBottom}>
                         <GridItem xs={12} sm={12} md={12} mb={4}>
                           <Box className={classes.marginBottom}>
-                            <label htmlFor="school_id" style={{ fontSize: '12px', fontWeight: 'bold' }}>Asal Unit</label>
-                            {queryString["?detail"] !== undefined ?
+                            <label
+                              htmlFor="school_id"
+                              style={{ fontSize: "12px", fontWeight: "bold" }}
+                            >
+                              Asal Unit
+                            </label>
+                            {queryString["?detail"] !== undefined ? (
                               <SelectWithSearch
                                 async
                                 isDisabled={true}
@@ -828,95 +931,107 @@ const EmployeeInputSection = () => {
                                 value={school_id}
                                 data={controller.school}
                                 name="school_id"
-                                placeholder="Pilih Asal Unit"
+                                placeholder={
+                                  school_id ||
+                                  "Asal Unit"
+                                }
                                 label="Asal Unit"
-                              /> :
-                              controller.userInfo.role === 1 ? (
-                                <>
-                                  <Controller
-                                    as={
-                                      <SelectWithSearch
-                                        async
-                                        isDisabled={false}
-                                        onChange={(value) => {
-                                          const e = {
-                                            target: {
-                                              name: "school_id",
-                                              value: value.value,
-                                            },
-                                          };
-                                          onChange(e);
-                                        }}
-                                        value={school_id}
-                                        data={controller.school}
-                                        name="school_id"
-                                        placeholder="Pilih Asal Unit"
-                                        label="Asal Unit"
-                                      />
-                                    }
-                                    name="school_id"
-                                    onChange={(value) => {
-                                      const e = {
-                                        target: {
-                                          name: "school_id",
-                                          value: value[0].value,
-                                        },
-                                      };
-                                      onChange(e);
-                                      return value[0].value;
-                                    }}
-                                    control={control}
-                                    rules={{ required: true }}
-                                    defaultValue={school_id}
-                                  />
-                                  {errors &&
-                                    errors.school_id &&
-                                    errors.school_id.type === "required" && (
-                                      <p
-                                        style={{ color: "red", fontSize: "12px" }}
-                                      >
-                                        {errorMessage.school_id}
-                                      </p>
-                                    )}
-                                </>
-                              ) : queryString['?school_id'] !== undefined ?
-                                  <SelectWithSearch
-                                    async
-                                    onChange={onChange}
-                                    value={controller.userInfo.school_id}
-                                    data={[
-                                      {
-                                        id: controller.userInfo.school.id,
-                                        name: controller.userInfo.school.name,
-                                      },
-                                    ]}
-                                    name="school_id"
-                                    label="Asal Unit"
-                                  /> :
-                                  (
+                              />
+                            ) : controller.userInfo.role === 1 ? (
+                              <>
+                                <Controller
+                                  as={
                                     <SelectWithSearch
                                       async
-                                      isDisabled
-                                      onChange={onChange}
-                                      value={controller.userInfo.school.id}
-                                      data={[
-                                        {
-                                          id: controller.userInfo.school.id,
-                                          name: controller.userInfo.school.name,
-                                        },
-                                      ]}
+                                      isDisabled={false}
+                                      onChange={(value) => {
+                                        const e = {
+                                          target: {
+                                            name: "school_id",
+                                            value: value.value,
+                                          },
+                                        };
+                                        onChange(e);
+                                      }}
+                                      value={school_id}
+                                      data={controller.school}
                                       name="school_id"
+                                      placeholder={
+                                        controller.employeeInput.school_id ||
+                                        "Asal Unit"
+                                      }
                                       label="Asal Unit"
                                     />
+                                  }
+                                  name="school_id"
+                                  onChange={(value) => {
+                                    const e = {
+                                      target: {
+                                        name: "school_id",
+                                        value: value[0].value,
+                                      },
+                                    };
+                                    onChange(e);
+                                    return value[0].value;
+                                  }}
+                                  control={control}
+                                  rules={{ required: true }}
+                                  defaultValue={school_id}
+                                />
+                                {errors &&
+                                  errors.school_id &&
+                                  errors.school_id.type === "required" && (
+                                    <p
+                                      style={{ color: "red", fontSize: "12px" }}
+                                    >
+                                      {errorMessage.school_id}
+                                    </p>
                                   )}
+                              </>
+                            ) : queryString["?school_id"] !== undefined ? (
+                              <SelectWithSearch
+                                async
+                                onChange={onChange}
+                                value={controller.userInfo.school.id}
+                                data={[
+                                  {
+                                    id: controller.userInfo.school.id,
+                                    name: controller.userInfo.school.name,
+                                  },
+                                ]}
+                                name="school_id"
+                                label="Asal Unit"
+                             
+                              />
+                            ) : (
+                              <SelectWithSearch
+                                async
+                                isDisabled
+                                onChange={onChange}
+                                value={controller.userInfo.school.id}
+                                data={[
+                                  {
+                                    id: controller.userInfo.school.id,
+                                    name: controller.userInfo.school.name,
+                                  },
+                                ]}
+                                name="school_id"
+                                label="Asal Unit"
+                              />
+                            )}
                           </Box>
                         </GridItem>
                       </GridContainer>
                       <GridContainer className={classes.marginBottom}>
                         <GridItem xs={12} sm={12} md={12} mb={4}>
                           <Box className={classes.marginBottom}>
-                            <label htmlFor="status" style={{ fontSize: '12px', fontWeight: 'bold' }}>Status Kepegawaian</label>
-                            {queryString["?detail"] !== undefined ?
+                            <label
+                              htmlFor="status"
+                              style={{ fontSize: "12px", fontWeight: "bold" }}
+                            >
+                              Status Kepegawaian
+                            </label>
+                            {queryString["?detail"] !== undefined ? (
                               <SelectWithSearch
                                 async={false}
                                 isDisabled={true}
@@ -935,7 +1050,8 @@ const EmployeeInputSection = () => {
                                 data={EmployeeStatus}
                                 name="status"
                                 label="Status Pegawai"
-                              /> :
+                              />
+                            ) : (
                               <Controller
                                 as={
                                   <SelectWithSearch
@@ -972,7 +1088,8 @@ const EmployeeInputSection = () => {
                                 rules={{ required: true }}
                                 control={control}
                                 defaultValue={status}
-                              />}
+                              />
+                            )}
                             {errors &&
                               errors.status &&
                               errors.status.type === "required" && (
@@ -986,13 +1103,18 @@ const EmployeeInputSection = () => {
                       <GridContainer className={classes.marginBottom}>
                         <GridItem xs={12} sm={12} md={12} mb={4}>
                           <Box className={classes.marginBottom}>
-                            <label htmlFor="registered_year" style={{ fontSize: '12px', fontWeight: 'bold' }}>Tahun Masuk</label>
-                            {queryString["?detail"] !== undefined ?
+                            <label
+                              htmlFor="registered_year"
+                              style={{ fontSize: "12px", fontWeight: "bold" }}
+                            >
+                              Tahun Masuk
+                            </label>
+                            {queryString["?detail"] !== undefined ? (
                               <KeyboardDatePicker
                                 autoOk
                                 variant="inline"
-                                views={['year', 'date', 'month']}
-                                disabled={true}                                            
+                                views={["year", "date", "month"]}
+                                disabled={true}
                                 format="dd-MM-yyyy"
                                 inputVariant="outlined"
                                 style={{
@@ -1025,11 +1147,12 @@ const EmployeeInputSection = () => {
                                 InputProps={{
                                   classes: { input: classes.input },
                                 }}
-                              /> :
+                              />
+                            ) : (
                               <Controller
                                 as={
                                   <KeyboardDatePicker
-                                     views={['year', 'date', 'month']}
+                                    views={["year", "date", "month"]}
                                     autoOk
                                     variant="inline"
                                     format="dd/MM/yyyy"
@@ -1084,7 +1207,8 @@ const EmployeeInputSection = () => {
                                     ? null
                                     : moment(registered_year).toDate()
                                 }
-                              />}
+                              />
+                            )}
                             {errors &&
                               errors.registered_year &&
                               errors.registered_year.type === "required" && (
@@ -1109,15 +1233,20 @@ const EmployeeInputSection = () => {
                                   component="h4"
                                   style={{
                                     fontWeight: "bold",
-                                    marginBottom: '18px'
+                                    marginBottom: "18px",
                                   }}
                                 >
                                   Kontak Person
-                          </Typography>
+                                </Typography>
                               </GridItem>
                             </GridContainer>
-                            <label htmlFor="" style={{ fontSize: '12px', fontWeight: 'bold' }}>No Telepon/HP</label>
-                            {queryString["?detail"] !== undefined ?
+                            <label
+                              htmlFor=""
+                              style={{ fontSize: "12px", fontWeight: "bold" }}
+                            >
+                              No Telepon/HP
+                            </label>
+                            {queryString["?detail"] !== undefined ? (
                               <TextField
                                 style={{
                                   width: "100%",
@@ -1126,12 +1255,14 @@ const EmployeeInputSection = () => {
                                 variant="outlined"
                                 name="phone"
                                 onChange={onChange}
-                                InputProps={{ classes: { input: classes.input } }}
+                                InputProps={{
+                                  classes: { input: classes.input },
+                                }}
                                 placeholder="Nomor Telepon/HP"
                                 id={
                                   errors &&
-                                    errors.phone &&
-                                    errors.phone.type === "required"
+                                  errors.phone &&
+                                  errors.phone.type === "required"
                                     ? "filled-error-helper-text"
                                     : "name"
                                 }
@@ -1139,7 +1270,8 @@ const EmployeeInputSection = () => {
                                   required: true,
                                   pattern: /^[0-9]*$/i,
                                 })}
-                              /> :
+                              />
+                            ) : (
                               <TextField
                                 style={{
                                   width: "100%",
@@ -1147,12 +1279,14 @@ const EmployeeInputSection = () => {
                                 variant="outlined"
                                 name="phone"
                                 onChange={onChange}
-                                InputProps={{ classes: { input: classes.input } }}
+                                InputProps={{
+                                  classes: { input: classes.input },
+                                }}
                                 placeholder="Nomor Telepon/HP"
                                 id={
                                   errors &&
-                                    errors.phone &&
-                                    errors.phone.type === "required"
+                                  errors.phone &&
+                                  errors.phone.type === "required"
                                     ? "filled-error-helper-text"
                                     : "name"
                                 }
@@ -1160,7 +1294,8 @@ const EmployeeInputSection = () => {
                                   required: true,
                                   pattern: /^[0-9]*$/i,
                                 })}
-                              />}
+                              />
+                            )}
                             {errors &&
                               errors.phone &&
                               errors.phone.type === "required" && (
@@ -1181,8 +1316,13 @@ const EmployeeInputSection = () => {
                       <GridContainer className={classes.marginBottom}>
                         <GridItem xs={12} sm={12} md={12} mb={4}>
                           <Box className={classes.marginBottom}>
-                            <label htmlFor="" style={{ fontSize: '12px', fontWeight: 'bold' }}>Alamat Surel</label>
-                            {queryString["?detail"] !== undefined ?
+                            <label
+                              htmlFor=""
+                              style={{ fontSize: "12px", fontWeight: "bold" }}
+                            >
+                              Alamat Surel
+                            </label>
+                            {queryString["?detail"] !== undefined ? (
                               <TextField
                                 style={{
                                   width: "100%",
@@ -1195,8 +1335,11 @@ const EmployeeInputSection = () => {
                                 id="email"
                                 inputRef={register({ required: true })}
                                 onChange={onChange}
-                                InputProps={{ classes: { input: classes.input } }}
-                              /> :
+                                InputProps={{
+                                  classes: { input: classes.input },
+                                }}
+                              />
+                            ) : (
                               <TextField
                                 style={{
                                   width: "100%",
@@ -1208,8 +1351,11 @@ const EmployeeInputSection = () => {
                                 id="email"
                                 inputRef={register({ required: true })}
                                 onChange={onChange}
-                                InputProps={{ classes: { input: classes.input } }}
-                              />}
+                                InputProps={{
+                                  classes: { input: classes.input },
+                                }}
+                              />
+                            )}
                             {errors &&
                               errors.email &&
                               errors.email.type === "required" && (
@@ -1227,8 +1373,9 @@ const EmployeeInputSection = () => {
                               marginTop: 30,
                             }}
                           >
-                            {queryString["?detail"] !== undefined ?
-                              <div /> :
+                            {queryString["?detail"] !== undefined ? (
+                              <div />
+                            ) : (
                               <Button
                                 style={{
                                   color: "#fff",
@@ -1241,7 +1388,8 @@ const EmployeeInputSection = () => {
                                 onClick={(e) => null}
                               >
                                 Submit Data
-                            </Button>}
+                              </Button>
+                            )}
                           </Box>
                         </GridItem>
                       </GridContainer>

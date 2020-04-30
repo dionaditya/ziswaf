@@ -554,7 +554,7 @@ export const StudentListController = ({ children }) => {
             ...prevState,
             rowsPerPage: tableState.rowsPerPage,
           }));
-          if (studentSorted !== null) {
+          if (studentSortedByRows.data.data !== null) {
             dispatch({
               type: ActionType.setData,
               payload: studentSortedByRows.data.data,
@@ -655,13 +655,15 @@ export const StudentListController = ({ children }) => {
   const handleModal = (e: any) => {
     return (dispatch: any) => async (actiontype: any) => {
       dispatch({ type: actiontype });
-      dispatch({ type: ActionType.setLoading, payload: true });
-
-      let listSchool = await schoolPresenter.loadData();
-      let listProvince = await provincePresenter.loadData(
-        new Map<string, string>()
-      );
-      if (userInfo.role === 1) {
+   
+      if(state.province !== [] && state.regency !== []) {
+        dispatch({ type: ActionType.setLoading, payload: true });
+        let listSchool = await schoolPresenter.loadData();
+        let listProvince = await provincePresenter.loadData(
+          new Map<string, string>()
+        );
+        let cityList = await cityPresenter.loadData();
+        dispatch({ type: ActionType.setCity, payload: cityList });
         dispatch({
           type: ActionType.setSchool,
           payload: {
@@ -669,30 +671,8 @@ export const StudentListController = ({ children }) => {
             school: listSchool.data.data,
           },
         });
-      } else {
-        let filterOperator = listSchool.data.data.filter(
-          (val) => val.id === userInfo.school.id
-        );
-
-        if (filterOperator !== null && filterOperator !== undefined) {
-          dispatch({
-            type: ActionType.handleFilters,
-            payload: {
-              name: "school_id",
-              value: filterOperator[0].id,
-            },
-          });
-          dispatch({
-            type: ActionType.setSchool,
-            payload: {
-              province: listProvince,
-              school: listSchool.data.data,
-            },
-          });
-        }
+        dispatch({ type: ActionType.setLoading, payload: false });
       }
-
-      dispatch({ type: ActionType.setLoading, payload: false });
     };
   };
 
@@ -733,12 +713,7 @@ export const StudentListController = ({ children }) => {
 
   const handleChangeFilter = async (e: any) => {
     if (e.target.name === "province") {
-      let cityList = await cityPresenter.loadData({
-        filter: {
-          province_id: e.target.value,
-        },
-      });
-      dispatch({ type: ActionType.setCity, payload: cityList });
+     
       setFilterStatus((prevState) => ({
         ...prevState,
         filter: {

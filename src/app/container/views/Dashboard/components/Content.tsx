@@ -127,6 +127,7 @@ const Content = () => {
   const showColorOPerator = controller.operatorData.map((val) => val.color);
 
 
+  console.log(controller.selectedSeries)
 
   return (
     <div>

@@ -299,7 +299,21 @@ const InputDataSiswaSection = ({ value, setValues }) => {
                       )}
                     </label>
 
-                    <input
+                 
+
+                      <Button
+                        style={{
+                          color: "#00923F",
+                          marginLeft: "-12px",
+                        }}
+                        color="transparent"
+                        component="label"
+                        raised
+                        id="icon-button-file"
+                        onClick={(e) => null}
+                      >
+                        Tambahkan Foto
+                        <input
                       accept="image/*"
                       style={{
                         display: "none",
@@ -309,19 +323,7 @@ const InputDataSiswaSection = ({ value, setValues }) => {
                       name="file-upload"
                       onChange={handleFIle}
                     />
-
-                    <label htmlFor="icon-button-file">
-                      <Button
-                        style={{
-                          color: "#00923F",
-                          marginLeft: "-12px",
-                        }}
-                        color="transparent"
-                        onClick={(e) => null}
-                      >
-                        Tambahkan Foto
                       </Button>
-                    </label>
                   </Box>
                 </GridItem>
                 <GridItem xs={12} sm={12} md={5}>

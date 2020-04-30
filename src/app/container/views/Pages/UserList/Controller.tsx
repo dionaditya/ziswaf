@@ -400,6 +400,11 @@ export const UserListController = ({ children }) => {
         async actiontype => {
             dispatch({ type: ActionType.setLoading, payload: true })
             const listUser = await userPresenter.loadData({ ...filterStatus })
+            setPagintion({
+                total: listUser.data.pagination.total,
+                page: listUser.data.data !== null ? listUser.data.pagination.current_page-1 : listUser.data.pagination.current_page,
+                rowsPerPage: listUser.data.pagination.page_size
+            })
             dispatch({ type: ActionType.setData, payload: listUser.data.data })
             dispatch({ type: ActionType.setLoading, payload: false })
         }
@@ -414,7 +419,7 @@ export const UserListController = ({ children }) => {
             
               setPagintion({
                 total: listUser.data.pagination.total,
-                page: listUser.data.pagination.current_page-1,
+                page: listUser.data.data !== null ? listUser.data.pagination.current_page-1 : listUser.data.pagination.current_page,
                 rowsPerPage: listUser.data.pagination.page_size
             })
             

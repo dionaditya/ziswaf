@@ -256,86 +256,76 @@ export const EmployeeInputController = ({ children }) => {
     const handleSubmit = controller => async dispatch => {
 
         if (id !== undefined) {
-            try {
-                if (state.employeeInput.image !== [] && state.employeeInput.image.length > 0) {
-                    const postEmployee = await employeePresenter.updateEmployeeData(new EmployeeApiRequest(
-                        state.employeeInput.school_id,
-                        state.employeeInput.name,
-                        state.employeeInput.place_of_birth,
-                        moment(state.employeeInput.birth_of_date).toISOString(),
-                        state.employeeInput.phone,
-                        state.employeeInput.email,
-                        state.employeeInput.address,
-                        state.employeeInput.status,
-                        moment(state.employeeInput.registered_year).toISOString(),
-                        state.employeeInput.pos_code,
-                        state.employeeInput.province_id,
-                        state.employeeInput.regency_id,
-                        state.employeeInput.image,
-                    ), _.toNumber(id))
-                    return postEmployee
-                } else {
-                    const postEmployee = await employeePresenter.updateEmployeeData(new EmployeeApiRequestWithoutImage(
-                        state.employeeInput.school_id,
-                        state.employeeInput.name,
-                        state.employeeInput.place_of_birth,
-                        moment(state.employeeInput.birth_of_date).toISOString(),
-                        state.employeeInput.phone,
-                        state.employeeInput.email,
-                        state.employeeInput.address,
-                        state.employeeInput.status,
-                        moment(state.employeeInput.registered_year).toISOString(),
-                        state.employeeInput.pos_code,
-                        state.employeeInput.province_id,
-                        state.employeeInput.regency_id,
-                    ), _.toNumber(id))
-                    return postEmployee
-                }
-
-
-            } catch (error) {
-                return error.response
+            if (state.employeeInput.image !== [] && state.employeeInput.image.length > 0) {
+                const postEmployee = await employeePresenter.updateEmployeeData(new EmployeeApiRequest(
+                    state.employeeInput.school_id,
+                    state.employeeInput.name,
+                    state.employeeInput.place_of_birth,
+                    moment(state.employeeInput.birth_of_date).toISOString(),
+                    state.employeeInput.phone,
+                    state.employeeInput.email,
+                    state.employeeInput.address,
+                    state.employeeInput.status,
+                    moment(state.employeeInput.registered_year).toISOString(),
+                    state.employeeInput.pos_code,
+                    state.employeeInput.province_id,
+                    state.employeeInput.regency_id,
+                    state.employeeInput.image,
+                ), _.toNumber(id))
+                return postEmployee
+            } else {
+                const postEmployee = await employeePresenter.updateEmployeeData(new EmployeeApiRequestWithoutImage(
+                    state.employeeInput.school_id,
+                    state.employeeInput.name,
+                    state.employeeInput.place_of_birth,
+                    moment(state.employeeInput.birth_of_date).toISOString(),
+                    state.employeeInput.phone,
+                    state.employeeInput.email,
+                    state.employeeInput.address,
+                    state.employeeInput.status,
+                    moment(state.employeeInput.registered_year).toISOString(),
+                    state.employeeInput.pos_code,
+                    state.employeeInput.province_id,
+                    state.employeeInput.regency_id,
+                ), _.toNumber(id))
+                return postEmployee
             }
 
         } else {
-            try {
-                if (state.employeeInput.image !== [] && state.employeeInput.image.length > 0) {
-                    const postEmployee = await employeePresenter.postNewEmployeeData(new EmployeeApiRequest(
-                        state.employeeInput.school_id,
-                        state.employeeInput.name,
-                        state.employeeInput.place_of_birth,
-                        moment(state.employeeInput.birth_of_date).toISOString(),
-                        state.employeeInput.phone,
-                        state.employeeInput.email,
-                        state.employeeInput.address,
-                        state.employeeInput.status,
-                        moment(state.employeeInput.registered_year).toISOString(),
-                        state.employeeInput.pos_code,
-                        state.employeeInput.province_id,
-                        state.employeeInput.regency_id,
-                        state.employeeInput.image,
-                        
-                    ))
-                    return postEmployee
-                }else{
-                    const postEmployee = await employeePresenter.postNewEmployeeData(new EmployeeApiRequestWithoutImage(
-                        state.employeeInput.school_id,
-                        state.employeeInput.name,
-                        state.employeeInput.place_of_birth,
-                        moment(state.employeeInput.birth_of_date).toISOString(),
-                        state.employeeInput.phone,
-                        state.employeeInput.email,
-                        state.employeeInput.address,
-                        state.employeeInput.status,
-                        moment(state.employeeInput.registered_year).toISOString(),
-                        state.employeeInput.pos_code,
-                        state.employeeInput.province_id,
-                        state.employeeInput.regency_id,                        
-                    ))
-                    return postEmployee
-                }
-            } catch (e) {
-                return e.response
+            if (state.employeeInput.image !== [] && state.employeeInput.image.length > 0) {
+                const postEmployee = await employeePresenter.postNewEmployeeData(new EmployeeApiRequest(
+                    state.employeeInput.school_id,
+                    state.employeeInput.name,
+                    state.employeeInput.place_of_birth,
+                    moment(state.employeeInput.birth_of_date).toISOString(),
+                    state.employeeInput.phone,
+                    state.employeeInput.email,
+                    state.employeeInput.address,
+                    state.employeeInput.status,
+                    moment(state.employeeInput.registered_year).toISOString(),
+                    state.employeeInput.pos_code,
+                    state.employeeInput.province_id,
+                    state.employeeInput.regency_id,
+                    state.employeeInput.image,
+                    
+                ))
+                return postEmployee
+            }else{
+                const postEmployee = await employeePresenter.postNewEmployeeData(new EmployeeApiRequestWithoutImage(
+                    state.employeeInput.school_id,
+                    state.employeeInput.name,
+                    state.employeeInput.place_of_birth,
+                    moment(state.employeeInput.birth_of_date).toISOString(),
+                    state.employeeInput.phone,
+                    state.employeeInput.email,
+                    state.employeeInput.address,
+                    state.employeeInput.status,
+                    moment(state.employeeInput.registered_year).toISOString(),
+                    state.employeeInput.pos_code,
+                    state.employeeInput.province_id,
+                    state.employeeInput.regency_id,                        
+                ))
+                return postEmployee
             }
         }
     }

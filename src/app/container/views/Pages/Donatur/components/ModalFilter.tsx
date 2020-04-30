@@ -89,7 +89,7 @@ const ModalFilter = () => {
                   async
                   isDisabled
                   onChange={handleChange}
-                  value={controller.userInfo.school_id}
+                  value={controller.userInfo.school.id}
                   data={[
                     {
                       id: controller.userInfo.school.id,

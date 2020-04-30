@@ -84,18 +84,19 @@ export class DashboardMapper {
           item.data.dashboard_admin.total_zakat_fitrah_per_month.month.map(
             (data) => new ZakatFitrahData(data.total)
           ),
+       
+          item.data.dashboard_admin.total_Infaq_per_month.month.map(
+            (data) => new InfaqData(data.total)
+          ),
           item.data.dashboard_admin.total_wakaf_per_month.month.map(
             (data) => new WakafData(data.total)
           ),
-          item.data.dashboard_admin.total_Infaq_per_month.month.map(
-            (data) => new InfaqData(data.total)
+          item.data.dashboard_admin.total_other_per_month.month.map(
+            (data) => new OtherData(data.total)
           ),
           item.data.dashboard_admin.total_qurban_per_month.month.map(
             (data) => new KurbanData(data.total)
           ),
-          item.data.dashboard_admin.total_other_per_month.month.map(
-            (data) => new OtherData(data.total)
-          )
         ),
         new CommonReportData(
           item.data.common_report.total,

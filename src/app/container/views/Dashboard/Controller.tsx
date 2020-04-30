@@ -226,51 +226,13 @@ const {
 
 export const DashboardController = ({ children }) => {
   const [state, setState] = useTracked()
-  const [data, setData] = useState<any>({});
-  const [dataDashboard, setDataDashboard] = useState<any>({})
-  const [dataCommonReport, setDataCommonReport] = useState<any>({})
-  const [dataDivisionReport, setDataDivisionReport] = useState<any>({})
-  const [dataNominalReport, setDataNominalReport] = useState<any>({})
-  const [dataPrognosisUpz, setDataPrognosisUpz] = useState<any>({})
-  const [dataPrognosisRetail, setDataPrognosisRetail] = useState<any>({})
-  const [dataPrognosisCorporate, setDataPrognosisCorporate] = useState<any>({})
-  const [dataUpzPerMonth, setDataUpzPerMonth] = useState<any>({})
-  const [dataRetailPerMonth, setDataRetailPerMonth] = useState<any>({})
-  const [dataCorporatePerMonth, setDataCorporatePerMonth] = useState<any>({})
-  const [dataDashboardOperator, setDataDashboardOperator] = useState<any>({})
-  const [dataAdminPermonth, setDataAdminPermonth] = useState<any>([])
-  const [dataAdminZakatMaal, setDataAdminZakatMaal] = useState<any>([])
-  const [dataAdminFitrah, setDataAdminZakatFitrah] = useState<any>([])
-  const [dataAdminInfaq, setDataAdminInfaq] = useState<any>([])
-  const [dataAdminKurban, setDataAdminKurban] = useState<any>([])
-  const [dataAdminOther, setDataAdminOther] = useState<any>([])
-  const [dataAdminWakaf, setDataAdminWakaf] = useState<any>([])
-  const [dataOperatorPerDay, setDataOperatorPerDay] = useState<any>([])
-  const [dataOperatorZakatMaal, setDataOperatorZakatMaal] = useState<any>([])
-  const [dataOperatorFitrah, setDataOperatorZakatFitrah] = useState<any>([])
-  const [dataOperatorInfaq, setDataOperatorInfaq] = useState<any>([])
-  const [dataOperatorKurban, setDataOperatorKurban] = useState<any>([])
-  const [dataOperatorOther, setDataOperatorOther] = useState<any>([])
-  const [dataOperatorWakaf, setDataOperatorWakaf] = useState<any>([])
-  const [dataPrognosisPerMonth, setDataPrognosisPerMonth] = useState<any>({})
-  const [dataTransactionPerMonth, setDataTransactionPerMonth] = useState<any>({})
-  const [dataCompare, setDataCompare] = useState<any>({})
-  const [dataZiswafPersent, setDataZiswafPersent] = useState<any>({})
+  const [loading, setLoading] = useState(false)
   const [idVal, setIdVal] = useState<number>(0)
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [labelDataSelect, setLabelDataSelect] = useState(null);
   const [labelSearch, setLabelSearch] = useState('');
-  const [operatorData, setOperatorData] = useState([
-    {
-      name: 'Total Ziswaf Perday',
-      total: 0,
-      compareData: 0,
-      data: [],
-      color: '#2C39C2'
-    },
-  ])
-
+ 
   const [filterParam, setFilterParam] = useState<any>(initialState.filterParam)
   const [filterParamAdmin, setFilterParamAdmin] = useState<any>(initialState.filterParamAdmin)
   const [school, setSchool] = useState<any>([]);
@@ -302,8 +264,8 @@ export const DashboardController = ({ children }) => {
     }
   }
 
-  const adminPermonth = dataAdminPermonth.map(val => val.total)
-  const operatorPerDay = dataOperatorPerDay.map(val => val.total)
+  const adminPermonth = state.dataAdminPermonth.map(val => val.total)
+  const operatorPerDay = state.dataOperatorPerDay.map(val => val.total)
 
   useEffect(() => {
     if (role === 1) {
@@ -317,7 +279,7 @@ export const DashboardController = ({ children }) => {
         }))
       }
     }
-  }, [dataAdminPermonth])
+  }, [state.dataAdminPermonth])
 
   useEffect(() => {
     if (role === 2) {
@@ -331,10 +293,13 @@ export const DashboardController = ({ children }) => {
             color: '#2C39C2'
           },
         ]
-        setOperatorData(operator)
+        setState(prevState => ({
+          ...prevState,
+          operatorData: operator
+        }))
       }
     }
-  }, [dataOperatorPerDay])
+  }, [state.dataOperatorPerDay])
 
   useEffect(() => {
     if (role === 1) {
@@ -346,90 +311,78 @@ export const DashboardController = ({ children }) => {
   useEffect(() => {
     if (role === 1) {
       onGetData();
-      setState(prevState => ({
-        ...prevState,
-        selectedSeries: initialState.selectedSeries
-      }))
     }
   }, [filterParamAdmin]);
 
   useEffect(() => {
     if (role === 2) {
-      setState(prevState => ({
-        ...prevState,
-        setFilterParam: {
-          ...prevState.setFilterParam,
-          filter: {
-            ...prevState.filter,
-            school_id: idSchool,
-            shchool_name: nameSchool,
-          }
-        },
-        selectedSeries: state.selectedSeriesOperator
-      }))
+      onGetDataDashboardOperator();
     }
-    onGetDataDashboardOperator();
+  
   }, [filterParam]);
 
 
   const onGetData = async () => {
     try {
-      setState(prevState => ({
-        ...prevState, loading: true
-      }))
+      setLoading(true)
 
       const dashboardData = await dashboardAdminPresenter.getAll(filterParamAdmin);
-      setData(dashboardData);
-      setDataAdminPermonth(dashboardData.data?.dashboardAdmin?.ziswafTotalPermonth)
-      setDataAdminZakatMaal(dashboardData.data?.dashboardAdmin?.zakatMaalPerMonth)
-      setDataAdminZakatFitrah(dashboardData.data?.dashboardAdmin?.zakatFitrahPerMonth)
-      setDataAdminInfaq(dashboardData.data?.dashboardAdmin?.infaqPerMonth)
-      setDataAdminKurban(dashboardData.data?.dashboardAdmin?.kurbanPerMonth)
-      setDataAdminOther(dashboardData.data?.dashboardAdmin?.otherPerMonth)
-      setDataAdminWakaf(dashboardData.data?.dashboardAdmin?.wakafPerMonth)
-      setDataDashboard(dashboardData.data?.dashboardAdmin)
-      setDataCommonReport(dashboardData.data?.commonReport)
-      setDataDivisionReport(dashboardData.data?.divisionReport)
-      setDataNominalReport(dashboardData.data?.nominalReport)
-      setDataPrognosisUpz(dashboardData.data?.prognosisUpz)
-      setDataPrognosisRetail(dashboardData.data?.prognosisRetail)
-      setDataPrognosisCorporate(dashboardData.data?.pronosisCorporate)
-      setDataUpzPerMonth(dashboardData.data?.upzPerMonth)
-      setDataRetailPerMonth(dashboardData.data?.retailPerMonth)
-      setDataCorporatePerMonth(dashboardData.data?.corporatePerMonth)
-      setDataTransactionPerMonth(dashboardData.data?.commonReport?.totalTransactionPerMonth)
-      setDataPrognosisPerMonth(dashboardData.data?.commonReport?.totalPrognosisPerMonth)
-      setDataCompare(dashboardData.data?.dashboardAdmin?.totalTransactionLastYear)
-      setDataZiswafPersent(dashboardData.data?.commonReport?.totalZiswafPersent)
-      setState(prevState => ({
-        ...prevState, loading: false
-      }))
+
+      setState({
+        ...state,
+        data: dashboardData,
+        selectedSeries: initialState.selectedSeries,
+        dataAdminPermonth: dashboardData.data?.dashboardAdmin?.ziswafTotalPermonth,
+        dataAdminZakatMaal: dashboardData.data?.dashboardAdmin?.zakatMaalPerMonth,
+        dataAdminFitrah: dashboardData.data?.dashboardAdmin?.zakatFitrahPerMonth,
+        dataAdminInfaq:  dashboardData.data?.dashboardAdmin?.infaqPerMonth,
+        dataAdminKurban: dashboardData.data?.dashboardAdmin?.kurbanPerMonth,
+        dataAdminOther: dashboardData.data?.dashboardAdmin?.otherPerMonth,
+        dataAdminWakaf: dashboardData.data?.dashboardAdmin?.wakafPerMonth,
+        dataDashboard: dashboardData.data?.dashboardAdmin,
+        dataCommonReport: dashboardData.data?.commonReport,
+        dataDivisionReport: dashboardData.data?.divisionReport,
+        dataNominalReport: dashboardData.data?.nominalReport,
+        dataPrognosisUpz: dashboardData.data?.prognosisUpz,
+        dataPrognosisRetail: dashboardData.data?.prognosisRetail,
+        dataPrognosisCorporate: dashboardData.data?.pronosisCorporate,
+        dataUpzPerMonth: dashboardData.data?.upzPerMonth,
+        dataRetailPerMonth: dashboardData.data?.retailPerMonth,
+        dataCorporatePerMonth: dashboardData.data?.corporatePerMonth,
+        dataTransactionPerMonth: dashboardData.data?.commonReport?.totalTransactionPerMonth,
+        dataPrognosisPerMonth: dashboardData.data?.commonReport?.totalPrognosisPerMonth,
+        dataCompare: dashboardData.data?.dashboardAdmin?.totalTransactionLastYear,
+        dataZiswafPersent: dashboardData.data?.commonReport?.totalZiswafPersent,
+      })
+      setLoading(false)
     } catch (error) {
-      setData([]);
-      setDataAdminPermonth([])
-      setDataAdminZakatMaal([])
-      setDataAdminZakatFitrah([])
-      setDataAdminInfaq([])
-      setDataAdminKurban([])
-      setDataAdminOther([])
-      setDataAdminWakaf([])
-      setDataDashboard([])
-      setDataCommonReport([])
-      setDataDivisionReport([])
-      setDataNominalReport([])
-      setDataPrognosisUpz([])
-      setDataPrognosisRetail([])
-      setDataPrognosisCorporate([])
-      setDataUpzPerMonth([])
-      setDataRetailPerMonth([])
-      setDataCorporatePerMonth([])
-      setDataTransactionPerMonth([])
-      setDataPrognosisPerMonth([])
-      setDataCompare([])
-      setDataZiswafPersent([])
-      setState(prevState => ({
-        ...prevState, loading: false
-      }))
+      setState({
+        ...state,
+        dataPrognosisPerMonth: {},
+        selectedSeries: initialState.selectedSeries,
+        dataTransactionPerMonth: {},
+        dataCompare: {},
+        dataZiswafPersent: {},
+        dataAdminPermonth: [],
+        dataAdminZakatMaal: [],
+        dataAdminFitrah: [],
+        dataAdminInfaq: [],
+        dataAdminKurban: [],
+        dataAdminOther: [],
+        dataAdminWakaf: [],
+        data: {},
+        dataDashboard: {},
+        dataCommonReport: {},
+        dataDivisionReport: {},
+        dataNominalReport: {},
+        dataPrognosisUpz: {},
+        dataPrognosisRetail: {},
+        dataPrognosisCorporate: {},
+        dataUpzPerMonth: {},
+        dataRetailPerMonth: {},
+        dataCorporatePerMonth: {},
+      })
+      setLoading(false)
     }
   };
 
@@ -448,44 +401,48 @@ export const DashboardController = ({ children }) => {
   }
 
   const onGetDataDashboardOperator = async () => {
-    setState(prevState => ({
-      ...prevState, loading: true
-    }))
+    setLoading(true)
     const presenter = await container.resolve(DashboardOperatorPresenter);
     presenter.getAllData(filterParam)
       .then((res) => {
-        setState(prevState => ({
-          ...prevState, loading: false
-        }))
-
-        setDataOperatorPerDay(res.data?.totalZiswafPerDay)
-        setDataDashboardOperator(res.data?.dashboardOperator)
-        setDataOperatorZakatMaal(res.data?.zakatMaalPerDay)
-        setDataOperatorZakatFitrah(res.data?.zakatFitrahPerDay)
-        setDataOperatorInfaq(res.data?.infaqPerDay)
-        setDataOperatorKurban(res.data?.kurbanPerDay)
-        setDataOperatorOther(res.data?.otherPerDay)
-        setDataOperatorWakaf(res.data?.wakafPerDay)
-        setDataCommonReport(res.data?.commonReport)
-        setDataDivisionReport(res.data?.divisionReport)
-        setDataNominalReport(res.data?.nominalReport)
-        setDataCompare(res.data?.dashboardOperator?.totalTransactionLastYear)
+        setState({
+          ...state,
+          dataOperatorPerDay: res.data?.totalZiswafPerDay,
+          selectedSeries: initialState.selectedSeries,
+          dataDashboardOperator: res.data?.dashboardOperator,
+          dataOperatorZakatMaal: res.data?.zakatMaalPerDay,
+          dataOperatorFitrah: res.data?.zakatFitrahPerDay,
+          dataOperatorInfaq: res.data?.infaqPerDay,
+          dataOperatorKurban: res.data?.kurbanPerDay,
+          dataOperatorWakaf: res.data?.wakafPerDay,
+          dataOperatorOther: res.data?.otherPerDay,
+          dataCommonReport: res.data?.commonReport,
+          dataDivisionReport: res.data?.divisionReport,
+          dataNominalReport: res.data?.nominalReport,
+          dataCompare: res.data?.dashboardOperator?.totalTransactionLastYear
+        })
+      
+        setLoading(false)
       })
       .catch((error) => {
-        setState(prevState => ({
-          ...prevState, loading: false
-        }))
-        setDataOperatorPerDay([])
-        setDataDashboardOperator({})
-        setDataOperatorZakatMaal([])
-        setDataOperatorZakatFitrah([])
-        setDataOperatorInfaq([])
-        setDataOperatorKurban([])
-        setDataOperatorOther([])
-        setDataOperatorWakaf([])
-        setDataCommonReport({})
-        setDataDivisionReport({})
-        setDataNominalReport({})
+        setState({
+          ...state,
+          dataCommonReport: {},
+          selectedSeries: initialState.selectedSeries,
+          dataDivisionReport: {},
+          dataNominalReport: {},
+          dataOperatorZakatMaal: [],
+          dataOperatorFitrah: [],
+          dataOperatorInfaq: [],
+          dataOperatorKurban: [],
+          dataOperatorWakaf: [],
+          dataOperatorOther: [],
+          dataOperatorPerDay: [],
+          dataCompare: {},
+          dataDashboardOperator: {}
+        })
+        setLoading(false)
+
       })
   };
 
@@ -506,35 +463,41 @@ export const DashboardController = ({ children }) => {
   }
 
   const _handleClickOperator = (e, selected) => {
-    const isThere = operatorData.filter(value => value.name === selected.name)
+    const isThere = state.operatorData.filter(value => value.name === selected.name)
     if (isThere.length > 0) {
-      const operator = operatorData.filter(value => value.name !== selected.name)
-      setOperatorData(operator)
+      const operator = state.operatorData.filter(value => value.name !== selected.name)
+      setState({
+        ...state,
+        operatorData: operator
+      })
     }
     else {
-      const temp = [...operatorData, selected]
-      setOperatorData(temp)
+      const temp = [...state.operatorData, selected]
+      setState({
+        ...state,
+        operatorData: temp
+      })
     }
   }
 
   const dataPerMonthRetail = [
     {
       name: 'Data Per Month Retail',
-      data: Object.values(dataRetailPerMonth),
+      data: Object.values(state.dataRetailPerMonth),
     }
   ]
 
   const dataPerMonthUpz = [
     {
       name: 'Data Per Month UPZ',
-      data: Object.values(dataUpzPerMonth),
+      data: Object.values(state.dataUpzPerMonth),
     }
   ]
 
   const dataPerMonthCorporate = [
     {
       name: 'Data Per Month Corporate',
-      data: Object.values(dataCorporatePerMonth),
+      data: Object.values(state.dataCorporatePerMonth),
     }
   ]
 
@@ -546,9 +509,9 @@ export const DashboardController = ({ children }) => {
   const returnCategories = () => {
     switch (idVal) {
       case idVal:
-        return dataOperatorZakatMaal.map((val, index) => index)
+        return state.dataOperatorZakatMaal.map((val, index) => index)
       default:
-        return Object.keys(dataPrognosisCorporate)
+        return Object.keys(state.dataPrognosisCorporate)
     }
   }
 
@@ -575,49 +538,49 @@ export const DashboardController = ({ children }) => {
     'Nov',
     'Des'
   ].map(val => `${val} ${currentYear}`)
-  const categoriesPerDay = dataOperatorPerDay.map((val, i) => i)
+  const categoriesPerDay = state.dataOperatorPerDay.map((val, i) => i)
 
   const series = [
     {
       name: 'Zakat Maal',
-      total: role === 1 ? dataDashboard.totalZakatMaal : dataDashboardOperator.totalZakatMaal,
-      compareData: role === 1 ? dataCommonReport.totalZiswafPersent && dataCommonReport.totalZiswafPersent.zakatMaalPersent : dataCommonReport.total_ziswaf_percent && dataCommonReport.total_ziswaf_percent.zakatMaalPersent,
-      data: role === 1 ? dataAdminZakatMaal.map(val => val.total) : dataOperatorZakatMaal.map(val => val.total),
+      total: role === 1 ? state.dataDashboard.totalZakatMaal : state.dataDashboardOperator.totalZakatMaal,
+      compareData: role === 1 ? state.dataCommonReport.totalZiswafPersent && state.dataCommonReport.totalZiswafPersent.zakatMaalPersent : state.dataCommonReport.total_ziswaf_percent && state.dataCommonReport.total_ziswaf_percent.zakatMaalPersent,
+      data: role === 1 ? state.dataAdminZakatMaal.map(val => val.total) : state.dataOperatorZakatMaal.map(val => val.total),
       color: "#3DB15B"
     },
     {
       name: 'Zakat Fitrah',
-      total: role === 1 ? dataDashboard.totalZakatFitrah : dataDashboardOperator.totalZakatFitrah,
-      compareData: role === 1 ? dataCommonReport.totalZiswafPersent && dataCommonReport.totalZiswafPersent.zakatFitrahPersent : dataCommonReport.total_ziswaf_percent && dataCommonReport.total_ziswaf_percent.zakatFitrahPersent,
-      data: role === 1 ? dataAdminFitrah.map(val => val.total) : dataOperatorFitrah.map(val => val.total),
+      total: role === 1 ? state.dataDashboard.totalZakatFitrah : state.dataDashboardOperator.totalZakatFitrah,
+      compareData: role === 1 ? state.dataCommonReport.totalZiswafPersent && state.dataCommonReport.totalZiswafPersent.zakatFitrahPersent : state.dataCommonReport.total_ziswaf_percent && state.dataCommonReport.total_ziswaf_percent.zakatFitrahPersent,
+      data: role === 1 ? state.dataAdminFitrah.map(val => val.total) : state.dataOperatorFitrah.map(val => val.total),
       color: "#FFB946"
     },
     {
       name: 'Infaq/Shadaqah',
-      total: role === 1 ? dataDashboard.totalInfaq : dataDashboardOperator.totalInfaq,
-      compareData: role === 1 ? dataCommonReport.totalZiswafPersent && dataCommonReport.totalZiswafPersent.infaqPersent : dataCommonReport.total_ziswaf_percent && dataCommonReport.total_ziswaf_percent.infaqPersent,
-      data: role === 1 ? dataAdminInfaq.map(val => val.total) : dataOperatorInfaq.map(val => val.total),
+      total: role === 1 ? state.dataDashboard.totalInfaq : state.dataDashboardOperator.totalInfaq,
+      compareData: role === 1 ? state.dataCommonReport.totalZiswafPersent && state.dataCommonReport.totalZiswafPersent.infaqPersent :state.dataCommonReport.total_ziswaf_percent && state.dataCommonReport.total_ziswaf_percent.infaqPersent,
+      data: role === 1 ? state.dataAdminInfaq.map(val => val.total) : state.dataOperatorInfaq.map(val => val.total),
       color: "#BFC94C"
     },
     {
       name: 'Wakaf',
-      total: role === 1 ? dataDashboard.totalWakaf : dataDashboardOperator.totalWakaf,
-      compareData: role === 1 ? dataCommonReport.totalZiswafPersent && dataCommonReport.totalZiswafPersent.waqafPersent : dataCommonReport.total_ziswaf_percent && dataCommonReport.total_ziswaf_percent.waqafPersent,
-      data: role === 1 ? dataAdminWakaf.map(val => val.total) : dataOperatorWakaf.map(val => val.total),
+      total: role === 1 ? state.dataDashboard.totalWakaf : state.dataDashboardOperator.totalWakaf,
+      compareData: role === 1 ? state.dataCommonReport.totalZiswafPersent && state.dataCommonReport.totalZiswafPersent.waqafPersent : state.dataCommonReport.total_ziswaf_percent && state.dataCommonReport.total_ziswaf_percent.waqafPersent,
+      data: role === 1 ? state.dataAdminWakaf.map(val => val.total) : state.dataOperatorWakaf.map(val => val.total),
       color: "#F7685B"
     },
     {
       name: 'Penerimaan lain',
-      total: role === 1 ? dataDashboard.totalOther : dataDashboardOperator.totalOther,
-      compareData: role === 1 ? dataCommonReport.totalZiswafPersent && dataCommonReport.totalZiswafPersent.otherPersent : dataCommonReport.total_ziswaf_percent && dataCommonReport.total_ziswaf_percent.otherPersent,
-      data: role === 1 ? dataAdminOther.map(val => val.total) : dataOperatorOther.map(val => val.total),
+      total: role === 1 ? state.dataDashboard.totalOther : state.dataDashboardOperator.totalOther,
+      compareData: role === 1 ? state.dataCommonReport.totalZiswafPersent && state.dataCommonReport.totalZiswafPersent.otherPersent : state.dataCommonReport.total_ziswaf_percent && state.dataCommonReport.total_ziswaf_percent.otherPersent,
+      data: role === 1 ? state.dataAdminOther.map(val => val.total) : state.dataOperatorOther.map(val => val.total),
       color: '#E546FF'
     },
     {
       name: 'Kurban',
-      total: role === 1 ? dataDashboard.totalKurban : dataDashboardOperator.totalKurban,
-      compareData: role === 1 ? dataCommonReport.totalZiswafPersent && dataCommonReport.totalZiswafPersent.qurbanPersent : dataCommonReport.total_ziswaf_percent && dataCommonReport.total_ziswaf_percent.qurbanPersent,
-      data: role === 1 ? dataAdminKurban.map(val => val.total) : dataOperatorKurban.map(val => val.total),
+      total: role === 1 ? state.dataDashboard.totalKurban : state.dataDashboardOperator.totalKurban,
+      compareData: role === 1 ? state.dataCommonReport.totalZiswafPersent && state.dataCommonReport.totalZiswafPersent.qurbanPersent : state.dataCommonReport.total_ziswaf_percent && state.dataCommonReport.total_ziswaf_percent.qurbanPersent,
+      data: role === 1 ? state.dataAdminKurban.map(val => val.total) : state.dataOperatorKurban.map(val => val.total),
       color: '#5BEEF7'
     },
   ]
@@ -626,28 +589,17 @@ export const DashboardController = ({ children }) => {
   return (
     <DashboardProvider
       value={{
+        ...state,
         getSchoolData,
-        data,
-        dataDashboard,
-        dataCommonReport,
-        dataDivisionReport,
-        dataNominalReport,
-        dataCorporatePerMonth,
-        dataPrognosisCorporate,
-        dataPrognosisRetail,
-        dataPrognosisUpz,
-        dataRetailPerMonth,
-        dataUpzPerMonth,
         filterParam,
         filterParamAdmin,
-        dataDashboardOperator,
         optionsUnit: state.optionsUnit,
         filterStartDate: state.filterStartDate,
         filterEndDate: state.filterEndDate,
         selectedSeries: state.selectedSeries,
         selectedColor: state.selectedColor,
         error: state.error,
-        loading: state.loading,
+        loading: loading,
         handleChange: _handleChange,
         handleClick: _handleClick,
         dataPerMonthRetail,
@@ -655,24 +607,7 @@ export const DashboardController = ({ children }) => {
         dataPerMonthCorporate,
         school,
         fetchingButton,
-        dataOperatorZakatMaal,
-        dataOperatorFitrah,
-        dataOperatorInfaq,
-        dataOperatorKurban,
-        dataOperatorWakaf,
-        dataOperatorOther,
         returnCategories,
-        dataPrognosisPerMonth,
-        dataTransactionPerMonth,
-        dataCompare,
-        dataZiswafPersent,
-        dataAdminPermonth,
-        dataAdminZakatMaal,
-        dataAdminFitrah,
-        dataAdminInfaq,
-        dataAdminKurban,
-        dataAdminOther,
-        dataAdminWakaf,
         dataSeries: series,
         startDate,
         status,
@@ -690,12 +625,8 @@ export const DashboardController = ({ children }) => {
         idSchool,
         labelSearch,
         setLabelSearch,
-        dataOperatorPerDay,
-        setDataOperatorPerDay,
         selectedSeriesOperator: state.selectedSeriesOperator,
         handleClickOperator: _handleClickOperator,
-        operatorData,
-        setOperatorData
       }}>
       {children}
     </DashboardProvider>
