@@ -18,8 +18,8 @@ function a11yProps(index: any) {
     };
 }
 
-const TabNav = ({ handleChange, tabs, value, render, link }) => { 
-    const location = useLocation()
+const TabNav = (props) => {
+    const { handleChange, tabs, value, render, link } = props
     if(link) {
         return (
             <div>
@@ -32,7 +32,10 @@ const TabNav = ({ handleChange, tabs, value, render, link }) => {
                         tabs.map((tab, i) => {
                             return (
                                <>
-                                        <Link to={tab.link} className="black-text">
+                                        <Link to={tab.link} className="black-text" style={{
+                                            textDecoration: 'none',
+                                            color: '#000'
+                                        }}>
                                                 <Tab key={i} label={tab.name} {...a11yProps(i)} />
                                         </Link> 
                                </>

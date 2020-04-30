@@ -38,6 +38,8 @@ import InputSearch from "@/app/container/commons/InputSearch";
 import Button from "@/app/container/commons/CustomButtons/Button.tsx";
 import ModalFilterUser from "../ModalFilter";
 import ModalChangePassword from "../ModalChangePassword";
+import SearchInput from '@/app/container/commons/SearchInput';
+import { Search } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -192,154 +194,161 @@ const HalamanDaftarUserDashboard = () => {
     setName((prevState) => event.target.value);
   };
 
- return (
-      <>
-        <ModalFilterUser controller={controller} actionType={ActionType} handleChange={(e) => handleChange(e)}/>
-        <ModalChangePassword
-          onSaveData={(data, type) => onSubmit(data, type)}
-          onClose={onClickChangePassword}
-          controller={controller}
-          onChangeStatus={(e) => setModalChangeStatus("reset")}
-          onChange={handleChangePassowordInput}/>
-        <DialogDelete
-            open={dialogOpen}
-            handleDelete={handleDeleteData}
-            handleClose={e => setDialogOpen(false)} />
-        <Snackbar open={alertSucess} autoHideDuration={4000} onClose={handleClose}>
-            <Alert onClose={handleClose} severity="success">
-                Sukses menghapus data user
+  return (
+    <>
+      <ModalFilterUser controller={controller} actionType={ActionType} handleChange={(e) => handleChange(e)} />
+      <ModalChangePassword
+        onSaveData={(data, type) => onSubmit(data, type)}
+        onClose={onClickChangePassword}
+        controller={controller}
+        onChangeStatus={(e) => setModalChangeStatus("reset")}
+        onChange={handleChangePassowordInput} />
+      <DialogDelete
+        open={dialogOpen}
+        handleDelete={handleDeleteData}
+        handleClose={e => setDialogOpen(false)} />
+      <Snackbar open={alertSucess} autoHideDuration={4000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success">
+          Sukses menghapus data user
             </Alert>
-        </Snackbar>
-        <GridContainer>
-          <GridItem xs={12} sm={12} md={12}>
-            <GridContainer display="flex" alignItems="center">
-                <GridItem xs={5} sm={5} md={2}>
-                    <Button
-                    style={{
-                    color: "#3A3B3F",
-                    height: 45,
-                    }}
-                    color="white"
-                    onClick={(e) => onClickFilters(e)}
-                >
-                    <i className="material-icons" style={{ fontSize: 20 }}>
-                    filter_list
-                    </i>{" "}
-                    <span
-                        style={{
-                        color: "#3A3B3F",
-                        fontSize: 14,
-                        fontWeight: 800,
-                        }}
-                    >
-                        FILTER
-                    </span>
-                </Button>
-                </GridItem>
-                <GridItem xs={7} sm={7} md={10}>
-                    <Box style={{ width: "100%" }}>
-                    <InputSearch
-                        value={controller.filterStatus.search}
-                        onChange={(e) => {
-                        controller.handleSearchUserQuery(e)(controller.dispatch)(
-                            ActionType.handleSearchUser
-                        );
-                        }}
-                        onKeyPress={(event) => {
-                        if (event.key === "Enter") {
-                            controller.handleSearch("search")(controller.dispatch)(
-                            ActionType.handleSearchUser
-                            );
-                        }
-                        }}
-                    />
-                    </Box>
-                </GridItem>
-            </GridContainer>
-          </GridItem>
-          <GridItem xs={12} sm={12} md={12}>
-            <Box mt={3}>
-              <span
-                style={{ fontSize: 24, fontWeight: "bold", color: "#3A3B3F" }}
-              >
-                Daftar User
-              </span>
-            </Box>
-          </GridItem>
-          <GridItem xs={12} sm={12} md={12}>
-            <Box className={classes.boxAddContainer}>
+      </Snackbar>
+      <GridContainer>
+        <GridItem xs={12} sm={12} md={12}>
+          <GridContainer display="flex" alignItems="center">
+            <GridItem xs={5} sm={5} md={2}>
               <Button
                 style={{
-                  backgroundColor: "#6DB400",
-                  color: "#FFFFFF",
-                  height: 42,
+                  color: "#3A3B3F",
+                  height: 45,
                 }}
-                color="success"
-                onClick={(e) => history.push("users-input")}
+                color="white"
+                onClick={(e) => onClickFilters(e)}
               >
-                <i className="material-icons" style={{ fontSize: 14 }}>
-                  add
+                <i className="material-icons" style={{ fontSize: 20 }}>
+                  filter_list
+                    </i>{" "}
+                <span
+                  style={{
+                    color: "#3A3B3F",
+                    fontSize: 14,
+                    fontWeight: 800,
+                  }}
+                >
+                  FILTER
+                    </span>
+              </Button>
+            </GridItem>
+            <GridItem xs={7} sm={7} md={10}>
+              <Box style={{ width: "100%" }}>
+                <IconButton>
+                  <Search style={{ color: "#C2CFE0" }} />
+                </IconButton>
+                <SearchInput
+                  placeholder="Cari Personel"
+                  name="search"
+                  id="search"
+                  type="text"
+                  value={controller.filterStatus.search}
+                  onChange={(e) => {
+                    controller.handleSearchUserQuery(e)(controller.dispatch)(
+                      ActionType.handleSearchUser
+                    );
+                  }}
+                  onKeyPress={(event) => {
+                    if (event.key === "Enter") {
+                      controller.handleSearch("search")(controller.dispatch)(
+                        ActionType.handleSearchUser
+                      );
+                    }
+                  }}
+                />
+              </Box>
+            </GridItem>
+          </GridContainer>
+        </GridItem>
+        <GridItem xs={12} sm={12} md={12}>
+          <Box mt={3}>
+            <span
+              style={{ fontSize: 24, fontWeight: "bold", color: "#3A3B3F" }}
+            >
+              Daftar User
+              </span>
+          </Box>
+        </GridItem>
+        <GridItem xs={12} sm={12} md={12}>
+          <Box className={classes.boxAddContainer}>
+            <Button
+              style={{
+                backgroundColor: "#6DB400",
+                color: "#FFFFFF",
+                height: 42,
+              }}
+              color="success"
+              onClick={(e) => history.push("users-input")}
+            >
+              <i className="material-icons" style={{ fontSize: 14 }}>
+                add
                 </i>{" "}
                 Tambah User
               </Button>
-            </Box>
-          </GridItem>
-          <GridItem xs={12} sm={12} md={12}>
-            <Box style={{marginTop: 20, marginBottom: 20}}>
-              <TableDataSiswa
-                options={controller.optionsTable}
-                loading={controller.loading}
-                data={controller.data || []}
-                column={controller.displayColumns}
-              >
-                <CustomizedMenus>
-                  <Box
-                    className={classes.wrapper_menu}
-                    onClick={() => handleDetail(controller.tabIndex)}
-                  >
-                    <ListItemIcon>
-                      <DetailIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText primary="Detail" />
-                  </Box>
-                  <Box
-                    className={classes.wrapper_menu}
-                    onClick={(e) =>
-                      controller.handleModalChangePassword(e)(
-                        controller.dispatch
-                      )(ActionType.handleModalChangePassword)
-                    }
-                  >
-                    <ListItemIcon>
-                      <EditIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText primary="Ganti password" />
-                  </Box>
-                  <Box
-                    className={classes.wrapper_menu}
-                    onClick={(e) => controller.handleDeactivated(e)}
-                  >
-                    <ListItemIcon>
-                      <PeopleIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText primary="Deaktifkan" />
-                  </Box>
-                  <Box
-                    className={classes.wrapper_menu}
-                    onClick={(e) => setDialogOpen(true)}
-                  >
-                    <ListItemIcon>
-                      <DeleteIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText primary="Delete" />
-                  </Box>
-                </CustomizedMenus>
-              </TableDataSiswa>
-            </Box>
-          </GridItem>
-        </GridContainer>
-      </>
-    );
+          </Box>
+        </GridItem>
+        <GridItem xs={12} sm={12} md={12}>
+          <Box style={{ marginTop: 20, marginBottom: 20 }}>
+            <TableDataSiswa
+              options={controller.optionsTable}
+              loading={controller.loading}
+              data={controller.data || []}
+              column={controller.displayColumns}
+            >
+              <CustomizedMenus>
+                <Box
+                  className={classes.wrapper_menu}
+                  onClick={() => handleDetail(controller.tabIndex)}
+                >
+                  <ListItemIcon>
+                    <DetailIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary="Detail" />
+                </Box>
+                <Box
+                  className={classes.wrapper_menu}
+                  onClick={(e) =>
+                    controller.handleModalChangePassword(e)(
+                      controller.dispatch
+                    )(ActionType.handleModalChangePassword)
+                  }
+                >
+                  <ListItemIcon>
+                    <EditIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary="Ganti password" />
+                </Box>
+                <Box
+                  className={classes.wrapper_menu}
+                  onClick={(e) => controller.handleDeactivated(e)}
+                >
+                  <ListItemIcon>
+                    <PeopleIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary="Deaktifkan" />
+                </Box>
+                <Box
+                  className={classes.wrapper_menu}
+                  onClick={(e) => setDialogOpen(true)}
+                >
+                  <ListItemIcon>
+                    <DeleteIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary="Delete" />
+                </Box>
+              </CustomizedMenus>
+            </TableDataSiswa>
+          </Box>
+        </GridItem>
+      </GridContainer>
+    </>
+  );
 };
 
 export default HalamanDaftarUserDashboard;

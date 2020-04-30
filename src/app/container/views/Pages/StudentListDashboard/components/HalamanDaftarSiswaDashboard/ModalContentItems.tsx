@@ -32,7 +32,7 @@ const asyncDefaultValue = {
 const nonasyncDefaultValue = ["", "SEMUA"]
 
 const transformData = age.map(val => {
-  return  [val[0], val[1].toString()]
+  return [val[0], val[1].toString()]
 })
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -64,240 +64,281 @@ const ModalContentItems = () => {
   };
 
   return (
-        <MuiPickersUtilsProvider utils={MomentUtils}>
+    <MuiPickersUtilsProvider utils={MomentUtils}>
 
-            <GridContainer>
-              <GridItem xs={12} sm={12} md={12}>
-                <GridContainer>
-                  <GridItem xs={12} sm={12} md={6}>
-                    <Box className={classes.marginOptions}>
-                      {controller.userInfo.role === 2 ? (
-                        <>
-                          <label htmlFor="">UNIT MADRASAH</label>
-                          <SelectWithSearch
-                            async
-                            isDisabled
-                            onChange={handleChange}
-                            value={controller.userInfo.school.id}
-                            data={[
-                              {
-                                id: controller.userInfo.school.id,
-                                name: controller.userInfo.school.name,
-                              },
-                            ]}
-                            name="school_id"
-                            label="UNIT MADRASAH"
-                            placeholder="SEMUA"
-                          />
-                        </>
-                      ) : (
-                        <>
-                          <label htmlFor="">UNIT MADRASAH</label>
-                          <SelectWithSearch
-                            async
-                            isDisabled={false}
-                            onChange={(selectedValue) => {
-                              controller.setFilterStatus((prevState) => ({
-                                ...prevState,
-                                filter: {
-                                  ...prevState.filter,
-                                  school_id: selectedValue.value,
-                                },
-                              }));
-                            }}
-                            value={school_id}
-                            data={[
-                              asyncDefaultValue,
-                              ...controller.school
-                            ]}
-                            name="school_id"
-                            label="UNIT MADRASAH"
-                            placeholder={controller.loading ? "Loading..." : "SEMUA UNIT"}
-                          />
-                        </>
-                      )}
+      <GridContainer>
+        <GridItem xs={12} sm={12} md={12}>
+          <GridContainer>
+            <GridItem xs={12} sm={12} md={6}>
+              <Box className={classes.marginOptions}>
+                {controller.userInfo.role === 2 ? (
+                  <>
+                    <Box style={{ marginBottom: '10px' }}>
+                      <label htmlFor="" style={{ fontWeight: 'bold', color: '#757575', fontSize: '14px', }}>UNIT MADRASAH</label>
                     </Box>
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={6}>
-                    <Box className={classes.marginOptions}>
-                      <label htmlFor="">PROVINSI MADRASAH</label>
+                    <SelectWithSearch
+                      async
+                      isDisabled
+                      onChange={handleChange}
+                      value={controller.userInfo.school.id}
+                      data={[
+                        {
+                          id: controller.userInfo.school.id,
+                          name: controller.userInfo.school.name,
+                        },
+                      ]}
+                      name="school_id"
+                      label="UNIT MADRASAH"
+                      placeholder="SEMUA"
+                    />
+                  </>
+                ) : (
+                    <>
+                      <Box style={{ marginBottom: '10px' }}>
+                        <label htmlFor="" style={{ fontWeight: 'bold', color: '#757575', fontSize: '14px', }}>UNIT MADRASAH</label>
+                      </Box>
                       <SelectWithSearch
                         async
                         isDisabled={false}
                         onChange={(selectedValue) => {
-                          const e = {
-                            target: {
-                              name: 'province',
-                              value: selectedValue.value
-                            }
-                          }
-                          handleChange(e)
+                          controller.setFilterStatus((prevState) => ({
+                            ...prevState,
+                            filter: {
+                              ...prevState.filter,
+                              school_id: selectedValue.value,
+                            },
+                          }));
                         }}
-                        value={province}
+                        value={school_id}
                         data={[
                           asyncDefaultValue,
-                          ...controller.province
+                          ...controller.school
                         ]}
-                        name="province"
-                        label="PROVINSI MADRASAH"
-                        placeholder={controller.loading ? "Loading..." : "SEMUA PROVINSI"}
+                        name="school_id"
+                        label="UNIT MADRASAH"
+                        placeholder={controller.loading ? "Loading..." : "SEMUA UNIT"}
                       />
-                    </Box>
-                  </GridItem>
-                </GridContainer>
-                <GridContainer>
-                  <GridItem xs={12} sm={12} md={6}>
-                    <Box className={classes.marginOptions}>
-                    <label htmlFor="">KOTA MADRASAH</label>
-                    <SelectWithSearch
-                    async
-                    isDisabled={false}
-                    onChange={(selectedValue) => {
-                      controller.setFilterStatus((prevState) => ({
-                        ...prevState,
-                        filter: {
-                          ...prevState.filter,
-                          regency: selectedValue.value,
-                        },
-                      }));
-                    }}
-                    value={regency}
-                    data={[
-                      asyncDefaultValue,
-                      ...controller.regency
-                    ]}
-                    name="regency"
-                    label="KOTA MADRASAH"
-                    placeholder={controller.loading ? "Loading..." : "SEMUA KOTA"}
-                  />
-                    </Box>
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={6}>
-                    <Box className={classes.marginOptions}>
-                      <label htmlFor="">STATUS SOSIAL</label>
-                    <SelectWithSearch
-                    async={false}
-                    isDisabled={false}
-                    onChange={(selectedValue) => {
-                      controller.setFilterStatus((prevState) => ({
-                        ...prevState,
-                        filter: {
-                          ...prevState.filter,
-                          sosial_status: selectedValue.value,
-                        },
-                      }));
-                    }}
-                    value={sosial_status}
-                    name="sosial_status"
-                    data={[
-                      nonasyncDefaultValue,
-                      ...StudentStatus
-                    ]}
-                    label="STATUS SOSIAL"
-                    placeholder="SEMUA"
-                  />
-                    </Box>
-                  </GridItem>
-                </GridContainer>
-            
-              </GridItem>
-              <GridItem xs={12} sm={12} md={12}>
-                <GridContainer>
-                  <GridItem xs={12} sm={12} md={12}>
-                    <Typography component="h5" style={{
-                      fontWeight: 'bold'
-                    }}>Usia Siswa</Typography>
-                  </GridItem>
-                </GridContainer>
-                <GridContainer>
-                  <GridItem xs={12} sm={12} md={6}>
-                    <Box className={classes.marginOptions}>
-                      <label htmlFor="">Mulai</label>
-                    <SelectWithSearch
-                      async={false}
-                      onChange={(selectedValue) => {
-                        controller.setFilterStatus((prevState) => ({
-                          ...prevState,
-                          filter: {
-                            ...prevState.filter,
-                            age_start: selectedValue.value,
-                          },
-                        }));
-                      }}
-                      value={controller.filterStatus.filter.age_start}
-                      name="age_start"
-                      data={[
-                        nonasyncDefaultValue,
-                        ...transformData
-                      ]}
-                      label="Mulai"
-                      placeholder="Mulai"
-                    />
-                    </Box>
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={6}>
-                    <Box className={classes.marginOptions}>
-                    <label htmlFor="">Hingga</label>
-                    <SelectWithSearch
-                      async={false}
-                      isDisabled={false}
-                      onChange={(selectedValue) => {
-                        controller.setFilterStatus((prevState) => ({
-                          ...prevState,
-                          filter: {
-                            ...prevState.filter,
-                            age_end: selectedValue.value,
-                          },
-                        }));
-                      }}
-                      value={controller.filterStatus.filter.age_end}
-                      name="age_end"
-                      data={[
-                        nonasyncDefaultValue,
-                        ...transformData
-                      ]}
-                      label="Hingga"
-                      placeholder="Hingga"
-                    />
-                    </Box>
-                  </GridItem>
-                </GridContainer>
-                <GridContainer>
-                  <GridItem xs={12} sm={12} md={12}>
-                    <Typography component="h5" style={{
-                      fontWeight: 'bold'
-                    }}>Tahun Masuk</Typography>
-                  </GridItem>
-                </GridContainer>
-                <GridContainer>
-                  <GridItem xs={12} sm={12} md={6}>
-                    <Box className={classes.marginOptions}>
-                    <label htmlFor="registered_year_start">Mulai</label>
+                    </>
+                  )}
+              </Box>
+            </GridItem>
+            <GridItem xs={12} sm={12} md={6}>
+              <Box className={classes.marginOptions}>
+                <Box style={{ marginBottom: '10px' }}>
+                  <label htmlFor="" style={{ fontWeight: 'bold', color: '#757575', fontSize: '14px', }}>PROVINSI MADRASAH</label>
+                </Box>
+                <SelectWithSearch
+                  async
+                  isDisabled={false}
+                  onChange={(selectedValue) => {
+                    const e = {
+                      target: {
+                        name: 'province',
+                        value: selectedValue.value
+                      }
+                    }
+                    handleChange(e)
+                  }}
+                  value={province}
+                  data={[
+                    asyncDefaultValue,
+                    ...controller.province
+                  ]}
+                  name="province"
+                  label="PROVINSI MADRASAH"
+                  placeholder={controller.loading ? "Loading..." : "SEMUA PROVINSI"}
+                />
+              </Box>
+            </GridItem>
+          </GridContainer>
+          <GridContainer>
+            <GridItem xs={12} sm={12} md={6}>
+              <Box className={classes.marginOptions}>
+                <Box style={{ marginBottom: '10px' }}>
+                  <label htmlFor="" style={{ fontWeight: 'bold', color: '#757575', fontSize: '14px', }}>KOTA MADRASAH</label>
+                </Box>
+                <SelectWithSearch
+                  async
+                  isDisabled={false}
+                  onChange={(selectedValue) => {
+                    controller.setFilterStatus((prevState) => ({
+                      ...prevState,
+                      filter: {
+                        ...prevState.filter,
+                        regency: selectedValue.value,
+                      },
+                    }));
+                  }}
+                  value={regency}
+                  data={[
+                    asyncDefaultValue,
+                    ...controller.regency
+                  ]}
+                  name="regency"
+                  label="KOTA MADRASAH"
+                  placeholder={controller.loading ? "Loading..." : "SEMUA KOTA"}
+                />
+              </Box>
+            </GridItem>
+            <GridItem xs={12} sm={12} md={6}>
+              <Box className={classes.marginOptions}>
+                <Box style={{ marginBottom: '10px' }}>
+                  <label htmlFor="" style={{ fontWeight: 'bold', color: '#757575', fontSize: '14px' }}>STATUS SOSIAL</label>
+                </Box>
+                <SelectWithSearch
+                  async={false}
+                  isDisabled={false}
+                  onChange={(selectedValue) => {
+                    controller.setFilterStatus((prevState) => ({
+                      ...prevState,
+                      filter: {
+                        ...prevState.filter,
+                        sosial_status: selectedValue.value,
+                      },
+                    }));
+                  }}
+                  value={sosial_status}
+                  name="sosial_status"
+                  data={[
+                    nonasyncDefaultValue,
+                    ...StudentStatus
+                  ]}
+                  label="STATUS SOSIAL"
+                  placeholder="SEMUA"
+                />
+              </Box>
+            </GridItem>
+          </GridContainer>
+
+        </GridItem>
+        <GridItem xs={12} sm={12} md={12}>
+          <GridContainer>
+            <GridItem xs={12} sm={12} md={12}>
+              <Typography component="h5" style={{ fontWeight: 'bold', color: '#757575', fontSize: '16px', }}>Usia Siswa</Typography>
+            </GridItem>
+          </GridContainer>
+          <GridContainer>
+            <GridItem xs={12} sm={12} md={6}>
+              <Box className={classes.marginOptions}>
+                <label htmlFor="" style={{fontSize:'12px'}}>Mulai</label>
+                <SelectWithSearch
+                  async={false}
+                  onChange={(selectedValue) => {
+                    controller.setFilterStatus((prevState) => ({
+                      ...prevState,
+                      filter: {
+                        ...prevState.filter,
+                        age_start: selectedValue.value,
+                      },
+                    }));
+                  }}
+                  value={controller.filterStatus.filter.age_start}
+                  name="age_start"
+                  data={[
+                    nonasyncDefaultValue,
+                    ...transformData
+                  ]}
+                  label="Mulai"
+                  placeholder="Mulai"
+                />
+              </Box>
+            </GridItem>
+            <GridItem xs={12} sm={12} md={6}>
+              <Box className={classes.marginOptions}>
+                <label htmlFor="" style={{fontSize:'12px'}}>Hingga</label>
+                <SelectWithSearch
+                  async={false}
+                  isDisabled={false}
+                  onChange={(selectedValue) => {
+                    controller.setFilterStatus((prevState) => ({
+                      ...prevState,
+                      filter: {
+                        ...prevState.filter,
+                        age_end: selectedValue.value,
+                      },
+                    }));
+                  }}
+                  value={controller.filterStatus.filter.age_end}
+                  name="age_end"
+                  data={[
+                    nonasyncDefaultValue,
+                    ...transformData
+                  ]}
+                  label="Hingga"
+                  placeholder="Hingga"
+                />
+              </Box>
+            </GridItem>
+          </GridContainer>
+          <GridContainer>
+            <GridItem xs={12} sm={12} md={12}>
+              <Typography component="h5" style={{ fontWeight: 'bold', color: '#757575', fontSize: '16px', }}>Tahun Masuk</Typography>
+            </GridItem>
+          </GridContainer>
+          <GridContainer>
+            <GridItem xs={12} sm={12} md={6}>
+              <Box className={classes.marginOptions}>
+                <label htmlFor="registered_year_start" style={{ fontSize: '12px' }}>Mulai</label>
+                <KeyboardDatePicker
+                  disableToolbar
+                  variant="inline"
+                  views={["year"]}
+                  style={{
+                    width: "100%",
+                  }}
+                  inputVariant="outlined"
+                  placeholder={
+                    registered_start === ""
+                      ? "Tahun Masuk"
+                      : moment(registered_start).toString()
+                  }
+                  id="date-picker-inline"
+                  label=""
+                  value={
+                    registered_start === ""
+                      ? null : moment(registered_start).toDate()
+                  }
+                  onChange={(date: any) => {
+                    controller.setFilterStatus((prevState) => ({
+                      ...prevState,
+                      filter: {
+                        ...prevState.filter,
+                        registered_start: moment(date).format("YYYY"),
+                      },
+                    }));
+                  }}
+                  KeyboardButtonProps={{
+                    "aria-label": "change date",
+                  }}
+                />
+              </Box>
+            </GridItem>
+            <GridItem xs={12} sm={12} md={6}>
+              <Box className={classes.marginOptions}>
+                <label htmlFor="" style={{ fontSize: '12px' }}>Hingga</label>
+                {_.toNumber(registered_end) < _.toNumber(registered_start) ? (
                   <KeyboardDatePicker
                     disableToolbar
                     variant="inline"
                     views={["year"]}
+                    inputVariant="outlined"
                     style={{
                       width: "100%",
                     }}
-                    inputVariant="outlined"
                     placeholder={
-                      registered_start === ""
+                      registered_end === ""
                         ? "Tahun Masuk"
-                        : moment(registered_start).toString()
+                        : moment(registered_end).toString()
                     }
                     id="date-picker-inline"
                     label=""
-                    value={
-                      registered_start === ""
-                        ? null : moment(registered_start).toDate()
-                    }
+                    value={registered_start}
                     onChange={(date: any) => {
                       controller.setFilterStatus((prevState) => ({
                         ...prevState,
                         filter: {
                           ...prevState.filter,
-                          registered_start: moment(date).format("YYYY"),
+                          registered_end: moment(date).format("YYYY"),
                         },
                       }));
                     }}
@@ -305,82 +346,47 @@ const ModalContentItems = () => {
                       "aria-label": "change date",
                     }}
                   />
-                    </Box>
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={6}>
-                    <Box className={classes.marginOptions}>
-                      <label htmlFor="">Hingga</label>
-                    {_.toNumber(registered_end) < _.toNumber(registered_start) ? (
-                        <KeyboardDatePicker
-                          disableToolbar
-                          variant="inline"
-                          views={["year"]}
-                          inputVariant="outlined"
-                          style={{
-                            width: "100%",
-                          }}
-                          placeholder={
-                            registered_end === ""
-                              ? "Tahun Masuk"
-                              : moment(registered_end).toString()
-                          }
-                          id="date-picker-inline"
-                          label=""
-                          value={registered_start}
-                          onChange={(date: any) => {
-                            controller.setFilterStatus((prevState) => ({
-                              ...prevState,
-                              filter: {
-                                ...prevState.filter,
-                                registered_end: moment(date).format("YYYY"),
-                              },
-                            }));
-                          }}
-                          KeyboardButtonProps={{
-                            "aria-label": "change date",
-                          }}
-                        />
-                      ) : (
-                        <KeyboardDatePicker
-                          disableToolbar
-                          variant="inline"
-                          views={["year"]}
-                          inputVariant="outlined"
-                          placeholder={
-                            registered_end === ""
-                              ? "Tahun Masuk"
-                              : moment(registered_end).toString()
-                          }
-                          id="date-picker-inline"
-                          label=""
-                          style={{
-                            width: "100%",
-                          }}
-                          value={
-                            registered_end === ""
-                              ? null
-                              : moment(registered_end).toDate()
-                          }
-                          onChange={(date: any) => {
-                            controller.setFilterStatus((prevState) => ({
-                              ...prevState,
-                              filter: {
-                                ...prevState.filter,
-                                registered_end: moment(date).format("YYYY"),
-                              },
-                            }));
-                          }}
-                          KeyboardButtonProps={{
-                            "aria-label": "change date",
-                          }}
-                        />
-                      )}
-                    </Box>
-                  </GridItem>
-                </GridContainer>
-              </GridItem>
-            </GridContainer>
-        </MuiPickersUtilsProvider>
+                ) : (
+                    <KeyboardDatePicker
+                      disableToolbar
+                      variant="inline"
+                      views={["year"]}
+                      inputVariant="outlined"
+                      placeholder={
+                        registered_end === ""
+                          ? "Tahun Masuk"
+                          : moment(registered_end).toString()
+                      }
+                      id="date-picker-inline"
+                      label=""
+                      style={{
+                        width: "100%",
+                      }}
+                      value={
+                        registered_end === ""
+                          ? null
+                          : moment(registered_end).toDate()
+                      }
+                      onChange={(date: any) => {
+                        controller.setFilterStatus((prevState) => ({
+                          ...prevState,
+                          filter: {
+                            ...prevState.filter,
+                            registered_end: moment(date).format("YYYY"),
+                          },
+                        }));
+                      }}
+                      KeyboardButtonProps={{
+                        "aria-label": "change date",
+                      }}
+                    />
+                  )}
+              </Box>
+            </GridItem>
+          </GridContainer>
+        </GridItem>
+      </GridContainer>
+    </MuiPickersUtilsProvider>
   );
 };
 

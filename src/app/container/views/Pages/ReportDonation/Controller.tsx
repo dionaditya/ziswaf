@@ -142,7 +142,7 @@ const ReportDonationController = ({ children }) => {
                      })
                     setState(prevState  => ({...prevState, unitData: [{name: 0, label: "Semua"}].concat(transformData)}))
                  } else {
-                    setState(prevState  => ({...prevState, unitData: []}))
+                    setState(prevState  => ({...prevState, unitData: [{label: "Belum Ada Unit"}]}))
                  }
              }
             } catch(error) {

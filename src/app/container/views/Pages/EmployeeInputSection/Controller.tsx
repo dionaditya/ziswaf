@@ -238,7 +238,7 @@ export const EmployeeInputController = ({ children }) => {
                 let listSchoolPresenter = await schoolPresenter.loadData()
                 dispatch({
                     type: ActionType.setSchoolExisting,
-                    payload: queryString["?school_id"] !== undefined ? queryString["?school_id"] : userAccess.school.id
+                    payload: queryString["?school_id"] !== undefined  ? Number(queryString["?school_id"]) : userAccess.role === 1 ? '' : userAccess.school.id
                 })
                 dispatch({
                     type: ActionType.setProvinceSchool, payload: {

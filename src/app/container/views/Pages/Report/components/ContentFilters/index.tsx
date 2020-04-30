@@ -46,8 +46,8 @@ const ContentFilters: React.FC<{}> = () => {
     const parseName = parseInt(name, 10);
 
     if (label !== "Semua") {
-        const data = [{ name: parseName, label: label }];
-        controller.handleSetFilter(field, data);
+      const data = [{ name: parseName, label: label }];
+      controller.handleSetFilter(field, data);
     } else {
       controller.handleSetFilter(field, []);
     }
@@ -68,6 +68,15 @@ const ContentFilters: React.FC<{}> = () => {
       selected: selected,
     };
   };
+
+  const formatResponse = (val) => {
+    switch (val) {
+      case 'Data Not Found':
+          return 'Data Tidak Ditemukan'
+      default:
+        return val
+    }
+  }
 
   return (
     <GridContainer style={{ padding: "10px 20px" }}>
@@ -159,7 +168,7 @@ const ContentFilters: React.FC<{}> = () => {
         {
           controller.message && <GridContainer>
             <GridItem xs={12} sm={12} md={12} style={{ marginTop: 10, display: 'flex', justifyContent: 'center', }}>
-              <span style={{ fontWeight: 800, color: 'red' }}>Data Tidak Ditemukan</span>
+              <span style={{ fontWeight: 800, color: 'red' }}>{formatResponse(controller.message)}</span>
             </GridItem>
           </GridContainer>
         }

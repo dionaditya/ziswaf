@@ -34,6 +34,9 @@ import { Details } from "@material-ui/icons";
 import Icon from "@material-ui/core/Icon";
 import InputSearch from "@/app/container/commons/InputSearch";
 import ButtonMenuNav from './ButtonMenu';
+import TabNav from "@/app/container/components/TabNav";
+import {useLocation} from 'react-router-dom'
+import qs from 'qs'
 
 const listColumnOptions = DonorTableColumn.map((val) => {
   return {
@@ -76,15 +79,34 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+const tabs = [
+  {
+    name: "List donatur yang sudah pernah donasi",
+    link: "/dashboard/donatur",
+  },
+  {
+    name: "List semua donatur",
+    link: `/dashboard/donatur?all=true`,
+  },
+];
+
 const DonorPage = () => {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [alertSucess, setSuccess] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
+  const [value, setValue] = React.useState(0)
 
   const xsmall = useMediaQuery("(min-width: 300px)" && "(max-width: 700px");
   const medium = useMediaQuery("(min-width: 701px)");
   const classes = useStyles();
   const controller = React.useContext(DonorContext);
+  const location = useLocation();
+
+  function useQuery() {
+    return qs.parse(location.search);
+  }
+
+  let query = useQuery();
 
   const handleSearchFunc = (e) => {
     controller.handleSearch(e)
@@ -105,7 +127,18 @@ const DonorPage = () => {
     setSuccess(false);
   };
 
-  
+  const handleChange = (e, i) => {
+    setValue(i);
+  };
+
+  React.useEffect(() => {
+    if(query['?all'] === 'true') {
+      setValue(1)
+    } else {
+      setValue(0)
+    }
+  }, [location.search])
+
 
   const ModalComponent = () => {
     return (
@@ -302,55 +335,63 @@ const DonorPage = () => {
           </GridContainer>
           <GridContainer>
             <GridItem xs={12} sm={12} md={12}>
-              <DonorData
-                options={controller.optionsTable}
-                loading={controller.loading}
-                data={controller.data}
-                column={controller.displayColumns}
-                // page={controller.filterStatus.paging.page}
-                // count={controller.filterStatus.paging.limit}
-                // handleSort={controller.handleSort}
-                // handleChangesRowsPerPage={controller.handleChangesRowsPerPage}
-              >
-                <CustomizedMenus>
-                <Link
-                    to={`/dashboard/donatur-${controller.isCompany.toLowerCase()}/${controller.tableIndex}?is_detail=true`}
-                    className="black-text"
-                    style={{
-                      textDecoration: 'none',
-                      color: '#000'
-                    }}
-                  >
-                    <Box className={classes.wrapper_menu}>
-                      <ListItemIcon>
-                        <Details fontSize="small" />
-                      </ListItemIcon>
-                      <ListItemText primary="Detail" />
-                    </Box>
-                  </Link>
+              <TabNav  
+                value={value}
+                handleChange={handleChange}
+                tabs={tabs}
+                link
+                render={(render) => (
+                  <DonorData
+                  options={controller.optionsTable}
+                  loading={controller.loading}
+                  data={controller.data}
+                  column={controller.displayColumns}
+                  // page={controller.filterStatus.paging.page}
+                  // count={controller.filterStatus.paging.limit}
+                  // handleSort={controller.handleSort}
+                  // handleChangesRowsPerPage={controller.handleChangesRowsPerPage}
+                >
+                  <CustomizedMenus>
                   <Link
-                    to={`/dashboard/donatur-${controller.isCompany.toLowerCase()}/${controller.tableIndex}`}
-                    className="black-text"
-                    style={{
-                      textDecoration: 'none',
-                      color: '#000'
-                    }}
-                  >
-                    <Box className={classes.wrapper_menu}>
-                      <ListItemIcon>
-                        <EditIcon fontSize="small" />
-                      </ListItemIcon>
-                      <ListItemText primary="Edit" />
-                    </Box>
-                  </Link>
-                  <Box className={classes.wrapper_menu} onClick={(e) => setDialogOpen(true)}>
+                      to={`/dashboard/donatur-${controller.isCompany.toLowerCase()}/${controller.tableIndex}?is_detail=true`}
+                      className="black-text"
+                      style={{
+                        textDecoration: 'none',
+                        color: '#000'
+                      }}
+                    >
+                      <Box className={classes.wrapper_menu}>
                         <ListItemIcon>
-                          <DeleteIcon fontSize="small" />
+                          <Details fontSize="small" />
                         </ListItemIcon>
-                        <ListItemText primary="Delete" />
-                  </Box>
-                </CustomizedMenus>
-              </DonorData>
+                        <ListItemText primary="Detail" />
+                      </Box>
+                    </Link>
+                    <Link
+                      to={`/dashboard/donatur-${controller.isCompany.toLowerCase()}/${controller.tableIndex}`}
+                      className="black-text"
+                      style={{
+                        textDecoration: 'none',
+                        color: '#000'
+                      }}
+                    >
+                      <Box className={classes.wrapper_menu}>
+                        <ListItemIcon>
+                          <EditIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary="Edit" />
+                      </Box>
+                    </Link>
+                    <Box className={classes.wrapper_menu} onClick={(e) => setDialogOpen(true)}>
+                          <ListItemIcon>
+                            <DeleteIcon fontSize="small" />
+                          </ListItemIcon>
+                          <ListItemText primary="Delete" />
+                    </Box>
+                  </CustomizedMenus>
+                </DonorData>
+                )} />
+              
             </GridItem>
           </GridContainer>
         </GridItem>

@@ -231,7 +231,7 @@ const EmployeeInputSection = () => {
       { id: id },
     ]);
     setProccessing(false);
-  }, [controller.employeeInput]);
+  }, [controller.employeeInput, location.search]);
 
 
 
@@ -938,7 +938,7 @@ const EmployeeInputSection = () => {
                                 label="Asal Unit"
                               />
                             ) : controller.userInfo.role === 1 ? (
-                              <>
+                              <> 
                                 <Controller
                                   as={
                                     <SelectWithSearch
@@ -957,8 +957,7 @@ const EmployeeInputSection = () => {
                                       data={controller.school}
                                       name="school_id"
                                       placeholder={
-                                        controller.employeeInput.school_id ||
-                                        "Asal Unit"
+                                       "Asal Unit"
                                       }
                                       label="Asal Unit"
                                     />
@@ -988,37 +987,21 @@ const EmployeeInputSection = () => {
                                     </p>
                                   )}
                               </>
-                            ) : queryString["?school_id"] !== undefined ? (
-                              <SelectWithSearch
-                                async
-                                onChange={onChange}
-                                value={controller.userInfo.school.id}
-                                data={[
-                                  {
-                                    id: controller.userInfo.school.id,
-                                    name: controller.userInfo.school.name,
-                                  },
-                                ]}
-                                name="school_id"
-                                label="Asal Unit"
-                             
-                              />
-                            ) : (
-                              <SelectWithSearch
-                                async
-                                isDisabled
-                                onChange={onChange}
-                                value={controller.userInfo.school.id}
-                                data={[
-                                  {
-                                    id: controller.userInfo.school.id,
-                                    name: controller.userInfo.school.name,
-                                  },
-                                ]}
-                                name="school_id"
-                                label="Asal Unit"
-                              />
-                            )}
+                            ) : <SelectWithSearch
+                            async
+                            isDisabled
+                            onChange={onChange}
+                            value={controller.userInfo.school.id}
+                            data={[
+                              {
+                                id: controller.userInfo.school.id,
+                                name: controller.userInfo.school.name,
+                              },
+                            ]}
+                            name="school_id"
+                            label="Asal Unit"
+                          />
+                            }
                           </Box>
                         </GridItem>
                       </GridContainer>

@@ -27,6 +27,7 @@ const roleAbilityAdmin: { id: number; name: string }[] = [
   { id: 26, name: "/donatur-perusahaan/:id" },
   { id: 27, name: "/donatur-perorangan/:id" },
   { id: 28, name: "/info-personel" },
+  { id: 28, name: "/info-personel/:id" },
   { id: 29, name: "upz-tanda-terima" },
   { id: 30, name: "/upz-tanda-terima/:transaction_id" },
   { id: 31, name: "/corporate-tanda-terima/:transaction_id" },
@@ -66,6 +67,8 @@ const roleAbilityOperator: { id: number; name: string }[] = [
   { id: 27, name: "/donatur-perorangan/:id" },
   { id: 28, name: "/donatur" },
   { id: 29, name: "/corporate/donor" },
+  { id: 30, name: "/info-personel" },
+  { id: 31, name: "/info-personel/:id" },
 ];
 
 export { roleAbilityAdmin, roleAbilityOperator };

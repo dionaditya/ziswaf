@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import BackNav from "@/app/container/components/BackNav";
 import { CorporateController } from "./Controller";
-import TabNav from "@/app/container/components/TabNav";
 import DonorInput from "./components/DonorInput";
 import DonationInput from "./components/DonationInput";
 import Receipts from "./components/Receipt";

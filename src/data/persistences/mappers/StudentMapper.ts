@@ -15,8 +15,11 @@ export class StudentMapper extends BaseResponseMapper {
 
         return data.data.map(val => {
             const educationStatus = EducationStatus.filter(e => e[0] === val.education_status)
-            const parentStatus = ParentStatus.filter(e => e[0]-1 === val.parent_status)
+            const parentStatus = ParentStatusMaster.filter(e => e[0] === val.parent_status)
             const studentStatus = StudentStatus.filter(e => e[0] === val.sosial_status)
+            const fatherStatus = ParentStatus.filter(e => e[0] === val.father_status)
+            const motherStatus = ParentStatus.filter(e => e[0] === val.mother_status)
+            
             return new Student(
                 val.id,
                 val.identity_number,
@@ -50,13 +53,13 @@ export class StudentMapper extends BaseResponseMapper {
                 moment(val.birth_of_date_father).format('dddd, DD MMMM YYYY'),
                 val.father_occupation,
                 val.father_phone,
-                parentStatus[0][1],
+                fatherStatus[0][1],
                 val.mother_name,
                 val.place_of_birth_mother,
                 moment(val.birth_of_date_mother).format('dddd, DD MMMM YYYY'),
                 val.mother_occupation,
                 val.mother_phone,
-                parentStatus[0][1],
+                motherStatus[0][1],
                 val.image,
                 val.province_id,
                 val.regency_id,

@@ -603,6 +603,7 @@ export const CorporateController = ({ children }) => {
 
 
     const handleSelectedDonatur = async (e) => {
+        setSelected(false)
         const SelectedDonatur = state.donatur.filter(val => val.id === e.key)
         const provinceId = state.province.filter(val => val.name === SelectedDonatur[0].province_id)
 

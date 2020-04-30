@@ -700,7 +700,6 @@ const DonorInput = ({ index, setIndex }) => {
                                       Email tidak valid
                                     </p>
                                   )}  
-                                />
                               </div>
                             ) : (
                               <div />

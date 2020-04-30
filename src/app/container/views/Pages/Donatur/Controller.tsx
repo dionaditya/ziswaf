@@ -8,10 +8,10 @@ import { CityPresenter } from "@/app/infrastructures/Presenter/City/Presenter";
 import { EmployeePresenter } from "@/app/infrastructures/Presenter/Employee/Presenter";
 import { getUserInfo } from "@/app/infrastructures/misc/Cookies";
 import { useDebounce } from "use-lodash-debounce";
-import { nonSortAbleDonorColumn } from '@/domain/entities/AllOptions';
-import { createContainer } from 'react-tracked'    
-
-
+import { nonSortAbleDonorColumn } from "@/domain/entities/AllOptions";
+import { createContainer } from "react-tracked";
+import qs from "qs";
+import { useLocation } from "react-router-dom";
 
 export enum ActionType {
   handleModal = "HANDLEMODAL",
@@ -90,8 +90,8 @@ export interface IState {
   loadData: Function;
   debounce: Function;
   setFilterStatus: Function;
-  isCompany: string
-  handleCloseModal: Function
+  isCompany: string;
+  handleCloseModal: Function;
 }
 
 const initialState: IState = {
@@ -164,7 +164,7 @@ const initialState: IState = {
     },
     search: "",
     sort: {
-      id: 'DESC',
+      id: "DESC",
     },
   },
   userInfo: {},
@@ -183,8 +183,8 @@ const initialState: IState = {
   loadData: () => {},
   debounce: () => {},
   setFilterStatus: () => {},
-  isCompany: '',
-  handleCloseModal: () => {}
+  isCompany: "",
+  handleCloseModal: () => {},
 };
 
 const reducer: React.Reducer<IState, IAction> = (state, action) => {
@@ -283,14 +283,12 @@ const reducer: React.Reducer<IState, IAction> = (state, action) => {
   }
 };
 
+const useValue = ({ reducer, initialState }) =>
+  useReducer(reducer, initialState);
 
-const useValue = ({ reducer, initialState }) => useReducer(reducer, initialState);
-
-const {
-  Provider,
-  useTracked,
-} = createContainer(() => useReducer(reducer, initialState));
-
+const { Provider, useTracked } = createContainer(() =>
+  useReducer(reducer, initialState)
+);
 
 export const DonorContext = React.createContext<IState>(initialState);
 const { Provider: DonorProvider } = DonorContext;
@@ -298,13 +296,19 @@ const { Provider: DonorProvider } = DonorContext;
 const DonorController = ({ children }) => {
   const [state, dispatch] = useTracked();
 
-
   const [tableIndex, setTableIndex] = React.useState(0);
   const [userInfo, setUserInfo] = React.useState<any>({});
   const [isFilter, setFilter] = React.useState(false);
   const [querySchool, setQuerySchool] = React.useState("");
   const debouncedSchool = useDebounce(querySchool, 100);
+  const location = useLocation();
 
+  function useQuery() {
+    const location = useLocation();
+    return qs.parse(location.search);
+  }
+
+  let query = useQuery();
 
   const [filterStatus, setFilterStatus] = React.useState<any>({
     paging: {
@@ -333,10 +337,9 @@ const DonorController = ({ children }) => {
   let employeePresenter: EmployeePresenter = container.resolve(
     EmployeePresenter
   );
-  const [isCompany, setIsCompany] = React.useState('')
+  const [isCompany, setIsCompany] = React.useState("");
 
   let userAccess = getUserInfo();
-
 
   useEffect(() => {
     const getData = async () => {
@@ -346,10 +349,10 @@ const DonorController = ({ children }) => {
         const listDonor = await donorPresenter.getAllWithPagination({
           ...filterStatus,
         });
-        if(listDonor.data.data !== null) {
+        if (listDonor.data.data !== null) {
           setPagination({
             total: listDonor.data.pagination.total,
-            page: listDonor.data.pagination.current_page-1,
+            page: listDonor.data.pagination.current_page - 1,
             rowsPerPage: listDonor.data.pagination.page_size,
           });
           setUserInfo(userAccess);
@@ -365,31 +368,30 @@ const DonorController = ({ children }) => {
           dispatch({ type: ActionType.setData, payload: [] });
           dispatch({ type: ActionType.setLoading, payload: false });
         }
-         
       } else {
         dispatch({ type: ActionType.setLoading, payload: true });
         const listDonor = await donorPresenter.getAllWithPagination({
           ...filterStatus,
           filter: {
             ...filterStatus.filter,
-            school_id: userAccess.school.id
-          }
+            school_id: query['?all'] !== 'true' ? userAccess.school.id : '',
+          },
         });
         setUserInfo(userAccess);
-        setFilterStatus(prevState => ({
+        setFilterStatus((prevState) => ({
           ...prevState,
-          filter: { 
+          filter: {
             ...prevState.filter,
-            school_id: userAccess.school.id
+            school_id: query['?all'] !== 'true' ? userAccess.school.id : '',
           },
         }));
-        if(listDonor.data.data !== null) {
+        if (listDonor.data.data !== null) {
           setPagination({
             total: listDonor.data.pagination.total,
-            page: listDonor.data.pagination.current_page-1,
+            page: listDonor.data.pagination.current_page - 1,
             rowsPerPage: listDonor.data.pagination.page_size,
           });
-        
+
           dispatch({
             type: ActionType.setSchool,
             payload: userAccess.school.id,
@@ -402,7 +404,7 @@ const DonorController = ({ children }) => {
             page: listDonor.data.pagination.current_page,
             rowsPerPage: listDonor.data.pagination.page_size,
           });
-        
+
           dispatch({
             type: ActionType.setSchool,
             payload: userAccess.school.id,
@@ -410,15 +412,10 @@ const DonorController = ({ children }) => {
           dispatch({ type: ActionType.setData, payload: [] });
           dispatch({ type: ActionType.setLoading, payload: false });
         }
-      
       }
     };
-
-    getData();  
-
-   
-  }, []);
-
+    getData();
+  }, [location.search]);
 
   const optionsTable = {
     filterType: "dropdown",
@@ -428,7 +425,7 @@ const DonorController = ({ children }) => {
     selectableRowsHeader: false,
     textLabels: {
       body: {
-        noMatch: state.loading ? 'loading...' : "Maaf tidak ada data",
+        noMatch: state.loading ? "loading..." : "Maaf tidak ada data",
       },
     },
     search: false,
@@ -444,7 +441,7 @@ const DonorController = ({ children }) => {
     onCellClick: (colData, celMeta: { colIndex; rowIndex; dataIndex }) => {
       const idData = state.data[celMeta.dataIndex]["id"];
       setTableIndex(idData);
-      setIsCompany(state.data[celMeta.dataIndex]["is_company"])
+      setIsCompany(state.data[celMeta.dataIndex]["is_company"]);
     },
     setCellHeaderProps: () => ({ align: "center" }),
     setCellProps: () => ({ align: "center" }),
@@ -467,7 +464,7 @@ const DonorController = ({ children }) => {
                 },
               }
             );
-            setFilterStatus(prevState => ({
+            setFilterStatus((prevState) => ({
               ...prevState,
               sort: {
                 [state.displayColumns[tableState.activeColumn]["name"]]: "ASC",
@@ -488,7 +485,7 @@ const DonorController = ({ children }) => {
                 },
               }
             );
-            setFilterStatus(prevState => ({
+            setFilterStatus((prevState) => ({
               ...prevState,
               sort: {
                 [state.displayColumns[tableState.activeColumn]["name"]]: "DESC",
@@ -508,13 +505,13 @@ const DonorController = ({ children }) => {
             ...filterStatus,
             paging: {
               ...filterStatus.paging,
-              page: tableState.page+1,
+              page: tableState.page + 1,
             },
           });
           setFilterStatus({
             ...filterStatus,
             paging: {
-              page: tableState.page+1,
+              page: tableState.page + 1,
               limit: tableState.rowsPerPage,
             },
           });
@@ -529,7 +526,7 @@ const DonorController = ({ children }) => {
             });
             dispatch({ type: ActionType.setLoading, payload: false });
           }
-          
+
           break;
         case "changeRowsPerPage":
           const donorSortedByRows = await donorPresenter.getAllWithPagination({
@@ -568,65 +565,65 @@ const DonorController = ({ children }) => {
   };
 
   const handleModal = async (e: any) => {
-      dispatch({ type: ActionType.handleModal });
+    dispatch({ type: ActionType.handleModal });
+    dispatch({
+      type: ActionType.setLoading,
+      payload: true,
+    });
+
+    let listSchool = await schoolPresenter.loadData();
+    let listRegency = await regencyPresenter.loadData();
+
+    if (userInfo.role === 1) {
+      dispatch({
+        type: ActionType.setSchool,
+        payload: listSchool.data.data,
+      });
+      dispatch({ type: ActionType.setRegency, payload: listRegency });
       dispatch({
         type: ActionType.setLoading,
-        payload: true,
+        payload: false,
       });
+    } else {
+      let filterOperator = listSchool.data.data.filter(
+        (val) => val.id === userInfo.school.id
+      );
 
-      let listSchool = await schoolPresenter.loadData();
-      let listRegency = await regencyPresenter.loadData();
-
-      if (userInfo.role === 1) {
+      if (filterOperator !== null && filterOperator !== undefined) {
+        setFilterStatus((prevState) => ({
+          ...prevState,
+          filter: {
+            ...prevState.filter,
+            school_id: filterOperator[0].id,
+          },
+        }));
         dispatch({
           type: ActionType.setSchool,
-          payload: listSchool.data.data
+          payload: listSchool.data.data,
         });
         dispatch({ type: ActionType.setRegency, payload: listRegency });
         dispatch({
           type: ActionType.setLoading,
           payload: false,
         });
-      } else {
-        let filterOperator = listSchool.data.data.filter(
-          (val) => val.id === userInfo.school.id
-        );
-
-        if (filterOperator !== null && filterOperator !== undefined) {
-          setFilterStatus(prevState => ({
-            ...prevState,
-            filter: {
-              ...prevState.filter,
-              school_id: filterOperator[0].id
-            }
-          }))
-          dispatch({
-            type: ActionType.setSchool,
-            payload: listSchool.data.data,
-          });
-          dispatch({ type: ActionType.setRegency, payload: listRegency });
-          dispatch({
-            type: ActionType.setLoading,
-            payload: false,
-          });
-        }
       }
+    }
   };
 
   const handleCloseModal = () => {
-     dispatch({ type: ActionType.handleModal });
-  }
+    dispatch({ type: ActionType.handleModal });
+  };
 
   const handleSearchDonorQuery = (e: any) => {
     e.persist();
-    setFilterStatus(prevState => ({
+    setFilterStatus((prevState) => ({
       ...prevState,
       search: e.target.value,
     }));
   };
 
-  const handleSelectedColumn = (e: { target: { value: any; name: any } })  => {
-    if(nonSortAbleDonorColumn.includes(e.target.value)) {
+  const handleSelectedColumn = (e: { target: { value: any; name: any } }) => {
+    if (nonSortAbleDonorColumn.includes(e.target.value)) {
       dispatch({
         type: ActionType.handleSelectedColumn,
         payload: {
@@ -645,98 +642,89 @@ const DonorController = ({ children }) => {
         },
       });
     }
-   
-  }
-   
+  };
 
   const handleChangeFilter = (e: any) => {
-    setFilterStatus(prevState => ({
-        ...prevState,
-        filter: {
-          ...prevState.filter,
-          [e.target.name]: e.target.value,
-        },
-      }));
+    setFilterStatus((prevState) => ({
+      ...prevState,
+      filter: {
+        ...prevState.filter,
+        [e.target.name]: e.target.value,
+      },
+    }));
   };
 
   const handleCTA = async (state: { filterStatus: any }) => {
-     dispatch({ type: ActionType.setLoading, payload: true });
-     
-      const listFilteredDonor = await donorPresenter.getAllWithPagination(
-        {
-          ...filterStatus,
-        }
-      );
-      if (listFilteredDonor.data.data === null) {
-        setFilter(true);
-        dispatch({ type: ActionType.setData, payload: [] });
-        setPagination({
-          total: listFilteredDonor.data.pagination.total,
-          page: listFilteredDonor.data.pagination.current_page,
-          rowsPerPage: listFilteredDonor.data.pagination.page_size,
-        });
-        dispatch({ type: ActionType.handleModal });
-        dispatch({ type: ActionType.setLoading, payload: false });
-     
-      } else {
-        setFilter(true);
-        dispatch({ type:  ActionType.setData, payload: listFilteredDonor.data.data });
-        setPagination({
-          total: listFilteredDonor.data.pagination.total,
-          page: listFilteredDonor.data.pagination.current_page-1,
-          rowsPerPage: listFilteredDonor.data.pagination.page_size,
-        });
-        dispatch({ type: ActionType.handleModal });
-        dispatch({ type: ActionType.setLoading, payload: false });
-     
-      }
+    dispatch({ type: ActionType.setLoading, payload: true });
+
+    const listFilteredDonor = await donorPresenter.getAllWithPagination({
+      ...filterStatus,
+    });
+    if (listFilteredDonor.data.data === null) {
+      setFilter(true);
+      dispatch({ type: ActionType.setData, payload: [] });
+      setPagination({
+        total: listFilteredDonor.data.pagination.total,
+        page: listFilteredDonor.data.pagination.current_page,
+        rowsPerPage: listFilteredDonor.data.pagination.page_size,
+      });
+      dispatch({ type: ActionType.handleModal });
+      dispatch({ type: ActionType.setLoading, payload: false });
+    } else {
+      setFilter(true);
+      dispatch({
+        type: ActionType.setData,
+        payload: listFilteredDonor.data.data,
+      });
+      setPagination({
+        total: listFilteredDonor.data.pagination.total,
+        page: listFilteredDonor.data.pagination.current_page - 1,
+        rowsPerPage: listFilteredDonor.data.pagination.page_size,
+      });
+      dispatch({ type: ActionType.handleModal });
+      dispatch({ type: ActionType.setLoading, payload: false });
+    }
   };
 
   const handleSearch = async (controller: { filterStatus: string }) => {
-      dispatch({ type: ActionType.setLoading, payload: true });
-      const listDonor = await donorPresenter.getAllWithPagination({
-        search: filterStatus.search,
-        filter: filterStatus.filter,
-        sort: {
-          id: 'DESC'
-        }
+    dispatch({ type: ActionType.setLoading, payload: true });
+    const listDonor = await donorPresenter.getAllWithPagination({
+      search: filterStatus.search,
+      filter: filterStatus.filter,
+      sort: {
+        id: "DESC",
+      },
+    });
+    if (listDonor.data.data === null) {
+      dispatch({ type: ActionType.setData, payload: [] });
+      setPagination({
+        total: listDonor.data.pagination.total,
+        page: listDonor.data.pagination.current_page,
+        rowsPerPage: listDonor.data.pagination.page_size,
       });
-      if (listDonor.data.data === null) {
-        dispatch({ type: ActionType.setData, payload: [] });
-        setPagination({
-          total: listDonor.data.pagination.total,
-          page: listDonor.data.pagination.current_page,
-          rowsPerPage: listDonor.data.pagination.page_size,
-        });
-        return dispatch({ type: ActionType.setLoading, payload: false });
-      } else {
-        dispatch({ type: ActionType.setData, payload: listDonor.data.data });
-        setPagination({
-          total: listDonor.data.pagination.total,
-          page: listDonor.data.pagination.current_page-1,
-          rowsPerPage: listDonor.data.pagination.page_size,
-        });
-        return dispatch({ type: ActionType.setLoading, payload: false });
-      }
-    };
- 
-
-
-
+      return dispatch({ type: ActionType.setLoading, payload: false });
+    } else {
+      dispatch({ type: ActionType.setData, payload: listDonor.data.data });
+      setPagination({
+        total: listDonor.data.pagination.total,
+        page: listDonor.data.pagination.current_page - 1,
+        rowsPerPage: listDonor.data.pagination.page_size,
+      });
+      return dispatch({ type: ActionType.setLoading, payload: false });
+    }
+  };
 
   const handleResetFilter = (e) => {
-     const resetFilter = {
-        ...initialState.filterStatus.filter,
-        school_id: userInfo.school.id,
-      };
+    const resetFilter = {
+      ...initialState.filterStatus.filter,
+      school_id: userInfo.school.id,
+    };
     if (userInfo.role === 2) {
-     
       setFilterStatus((prevState) => ({
         ...prevState,
         filter: resetFilter,
       }));
     } else {
- 
       setFilterStatus((prevState) => ({
         ...prevState,
         filter: initialState.filterStatus.filter,
@@ -761,7 +749,7 @@ const DonorController = ({ children }) => {
         });
         setPagination({
           total: listDonor.data.pagination.total,
-          page: listDonor.data.pagination.current_page-1,
+          page: listDonor.data.pagination.current_page - 1,
           rowsPerPage: listDonor.data.pagination.page_size,
         });
         dispatch({
@@ -790,19 +778,17 @@ const DonorController = ({ children }) => {
           label: val.name,
         };
       });
-      callback(transformData)
-    }, 100)
+      callback(transformData);
+    }, 100);
   };
   const debounce = async (inputValue, action) => {
     const inputValues = inputValue.replace(/\W/g, "");
     setQuerySchool(inputValues);
-    return inputValues
+    return inputValues;
   };
 
-
-
   return (
-      <DonorProvider
+    <DonorProvider
       value={{
         ...state,
         filterStatus: filterStatus,
@@ -818,29 +804,21 @@ const DonorController = ({ children }) => {
         handleDelete: handleDelete,
         userInfo: userAccess,
         debounce,
-        loadData,    
+        loadData,
         setFilterStatus,
         isCompany,
-        handleCloseModal
+        handleCloseModal,
       }}
     >
       {children}
     </DonorProvider>
-    
   );
-
- 
 };
 
-export const AppProvider = ({children}) => {
-    return(
-      <Provider>
-         <DonorController>
-             {children}
-         </DonorController>
-      </Provider>
-      )
-}
-
-
-
+export const AppProvider = ({ children }) => {
+  return (
+    <Provider>
+      <DonorController>{children}</DonorController>
+    </Provider>
+  );
+};

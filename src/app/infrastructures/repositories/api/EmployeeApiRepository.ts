@@ -73,6 +73,7 @@ export class EmployeeApiRepository implements EmployeeRepositoryInterface {
                 {},
                 payload
             )
+            console.log(...payload.toFormData())
             return response 
         } catch (e) {
             return e.response

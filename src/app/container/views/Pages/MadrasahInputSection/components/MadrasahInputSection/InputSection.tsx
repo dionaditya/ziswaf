@@ -716,13 +716,13 @@ const SectionInput = () => {
                 >
                   <Button
                     style={{
-                      width: "25%",
-                      height: "10vh",
-                      backgroundColor: "#00923F",
-                      color: "#FFFFFF",
+                      color: "#fff",
+                      marginTop: "40px",
+                      width: "174px",
+                      height: '49px'
                     }}
-                    color="success"
                     isLoading={loading ? true : false}
+                    color="primary"
                     type="submit"
                     onClick={(e) => null}
                   >

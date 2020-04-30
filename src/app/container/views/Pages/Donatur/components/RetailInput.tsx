@@ -151,7 +151,7 @@ const DataInput = () => {
           appearance: "success",
         });
         setTimeout(() => {
-          history.push(`/dashboard/donatur`);
+          history.push(`/dashboard/donatur?all=true`);
         }, 1000);
       }
     }
