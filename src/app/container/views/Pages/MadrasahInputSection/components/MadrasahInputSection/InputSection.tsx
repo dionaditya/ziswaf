@@ -129,42 +129,16 @@ const SectionInput = () => {
         controller.dispatch
       );
       if (status === "success") {
-        if (response !== undefined) {
-          if (response.status === 201 || response.status === 200) {
-            addToast("Data ma`had telah tersimpan", { appearance: "success" });
-            setTimeout(() => {
-              history.push("/dashboard/madrasah");
-            }, 2000);
-          } else if (response.status === 422) {
-            addToast(response.data.message, { appearance: "error" });
-          } else if (response.status === 400) {
-            addToast(response.data.message, { appearance: "error" });
-          } else if (response.status === 500) {
-            addToast(
-              "Tidak dapat menyimpan data ma`had karena gangguan server",
-              { appearance: "error" }
-            );
-          } else {
-            addToast("Tidak dapat menyimpan data ma`had ke sever", {
-              appearance: "error",
-            });
-          }
-        } else {
-          addToast("Tidak dapat menyimpan data ma`had karena gangguan server", {
-            appearance: "error",
-          });
-        }
+        addToast("Data ma`had telah tersimpan", { appearance: "success" });
+        setTimeout(() => {
+          history.push("/dashboard/madrasah");
+        }, 2000);
       } else {
         if (response !== undefined) {
-          if (response.status === 201 || response.status === 200) {
-            addToast("Data ma`had telah tersimpan", { appearance: "success" });
-            // setTimeout(() => {
-            //   history.push("/dashboard/madrasah");
-            // }, 2000);
-          } else if (response.status === 422) {
-            addToast(response.message, { appearance: "error" });
+          if (response.status === 422) {
+            addToast(response.data.message, { appearance: "error" });
           } else if (response.status === 400) {
-            addToast(response.message, { appearance: "error" });
+            addToast(response.data.message, { appearance: "error" });
           } else if (response.status === 500) {
             addToast(
               "Tidak dapat menyimpan data ma`had karena gangguan server",
@@ -234,6 +208,7 @@ const SectionInput = () => {
     setProccessing(false);
   }, [controller.inputSchoolData]);
 
+  console.log(controller.inputSchoolData)
 
   return (
     <MuiPickersUtilsProvider utils={MomentUtils}>
@@ -371,6 +346,15 @@ const SectionInput = () => {
                       )}
                   </GridItem>
                   <GridItem xs={12} sm={12} md={12} style={{ marginTop: "5vh" }}>
+                  <label
+                      htmlFor="address"
+                      className={
+                        errors && errors.address ? "red-text" : "black-text"
+                      }
+                      style={{ fontSize: '12px', fontWeight: 'bold' }}
+                    >
+                      Pilih Provinsi
+                  </label>
                     <Controller
                       as={
                         <SelectWithSearch
@@ -387,7 +371,7 @@ const SectionInput = () => {
                           }}
                           value={controller.inputSchoolData.province_id || ""}
                           data={controller.province || ""}
-                          name="province"
+                          name="province_id"
                           label="Provinsi"
                           placeholder={controller.inputSchoolData.province_id || 'Pilih Provinsi'}
                         />
@@ -416,6 +400,15 @@ const SectionInput = () => {
                       )}
                   </GridItem>
                   <GridItem xs={12} sm={12} md={12} style={{ marginTop: "5vh" }}>
+                  <label
+                      htmlFor="address"
+                      className={
+                        errors && errors.address ? "red-text" : "black-text"
+                      }
+                      style={{ fontSize: '12px', fontWeight: 'bold' }}
+                    >
+                      Pilih Kota
+                  </label>
                     <Controller
                       as={
                         <SelectWithSearch
@@ -432,7 +425,7 @@ const SectionInput = () => {
                           }}
                           value={controller.inputSchoolData.regency_id || ""}
                           data={controller.city}
-                          name="regency"
+                          name="regency_id"
                           label="Kota"
                           placeholder={controller.inputSchoolData.regency_id || 'Pilih Kota'}
                         />
@@ -646,7 +639,6 @@ const SectionInput = () => {
                         Email
                     </label>
                       <TextField
-                        // value={controller.inputSchoolData.email}
                         onChange={handleChange}
                         placeholder="Alamat surel"
                         style={{
@@ -654,10 +646,10 @@ const SectionInput = () => {
                         }}
                         id="email"
                         variant="outlined"
-                        type="text"
+                        type="email"
                         name="email"
                         inputRef={register({
-                          required: "Tidak boleh kosong",
+                          required: true,
                         })}
                       />
                       {errors &&

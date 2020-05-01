@@ -104,7 +104,11 @@ const reducer: React.Reducer<IState, IAction> = (state, action) => {
             return { ...state, city: action.payload }
 
         case ActionType.setMadrasahData:
-            return { ...state, inputSchoolData: action.payload }
+            return { ...state, inputSchoolData: {
+                ...action.payload,
+                province_id: action.payload.province_name,
+                regency_id: action.payload.regency_name
+            } }
 
         default:
             return state
@@ -195,7 +199,7 @@ export const UserListInputController = ({ children }) => {
 
     const handleSubmit = (e) => async dispatch => {
         if(id !== undefined) {
-            const updateUser = await schoolPresenter.updateSchoolData(new SchoolApiRequest(
+            const updateSchool = await schoolPresenter.updateSchoolData(new SchoolApiRequest(
                 state.inputSchoolData.name,
                 state.inputSchoolData.phone,
                 state.inputSchoolData.email,
@@ -208,17 +212,12 @@ export const UserListInputController = ({ children }) => {
                 state.inputSchoolData.address
             ), _.toNumber(id))
 
-            const [status, response] = updateUser
-            if(status === 'success') {
-                return ['success', response]
-            } else {
-                return ['error', response]
-            }
+           return updateSchool
         } else {
             dispatch({
                 type: ActionType.setLoading, payload: true
             })
-            const postUser = await schoolPresenter.postNewSchoolData(new SchoolApiRequest(
+            const postSchool = await schoolPresenter.postNewSchoolData(new SchoolApiRequest(
                 state.inputSchoolData.name,
                 state.inputSchoolData.phone,
                 state.inputSchoolData.email,
@@ -233,12 +232,7 @@ export const UserListInputController = ({ children }) => {
             dispatch({
                 type: ActionType.setLoading, payload: true
             })
-            const [status, response] = postUser
-            if(status === 'success') {
-                return ['success', response]
-            } else {
-                return ['error', response]
-            }
+            return postSchool
 
         }
     }

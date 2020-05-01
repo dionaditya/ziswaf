@@ -13,8 +13,15 @@ import Box from "@material-ui/core/Box";
 import TableCell from "@material-ui/core/TableCell";
 import GridContainer from "@/app/container/commons/Grid/GridContainer";
 import GridItem from "@/app/container/commons/Grid/GridItem";
-import { StudentListTableColumn } from "@/domain/entities/AllOptions";
-import { createContainer } from 'react-tracked' 
+import Avatar from "@material-ui/core/Avatar";
+import { createContainer } from "react-tracked";
+import {
+  nonSortAbleStudentDataTable,
+  StudentListTableColumn,
+  StudentInfo,
+  EducationInfo,
+  ParentInfo,
+} from "@/domain/entities/AllOptions";
 
 interface IState {
   data: any;
@@ -463,70 +470,324 @@ const MadrasahInfoController = ({ children }) => {
     renderExpandableRow: (rowData, rowMeta) => {
       return (
         <>
-          <TableCell colSpan={5}>
+          <TableCell colSpan={7}>
             <div
               style={{
                 width: "100%",
                 height: "100%",
-                paddingLeft: "60px",
+                paddingLeft: "40px",
               }}
             >
               <GridContainer>
                 <GridItem xs={12} sm={12} md={12}>
                   <GridContainer>
-                    <GridItem xs={12} sm={12} md={3} mb={4} mr={2}>
-                      <Box display="flex" marginBottom="20px">
-                        <div
-                          style={{
-                            width: "82px",
-                            height: "82px",
-                            border: "1px solid #979797",
-                            borderRadius: "50%",
-                          }}
-                        >
-                          <img
-                            src={state.students[rowMeta.dataIndex]["image"]}
-                            alt="foto siswa"
-                            width="80px"
-                            height="80px"
-                            style={{
-                              border: "2px solid transparent",
-                              borderRadius: "50%",
-                            }}
-                          />
-                        </div>
-                      </Box>
-                    </GridItem>
-                    <GridItem xs={12} sx={12} md={9}>
-                      {StudentListTableColumn.map((val) => {
-                        return (
+                    <GridItem xs={12} sm={12} md={12} mb={4} mr={2}>
+                      <GridContainer>
+                        <GridItem xs={12} sm={12} md={3}>
+                            <div
+                              style={{
+                                width: "82px",
+                                height: "82px",
+                                border: "1px solid #979797",
+                                borderRadius: "50%",
+                              }}
+                            >
+                              {state.students[rowMeta.dataIndex]["image"] ===
+                                "" ||
+                              state.students[rowMeta.dataIndex]["image"] ===
+                                null ? (
+                                <Avatar
+                                  style={{
+                                    background: "orange",
+                                    width: "82px",
+                                    height: "82px",
+                                  }}
+                                >
+                                  {state.students[rowMeta.dataIndex]["name"][0]}
+                                </Avatar>
+                              ) : (
+                                <img
+                                  src={
+                                    state.students[rowMeta.dataIndex]["image"]
+                                  }
+                                  alt="foto siswa"
+                                  width="80px"
+                                  height="80px"
+                                  style={{
+                                    border: "2px solid transparent",
+                                    borderRadius: "50%",
+                                  }}
+                                />
+                              )}
+                            </div>
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={9}>
                           <GridContainer>
-                            <GridItem xs={3} sm={3} md={4}>
+                            <GridItem xs={12} sm={12} md={12}>
                               <Typography
-                                component="p"
+                                component="h5"
                                 style={{
-                                  fontSize: "14px",
-                                  color: "rgba(50, 60, 71, 0.6)",
-                                }}
-                              >
-                                {val[1]}:
-                              </Typography>
-                            </GridItem>
-                            <GridItem xs={3} sm={3} md={6}>
-                              <Typography
-                                component="p"
-                                style={{
-                                  fontSize: "14px",
+                                  fontSize: "32px",
                                   color: "#354052",
                                   fontWeight: "bold",
                                 }}
                               >
-                                {state.students[rowMeta.dataIndex][val[0]]}
+                                {state.students[rowMeta.dataIndex]["name"]}
+                              </Typography>
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={12}>
+                              <Typography
+                                component="p"
+                                style={{
+                                  fontSize: "16px",
+                                  color: "rgba(50, 60, 71, 0.6)",
+                                }}
+                              >
+                                {state.students[rowMeta.dataIndex]["school_id"]}
+                              </Typography>
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={12}>
+                              <Typography
+                                component="p"
+                                style={{
+                                  fontSize: "16px",
+                                  color: "rgba(50, 60, 71, 0.6)",
+                                }}
+                              >
+                                {
+                                  state.students[rowMeta.dataIndex][
+                                    "identity_number"
+                                  ]
+                                }
                               </Typography>
                             </GridItem>
                           </GridContainer>
-                        );
-                      })}
+                        </GridItem>
+                      </GridContainer>
+                    </GridItem>
+                    <GridItem xs={12} sx={12} md={12}>
+                      <GridContainer>
+                        <GridItem xs={12} sm={12} md={12}>
+                          <GridContainer>
+                            <GridItem
+                              xs={12}
+                              sm={12}
+                              md={6}
+                              style={{
+                                marginTop: "20px",
+                              }}
+                            >
+                              <GridContainer>
+                                <GridItem
+                                  xs={12}
+                                  sm={12}
+                                  md={12}
+                                  style={{
+                                    marginBottom: "20px",
+                                  }}
+                                >
+                                  <Typography
+                                    component="p"
+                                    style={{
+                                      fontSize: "16px",
+                                      color: "rgba(50, 60, 71, 0.6)",
+                                      fontWeight: "bold",
+                                      display: "flex",
+                                      flexDirection: "column",
+                                    }}
+                                  >
+                                    <span> Info Data Siswa</span>
+                                    <Box
+                                      style={{
+                                        height: "5px",
+                                        width: "100%",
+                                        background: "rgb(109, 180, 0)",
+                                      }}
+                                    />
+                                  </Typography>
+                                </GridItem>
+                                {StudentInfo.map((val) => {
+                                  return (
+                                    <>
+                                      <GridItem xs={6} sm={6} md={6}>
+                                        <Typography
+                                          component="p"
+                                          style={{
+                                            fontSize: "14px",
+                                            color: "rgba(50, 60, 71, 0.6)",
+                                          }}
+                                        >
+                                          {val[1]}:
+                                        </Typography>
+                                      </GridItem>
+                                      <GridItem xs={6} sm={6} md={6}>
+                                        <Typography
+                                          component="p"
+                                          style={{
+                                            fontSize: "14px",
+                                            color: "#354052",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          {
+                                            state.students[rowMeta.dataIndex][
+                                              val[0]
+                                            ]
+                                          }
+                                        </Typography>
+                                      </GridItem>
+                                    </>
+                                  );
+                                })}
+                              </GridContainer>
+                            </GridItem>
+                            <GridItem
+                              xs={12}
+                              sm={12}
+                              md={6}
+                              style={{
+                                marginTop: "20px",
+                              }}
+                            >
+                              <GridContainer>
+                                <GridItem
+                                  xs={12}
+                                  sm={12}
+                                  md={12}
+                                  style={{
+                                    marginBottom: "20px",
+                                  }}
+                                >
+                                  <Typography
+                                    component="p"
+                                    style={{
+                                      fontSize: "16px",
+                                      color: "rgba(50, 60, 71, 0.6)",
+                                      fontWeight: "bold",
+                                      display: "flex",
+                                      flexDirection: "column",
+                                    }}
+                                  >
+                                    <span> Info Data Pendidikan</span>
+                                    <Box
+                                      style={{
+                                        height: "5px",
+                                        width: "100%",
+                                        background: "rgb(109, 180, 0)",
+                                      }}
+                                    />
+                                  </Typography>
+                                </GridItem>
+                                {EducationInfo.map((val) => {
+                                  return (
+                                    <>
+                                      <GridItem xs={6} sm={6} md={6}>
+                                        <Typography
+                                          component="p"
+                                          style={{
+                                            fontSize: "14px",
+                                            color: "rgba(50, 60, 71, 0.6)",
+                                          }}
+                                        >
+                                          {val[1]}:
+                                        </Typography>
+                                      </GridItem>
+                                      <GridItem xs={6} sm={6} md={6}>
+                                        <Typography
+                                          component="p"
+                                          style={{
+                                            fontSize: "14px",
+                                            color: "#354052",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          {
+                                            state.students[rowMeta.dataIndex][
+                                              val[0]
+                                            ]
+                                          }
+                                        </Typography>
+                                      </GridItem>
+                                    </>
+                                  );
+                                })}
+                              </GridContainer>
+                            </GridItem>
+                            <GridItem
+                              xs={12}
+                              sm={12}
+                              md={6}
+                              style={{
+                                marginTop: "20px",
+                              }}
+                            >
+                              <GridContainer>
+                                <GridItem
+                                  xs={12}
+                                  sm={12}
+                                  md={12}
+                                  style={{
+                                    marginBottom: "20px",
+                                  }}
+                                >
+                                  <Typography
+                                    component="p"
+                                    style={{
+                                      fontSize: "16px",
+                                      color: "rgba(50, 60, 71, 0.6)",
+                                      fontWeight: "bold",
+                                      display: "flex",
+                                      flexDirection: "column",
+                                    }}
+                                  >
+                                    <span> Info Data Orang Tua</span>
+                                    <Box
+                                      style={{
+                                        height: "5px",
+                                        width: "100%",
+                                        background: "rgb(109, 180, 0)",
+                                      }}
+                                    />
+                                  </Typography>
+                                </GridItem>
+                                {ParentInfo.map((val) => {
+                                  return (
+                                    <>
+                                      <GridItem xs={6} sm={6} md={6}>
+                                        <Typography
+                                          component="p"
+                                          style={{
+                                            fontSize: "14px",
+                                            color: "rgba(50, 60, 71, 0.6)",
+                                          }}
+                                        >
+                                          {val[1]}:
+                                        </Typography>
+                                      </GridItem>
+                                      <GridItem xs={6} sm={6} md={6}>
+                                        <Typography
+                                          component="p"
+                                          style={{
+                                            fontSize: "14px",
+                                            color: "#354052",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          {
+                                            state.students[rowMeta.dataIndex][
+                                              val[0]
+                                            ]
+                                          }
+                                        </Typography>
+                                      </GridItem>
+                                    </>
+                                  );
+                                })}
+                              </GridContainer>
+                            </GridItem>
+                          </GridContainer>
+                        </GridItem>
+                      </GridContainer>
                     </GridItem>
                   </GridContainer>
                 </GridItem>
@@ -558,25 +819,25 @@ const MadrasahInfoController = ({ children }) => {
         page: employeeData.data.pagination.current_page - 1,
         rowsPerPage: employeeData.data.pagination.page_size,
       });
-      setFilterStatus(prevState => ({
+      setFilterStatus((prevState) => ({
         ...prevState,
         paging: {
           page: employeeData.data.pagination.current_page - 1,
           limit: employeeData.data.pagination.page_size,
-        }
-      }))
-      setPagintionOfStudentData(prevState => ({
-        total:studentData.data.pagination.total,
-        page:studentData.data.pagination.current_page - 1,
-        rowsPerPage:studentData.data.pagination.page_size,
-      }))
-      setFilterStatusOfStudentData(prevState => ({
+        },
+      }));
+      setPagintionOfStudentData((prevState) => ({
+        total: studentData.data.pagination.total,
+        page: studentData.data.pagination.current_page - 1,
+        rowsPerPage: studentData.data.pagination.page_size,
+      }));
+      setFilterStatusOfStudentData((prevState) => ({
         ...prevState,
         paging: {
           page: studentData.data.pagination.current_page - 1,
           limit: studentData.data.pagination.page_size,
-        }
-      }))
+        },
+      }));
       setState((prevState) => ({
         ...prevState,
         employee: employeeData.data.data === null ? [] : employeeData.data.data,
@@ -603,26 +864,26 @@ const MadrasahInfoController = ({ children }) => {
         page: employeeBySearchQuery.data.pagination.current_page - 1,
         rowsPerPage: employeeBySearchQuery.data.pagination.page_size,
       });
-      setFilterStatus(prevState => ({
+      setFilterStatus((prevState) => ({
         ...prevState,
         paging: {
           page: employeeBySearchQuery.data.pagination.current_page - 1,
           limit: employeeBySearchQuery.data.pagination.page_size,
-        }
-      }))
+        },
+      }));
     } else {
       setPagintion({
         total: employeeBySearchQuery.data.pagination.total,
         page: employeeBySearchQuery.data.pagination.cuurent_page,
         rowsPerPage: employeeBySearchQuery.data.pagination.page_size,
       });
-      setFilterStatus(prevState => ({
+      setFilterStatus((prevState) => ({
         ...prevState,
         paging: {
           page: employeeBySearchQuery.data.pagination.current_page,
           limit: employeeBySearchQuery.data.pagination.page_size,
-        }
-      }))
+        },
+      }));
       setState((prevState) => ({
         ...prevState,
         employee: [],
@@ -636,35 +897,35 @@ const MadrasahInfoController = ({ children }) => {
       search: query,
     });
     if (studentBySearchQuery.data.data !== null) {
-      setPagintionOfStudentData(prevState => ({
-        total:  studentBySearchQuery.data.pagination.total,
+      setPagintionOfStudentData((prevState) => ({
+        total: studentBySearchQuery.data.pagination.total,
         page: studentBySearchQuery.data.pagination.current_page - 1,
         rowsPerPage: studentBySearchQuery.data.pagination.page_size,
-      }))
-      setFilterStatusOfStudentData(prevState => ({
+      }));
+      setFilterStatusOfStudentData((prevState) => ({
         ...prevState,
         paging: {
           page: studentBySearchQuery.data.pagination.current_page - 1,
           limit: studentBySearchQuery.data.pagination.page_size,
-        }
-      }))
+        },
+      }));
       setState((prevState) => ({
         ...prevState,
         students: studentBySearchQuery.data.data,
       }));
     } else {
-      setPagintionOfStudentData(prevState => ({
-        total:  studentBySearchQuery.data.pagination.total,
+      setPagintionOfStudentData((prevState) => ({
+        total: studentBySearchQuery.data.pagination.total,
         page: studentBySearchQuery.data.pagination.current_page,
         rowsPerPage: studentBySearchQuery.data.pagination.page_size,
-      }))
-      setFilterStatusOfStudentData(prevState => ({
+      }));
+      setFilterStatusOfStudentData((prevState) => ({
         ...prevState,
         paging: {
           page: studentBySearchQuery.data.pagination.current_page - 1,
           limit: studentBySearchQuery.data.pagination.page_size,
-        }
-      }))
+        },
+      }));
       setState((prevState) => ({
         ...prevState,
         students: [],
@@ -675,19 +936,19 @@ const MadrasahInfoController = ({ children }) => {
   const handleDelete = async (id) => {
     const employeeBySearchQuery: any = employeePresenter.deleteEmployeeData(id);
     if (employeeBySearchQuery) {
-    const employee = await employeePresenter.loadData(filterStatus);
-    setPagintion({
-      total: employee.data.pagination.total,
-      page: employee.data.pagination.current_page - 1,
-      rowsPerPage: employee.data.pagination.page_size,
-    });
-    setFilterStatus(prevState => ({
-      ...prevState,
-      paging: {
+      const employee = await employeePresenter.loadData(filterStatus);
+      setPagintion({
+        total: employee.data.pagination.total,
         page: employee.data.pagination.current_page - 1,
-        limit: employee.data.pagination.page_size,
-      }
-    }))
+        rowsPerPage: employee.data.pagination.page_size,
+      });
+      setFilterStatus((prevState) => ({
+        ...prevState,
+        paging: {
+          page: employee.data.pagination.current_page - 1,
+          limit: employee.data.pagination.page_size,
+        },
+      }));
       setState((prevState) => ({
         ...prevState,
         employee: employee.data.data,
@@ -700,21 +961,21 @@ const MadrasahInfoController = ({ children }) => {
 
   const handleDeleteStudent = async (id) => {
     const studentBySearchQuery: any = studentPresenter.deleteStudentData(id);
-    
+
     if (studentBySearchQuery) {
       const students = await studentPresenter.loadData(filterStatus);
-      setPagintionOfStudentData(prevState => ({
-        total:  students.data.pagination.total,
+      setPagintionOfStudentData((prevState) => ({
+        total: students.data.pagination.total,
         page: students.data.pagination.cuurent_page - 1,
         rowsPerPage: students.data.pagination.page_size,
-      }))
-      setFilterStatusOfStudentData(prevState => ({
+      }));
+      setFilterStatusOfStudentData((prevState) => ({
         ...prevState,
         paging: {
           page: students.data.pagination.cuurent_page - 1,
           limit: students.data.pagination.page_size,
-        }
-      }))
+        },
+      }));
       setState((prevState) => ({
         ...prevState,
         students: students.data.data,
@@ -725,7 +986,7 @@ const MadrasahInfoController = ({ children }) => {
     }
   };
 
-  console.log(state)
+  console.log(state);
 
   return (
     <MadrasahInfoContext.Provider

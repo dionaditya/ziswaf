@@ -58,7 +58,7 @@ export class SchoolApiRepository implements SchoolRepositoryInterface {
             )
             return ['succes', response]
         } catch (e) {
-            return ['error', e.toJSON]
+            return ['error', e]
         }
     }
 
@@ -68,11 +68,11 @@ export class SchoolApiRepository implements SchoolRepositoryInterface {
                 "put",
                 this.endpoints.updateSchoolData(id),
                 {},
-                payload
+                payload.toJson()
             )
             return ['succes', response]
         } catch (e) {
-            return ['error', e.toJSON]
+            return ['error', e.response]
         }
     }
 

@@ -9,6 +9,9 @@ import { getUserInfo } from "@/app/infrastructures/misc/Cookies";
 import {
   nonSortAbleStudentDataTable,
   StudentListTableColumn,
+  StudentInfo,
+  EducationInfo,
+  ParentInfo,
 } from "@/domain/entities/AllOptions";
 
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
@@ -17,8 +20,9 @@ import Box from "@material-ui/core/Box";
 import TableCell from "@material-ui/core/TableCell";
 import GridContainer from "@/app/container/commons/Grid/GridContainer";
 import GridItem from "@/app/container/commons/Grid/GridItem";
-import { createContainer } from 'react-tracked' 
 import Avatar from "@material-ui/core/Avatar";
+import { createContainer } from "react-tracked";
+
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -306,12 +310,12 @@ export const StudentListDashboardContext = React.createContext<IState>(
 );
 const { Provider: StudentListProvider } = StudentListDashboardContext;
 
-const useValue = ({ reducer, initialState }) => useReducer(reducer, initialState);
+const useValue = ({ reducer, initialState }) =>
+  useReducer(reducer, initialState);
 
-const {
-  Provider,
-  useTracked,
-} = createContainer(() => useReducer(reducer, initialState));
+const { Provider, useTracked } = createContainer(() =>
+  useReducer(reducer, initialState)
+);
 
 export const StudentListController = ({ children }) => {
   const [state, dispatch] = useTracked();
@@ -352,6 +356,8 @@ export const StudentListController = ({ children }) => {
   let cityPresenter: CityPresenter = container.resolve(CityPresenter);
 
   let userAccess = getUserInfo();
+
+  const classes = useStyles();
 
   useEffect(() => {
     const getData = async () => {
@@ -520,9 +526,9 @@ export const StudentListController = ({ children }) => {
             ...prevState,
             paging: {
               ...prevState.paging,
-              page: tableState.page+1,
-            }
-          }))
+              page: tableState.page + 1,
+            },
+          }));
           setPagintion((prevState) => ({
             ...prevState,
             page: tableState.page,
@@ -574,7 +580,7 @@ export const StudentListController = ({ children }) => {
     renderExpandableRow: (rowData, rowMeta) => {
       return (
         <>
-          <TableCell colSpan={5}>
+          <TableCell colSpan={7}>
             <div
               style={{
                 width: "100%",
@@ -587,60 +593,303 @@ export const StudentListController = ({ children }) => {
                   <GridContainer>
                     <GridItem xs={12} sm={12} md={2} mb={4} mr={2}>
                       <Box display="flex" marginBottom="20px">
-                        <div style={{
-                          width: '82px',
-                          height: '82px',
-                          border: '1px solid #979797',
-                          borderRadius: '50%'
-                        }}>
-                         {
-                           state.data[rowMeta.dataIndex]["image"] === '' && state.data[rowMeta.dataIndex]["image"] === null ? (
-                            <Avatar style={{
-                              background: 'orange'
-                            }}>N</Avatar>
-                             ) : (
-                               <img
-                            src={state.data[rowMeta.dataIndex]["image"]}
-                            alt="foto siswa"
-                            width="80px"
-                            height="80px"
-                            style={{
-                              border: "2px solid transparent",
-                              borderRadius: "50%",
-                            }}
-                          />
-                             )
-                         }
-                        
+                        <div
+                          style={{
+                            width: "82px",
+                            height: "82px",
+                            border: "1px solid #979797",
+                            borderRadius: "50%",
+                          }}
+                        >
+                          {state.data[rowMeta.dataIndex]["image"] === "" ||
+                          state.data[rowMeta.dataIndex]["image"] === null ? (
+                            <Avatar
+                              style={{
+                                background: "orange",
+                                width: "82px",
+                                height: "82px",
+                              }}
+                            >
+                             {state.data[rowMeta.dataIndex]["name"][0]}
+                            </Avatar>
+                          ) : (
+                            <img
+                              src={state.data[rowMeta.dataIndex]["image"]}
+                              alt="foto siswa"
+                              width="80px"
+                              height="80px"
+                              style={{
+                                border: "2px solid transparent",
+                                borderRadius: "50%",
+                              }}
+                            />
+                          )}
                         </div>
                       </Box>
                     </GridItem>
                     <GridItem xs={12} sx={12} md={10}>
-                      {StudentListTableColumn.map((val) => {
-                        return (
+                      <GridContainer>
+                        <GridItem xs={12} sm={12} md={12}>
                           <GridContainer>
-                            <GridItem xs={3} sm={3} md={4}>
-                            <Typography component="p" style={{
-                              fontSize: '14px',
-                              color: 'rgba(50, 60, 71, 0.6)'
-                            }}>
-                                
-                              {val[1]}:
-                            </Typography>
+                            <GridItem xs={12} sm={12} md={12}>
+                              <Typography
+                                component="h5"
+                                style={{
+                                  fontSize: "32px",
+                                  color: "#354052",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                {state.data[rowMeta.dataIndex]["name"]}
+                              </Typography>
                             </GridItem>
-                            <GridItem xs={3} sm={3} md={6}>
-                              <Typography component="p" style={{
-                              fontSize: '14px',
-                              color: '#354052',
-                              fontWeight: 'bold'
-                            }}>
-
-                              {state.data[rowMeta.dataIndex][val[0]]}
+                            <GridItem xs={12} sm={12} md={12}>
+                              <Typography
+                                component="p"
+                                style={{
+                                  fontSize: "16px",
+                                  color: "rgba(50, 60, 71, 0.6)",
+                                }}
+                              >
+                                {state.data[rowMeta.dataIndex]["school_id"]}
+                              </Typography>
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={12}>
+                              <Typography
+                                component="p"
+                                style={{
+                                  fontSize: "16px",
+                                  color: "rgba(50, 60, 71, 0.6)",
+                                }}
+                              >
+                                {
+                                  state.data[rowMeta.dataIndex][
+                                    "identity_number"
+                                  ]
+                                }
                               </Typography>
                             </GridItem>
                           </GridContainer>
-                        );
-                      })}
+                          <GridContainer>
+                            <GridItem
+                              xs={12}
+                              sm={12}
+                              md={4}
+                              style={{
+                                marginTop: "20px",
+                              }}
+                            >
+                              <GridContainer>
+                                <GridItem
+                                  xs={12}
+                                  sm={12}
+                                  md={12}
+                                  style={{
+                                    marginBottom: "20px",
+                                  }}
+                                >
+                                  <Typography
+                                    component="p"
+                                    style={{
+                                      fontSize: "16px",
+                                      color: "rgba(50, 60, 71, 0.6)",
+                                      fontWeight: "bold",
+                                      display: "flex",
+                                      flexDirection: "column",
+                                    }}
+                                  >
+                                    <span> Info Data Siswa</span>
+                                    <Box
+                                      style={{
+                                        height: "5px",
+                                        width: "100%",
+                                        background: "rgb(109, 180, 0)",
+                                      }}
+                                    />
+                                  </Typography>
+                                </GridItem>
+                                {StudentInfo.map((val) => {
+                                  return (
+                                    <>
+                                      <GridItem xs={6} sm={6} md={6}>
+                                        <Typography
+                                          component="p"
+                                          style={{
+                                            fontSize: "14px",
+                                            color: "rgba(50, 60, 71, 0.6)",
+                                          }}
+                                        >
+                                          {val[1]}:
+                                        </Typography>
+                                      </GridItem>
+                                      <GridItem xs={6} sm={6} md={6}>
+                                        <Typography
+                                          component="p"
+                                          style={{
+                                            fontSize: "14px",
+                                            color: "#354052",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          {
+                                            state.data[rowMeta.dataIndex][
+                                              val[0]
+                                            ]
+                                          }
+                                        </Typography>
+                                      </GridItem>
+                                    </>
+                                  );
+                                })}
+                              </GridContainer>
+                            </GridItem>
+                            <GridItem
+                              xs={12}
+                              sm={12}
+                              md={4}
+                              style={{
+                                marginTop: "20px",
+                              }}
+                            >
+                              <GridContainer>
+                                <GridItem
+                                  xs={12}
+                                  sm={12}
+                                  md={12}
+                                  style={{
+                                    marginBottom: "20px",
+                                  }}
+                                >
+                                  <Typography
+                                    component="p"
+                                    style={{
+                                      fontSize: "16px",
+                                      color: "rgba(50, 60, 71, 0.6)",
+                                      fontWeight: "bold",
+                                      display: "flex",
+                                      flexDirection: "column",
+                                    }}
+                                  >
+                                    <span> Info Data Pendidikan</span>
+                                    <Box
+                                      style={{
+                                        height: "5px",
+                                        width: "100%",
+                                        background: "rgb(109, 180, 0)",
+                                      }}
+                                    />
+                                  </Typography>
+                                </GridItem>
+                                {EducationInfo.map((val) => {
+                                  return (
+                                    <>
+                                      <GridItem xs={6} sm={6} md={6}>
+                                        <Typography
+                                          component="p"
+                                          style={{
+                                            fontSize: "14px",
+                                            color: "rgba(50, 60, 71, 0.6)",
+                                          }}
+                                        >
+                                          {val[1]}:
+                                        </Typography>
+                                      </GridItem>
+                                      <GridItem xs={6} sm={6} md={6}>
+                                        <Typography
+                                          component="p"
+                                          style={{
+                                            fontSize: "14px",
+                                            color: "#354052",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          {
+                                            state.data[rowMeta.dataIndex][
+                                              val[0]
+                                            ]
+                                          }
+                                        </Typography>
+                                      </GridItem>
+                                    </>
+                                  );
+                                })}
+                              </GridContainer>
+                            </GridItem>
+                            <GridItem
+                              xs={12}
+                              sm={12}
+                              md={4}
+                              style={{
+                                marginTop: "20px",
+                              }}
+                            >
+                              <GridContainer>
+                                <GridItem
+                                  xs={12}
+                                  sm={12}
+                                  md={12}
+                                  style={{
+                                    marginBottom: "20px",
+                                  }}
+                                >
+                                  <Typography
+                                    component="p"
+                                    style={{
+                                      fontSize: "16px",
+                                      color: "rgba(50, 60, 71, 0.6)",
+                                      fontWeight: "bold",
+                                      display: "flex",
+                                      flexDirection: "column",
+                                    }}
+                                  >
+                                    <span> Info Data Orang Tua</span>
+                                    <Box
+                                      style={{
+                                        height: "5px",
+                                        width: "100%",
+                                        background: "rgb(109, 180, 0)",
+                                      }}
+                                    />
+                                  </Typography>
+                                </GridItem>
+                                {ParentInfo.map((val) => {
+                                  return (
+                                    <>
+                                      <GridItem xs={6} sm={6} md={6}>
+                                        <Typography
+                                          component="p"
+                                          style={{
+                                            fontSize: "14px",
+                                            color: "rgba(50, 60, 71, 0.6)",
+                                          }}
+                                        >
+                                          {val[1]}:
+                                        </Typography>
+                                      </GridItem>
+                                      <GridItem xs={6} sm={6} md={6}>
+                                        <Typography
+                                          component="p"
+                                          style={{
+                                            fontSize: "14px",
+                                            color: "#354052",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          {
+                                            state.data[rowMeta.dataIndex][
+                                              val[0]
+                                            ]
+                                          }
+                                        </Typography>
+                                      </GridItem>
+                                    </>
+                                  );
+                                })}
+                              </GridContainer>
+                            </GridItem>
+                          </GridContainer>
+                        </GridItem>
+                      </GridContainer>
                     </GridItem>
                   </GridContainer>
                 </GridItem>
@@ -655,8 +904,8 @@ export const StudentListController = ({ children }) => {
   const handleModal = (e: any) => {
     return (dispatch: any) => async (actiontype: any) => {
       dispatch({ type: actiontype });
-   
-      if(state.province !== [] && state.regency !== []) {
+
+      if (state.province !== [] && state.regency !== []) {
         dispatch({ type: ActionType.setLoading, payload: true });
         let listSchool = await schoolPresenter.loadData();
         let listProvince = await provincePresenter.loadData(
@@ -713,7 +962,6 @@ export const StudentListController = ({ children }) => {
 
   const handleChangeFilter = async (e: any) => {
     if (e.target.name === "province") {
-     
       setFilterStatus((prevState) => ({
         ...prevState,
         filter: {
@@ -876,12 +1124,10 @@ export const StudentListController = ({ children }) => {
   );
 };
 
-export const AppProvider = ({children}) => {
-    return(
-      <Provider>
-         <StudentListController>
-             {children}
-         </StudentListController>
-      </Provider>
-      )
-}
+export const AppProvider = ({ children }) => {
+  return (
+    <Provider>
+      <StudentListController>{children}</StudentListController>
+    </Provider>
+  );
+};

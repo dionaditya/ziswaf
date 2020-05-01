@@ -113,7 +113,7 @@ export let StudentListTableColumn: [string, string][] = [
   ["chapter_kuran_description", "Surat yang telah dihafal"],
   ["hadist_description", "Hadis yang telah di hafal"],
   ["education_description", "Catatan tambahan"],
-  ["parent_status", "Statis orang tua"],
+  ["parent_status", "Status orang tua"],
   ["father_name", "Nama Ayah"],
   ["place_of_birth_father", "Tempat lahir Ayah"],
   ["birth_of_date_father", "Tanggal lahir Ayah"],
@@ -127,6 +127,53 @@ export let StudentListTableColumn: [string, string][] = [
   ["mother_phone", "No. HP Ibu"],
   ["mother_status", "Status Ibu"],
 ];
+
+export const StudentInfo = [
+  ["identity_number", "NIS"],
+  ["school_id", "Asal Unit"],
+  ["name", "Nama Siswa"],
+  ["age", "Usia"],
+  ["place_of_birth", "Tempat Lahir"],
+  ["birth_of_date", "Tanggal Lahir"],
+  ["child_row", "Anak ke"],
+  ["total_sibling", "Jumlah Saudara"],
+  ["address", "alamat"],
+  ["sosial_status", "Status sosial"],
+  ["pos_code", "Kode Pos"],
+  ["province_id", "Provinsi"],
+  ["city_id", "Kota"],
+  ["district_id", "Kecamatan"],
+  ["village_id", "Kelurahan/Desa"],
+]
+
+export const EducationInfo = [
+  ["education_status", "Status Pendidikan"],
+  ["registered_at", "Tahun Masuk"],
+  ["finished_at", "Tahun Keluar"],
+  ["punishment_count", "Jumlah Hukuman"],
+  ["punishment_start", "Tanggal Mulai"],
+  ["punishment_end", "Hingga"],
+  ["juz_kuran_description", "Juz yang telah dihafal"],
+  ["chapter_kuran_description", "Surat yang telah dihafal"],
+  ["hadist_description", "Hadis yang telah di hafal"],
+  ["education_description", "Catatan tambahan"],
+]
+
+export const ParentInfo = [
+  ["parent_status", "Status orang tua"],
+  ["father_name", "Nama Ayah"],
+  ["place_of_birth_father", "Tempat lahir Ayah"],
+  ["birth_of_date_father", "Tanggal lahir Ayah"],
+  ["father_occupation", "Pekerjaan Ayah"],
+  ["father_phone", "No. HP Ayah"],
+  ["father_status", "Status Ayah"],
+  ["mother_name", "Nama Ibu"],
+  ["place_of_birth_mother", "Tempat lahir Ibu"],
+  ["birth_of_date_mother", "Tanggal lahir Ibu"],
+  ["mother_occupation", "Pekerjaan Ibu"],
+  ["mother_phone", "No. HP Ibu"],
+  ["mother_status", "Status Ibu"],
+]
 
 export const nonSortAbleStudentDataTable = [
   'child_row',

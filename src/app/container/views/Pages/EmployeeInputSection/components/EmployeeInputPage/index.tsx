@@ -328,7 +328,6 @@ const EmployeeInputSection = () => {
                             />
                           </Button>
                         )}
-                        {controller.loading && "Loading ..."  }
                       </Box>
                     </GridItem>
                     <GridItem xs={12} sm={12} md={6}>
@@ -957,7 +956,7 @@ const EmployeeInputSection = () => {
                                       data={controller.school}
                                       name="school_id"
                                       placeholder={
-                                       "Asal Unit"
+                                       school_id !== '' ? school_id : "Asal Unit"
                                       }
                                       label="Asal Unit"
                                     />
