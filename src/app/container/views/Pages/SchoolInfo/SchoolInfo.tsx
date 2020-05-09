@@ -274,7 +274,7 @@ const SchoolInfo = () => {
                               className="black-text"
                               style={{ marginTop: "0px" }}
                             >
-                              {controller.data.phone || "-"}
+                              {`+62${controller.data.phone}` || "-"}
                             </p>
                           </GridItem>
                           <GridItem xs={12} sm={12} md={12}>

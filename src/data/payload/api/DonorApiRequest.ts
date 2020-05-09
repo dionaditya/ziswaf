@@ -6,19 +6,19 @@ import {
 import _ from 'lodash'
 
 export class CreateDonorApiRequest implements CreateDonorRequestInterface {
-  private name: string;
-  private company_name: string;
-  private is_company: boolean;
-  private position: string;
-  private email: string;
-  private address: string;
-  private phone: string;
-  private status: number;
-  private npwp: number;
-  private pos_code: number;
-  private info: string;
-  private province_id: number;
-  private regency_id: number;
+  name: string;
+  company_name: string;
+  is_company: boolean;
+  position: string;
+  email: string;
+  address: string;
+  phone: any
+  status: number;
+  npwp: number;
+  pos_code: number;
+  info: string;
+  province_id: number;
+  regency_id: number;
 
   constructor(
     name: string,
@@ -27,7 +27,7 @@ export class CreateDonorApiRequest implements CreateDonorRequestInterface {
     position: string,
     email: string,
     address: string,
-    phone: string,
+    phone: any,
     status: number,
     npwp: number,
     pos_code: number,
@@ -52,40 +52,37 @@ export class CreateDonorApiRequest implements CreateDonorRequestInterface {
 
   public toJson() {
     const data = {
-      name: this.name,
-      companyName: this.company_name,
-      isCompany: this.is_company,
-      position: this.position,
-      email: this.email,
-      address: this.address,
-      phone: this.phone,
-      status: this.status,
-      npwp: this.npwp,
-      posCode: this.pos_code,
-      info: this.info,
-      provinceId: this.province_id,
-      regencyId: this.regency_id,
+     ...this
     };
-    return JSON.stringify({
-      data,
-    });
+
+    const transformData = {}
+
+    Object.keys(data).forEach(val => {
+      if(data[val] === '' || data[val] === null) {
+        return null
+      } else {
+         transformData[val] = data[val]
+      }
+    })
+
+    return transformData
   }
 }
 
 export class UpdateDonorApiRequest implements UpdateDonorRequestInterface {
-    private name: string;
-  private company_name: string;
-  private is_company: boolean;
-  private position: string;
-  private email: string;
-  private address: string;
-  private phone: string;
-  private status: number;
-  private npwp: number;
-  private pos_code: number;
-  private info: string;
-  private province_id: any;
-  private regency_id: number;
+  name: string;
+  company_name: string;
+  is_company: boolean;
+  position: string;
+  email: string;
+  address: string;
+  phone: any;
+  status: number;
+  npwp: number;
+  pos_code: number;
+  info: string;
+  province_id: any;
+  regency_id: number;
 
   constructor(
     name: string,
@@ -94,7 +91,7 @@ export class UpdateDonorApiRequest implements UpdateDonorRequestInterface {
     position: string,
     email: string,
     address: string,
-    phone: string,
+    phone: any,
     status: number,
     npwp: number,
     pos_code: number,
@@ -133,7 +130,6 @@ export class UpdateDonorApiRequest implements UpdateDonorRequestInterface {
          } else {
             transformData[val] = data[val]
          }
-        
       }
     })
     return transformData

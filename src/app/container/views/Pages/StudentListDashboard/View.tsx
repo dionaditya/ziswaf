@@ -1,17 +1,16 @@
-import React from 'react'
-import StudentListDashboardPage from './components/HalamanDaftarSiswaDashboard'
-import { AppProvider } from './Controller'
-
+import React from "react";
+import StudentListDashboardPage from "./components/HalamanDaftarSiswaDashboard";
+import { AppProvider } from "./Controller";
+import { ToastProvider } from "react-toast-notifications";
 
 const StudentLishDasboard = () => {
+  return (
+    <AppProvider>
+      <ToastProvider>
+        <StudentListDashboardPage />
+      </ToastProvider>
+    </AppProvider>
+  );
+};
 
-    return (
-        <AppProvider>
-            <div className="daftar-siswa-container">
-                <StudentListDashboardPage />
-            </div>
-        </AppProvider>
-    )
-}
-
-export default StudentLishDasboard
+export default StudentLishDasboard;

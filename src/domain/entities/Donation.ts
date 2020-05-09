@@ -109,7 +109,7 @@ export class DonationTransactionDetail {
     ref_number: string;
     quantity: number;
     status: number;
-    created_at: Date;
+    created_at: Date | string;
     cash_description: string;
     good_description: string;
     donor_category: boolean;
@@ -136,7 +136,7 @@ export class DonationTransactionDetail {
         ref_number: string,
         quantity: number,
         status: number,
-        created_at: Date,
+        created_at: Date | string,
         cash_description: string,
         good_description: string,
         donor_category: boolean,
@@ -248,5 +248,74 @@ export class DonationWithSort {
         this.updated_by = updated_by
         this.created_at = created_at
         this.updated_at = updated_at
+    }
+}
+
+export interface Cash {
+    category_id: number;
+    value: number;
+    ref_number: string;
+}
+
+export interface Goods {
+    category_id: number;
+    description: string;
+    quantity: number;
+    value: number;
+    status: number;
+}
+
+export interface Data {
+    id: number;
+    category_id: number;
+    category_name: string;
+    statement_category_id: number;
+    statement_category_name: string;
+    description: string;
+    kwitansi: string;
+    item_id: number;
+    item_type: string;
+    school_id: number;
+    status: number;
+    cash: Cash;
+    goods: Goods;
+    created_at: Date;
+    updated_at: Date;
+}
+export class DonationDetailForEdit {
+    id: number;
+    category_id: number;
+    category_name: string;
+    statement_category_id: number;
+    statement_category_name: string;
+    description: string;
+    kwitansi: string;
+    item_id: number;
+    item_type: string;
+    school_id: number;
+    status: number;
+    cash: Cash;
+    goods: Goods;
+    created_at: Date;
+    updated_at: Date;
+
+    constructor(
+      data: any
+    ) {
+        this.id = data.id
+        this.category_id = data.category_id
+        this.category_name = data.category_name
+        this.statement_category_id = data.statement_category_id
+        this.statement_category_name = data.statement_category_name
+        this.description = data.description
+        this.kwitansi = data.kwitansi
+        this.item_id = data.item_id
+        this.item_type = data.item_type
+        this.school_id = data.school_id
+        this.status = data.status 
+        this.cash = data.cash 
+        this.goods = data.goods 
+        this.created_at = data.created_at
+        this.updated_at = data.updated_at
     }
 }

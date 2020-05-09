@@ -14,7 +14,7 @@ export class SchoolMapper extends BaseResponseMapper {
             return new School(
                 val.id,
                 val.name,
-                val.phone,
+                `+62${val.phone}`,
                 val.email,
                 val.pos_code,
                 val.description,
@@ -44,7 +44,7 @@ export class SchoolMapper extends BaseResponseMapper {
             data.user_id,
             data.province_name,
             data.regency_name,
-            moment(data.opened_at).format('DD MMMM YYYY'),
+            data.opened_at,
             data.report_school,
             data.head_master,
             data.address

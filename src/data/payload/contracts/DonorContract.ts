@@ -1,5 +1,5 @@
 export interface CreateDonorRequestInterface {
-  toJson(): string;
+  toJson(): any;
 }
 
 export interface UpdateDonorRequestInterface {

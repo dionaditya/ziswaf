@@ -28,8 +28,14 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
-import {useLocation} from 'react-router-dom'
-import qs from 'qs'
+import { useLocation } from "react-router-dom";
+import qs from "qs";
+import { useToasts } from "react-toast-notifications";
+import Alert from "@material-ui/lab/Alert";
+import InputMask from "react-input-mask";
+
+const infoWarning = `Catatan: Jika menemui info error nama dan email perusahaan yang sama walaupun nama kontaknya berbeda. 
+Silahkan dapat memperbarui nama kontak person perusahaan di fitur edit donatur terlebih dahulu atau dapat menggunakan data donatur perusahaan yang telah di daftarkan sebelumnya dengan melakukan pencarian melalui fitur cari donatur`;
 
 const innerTheme = createMuiTheme({
   palette: {
@@ -83,14 +89,17 @@ const DonorInput = ({ index, setIndex }) => {
     control,
   } = useForm();
   const [error, setError] = React.useState(false);
-  const location = useLocation()
+  const location = useLocation();
+  const { addToast } = useToasts();
+  const [loading, setLoading] = React.useState(false);
+  const [errorPhoneNumber, setErrorPhoneNumber] = React.useState(false);
 
   function useQuery() {
-    const location = useLocation()
-    return qs.parse(location.search)
+    const location = useLocation();
+    return qs.parse(location.search);
   }
-  
-  let query = useQuery()
+
+  let query = useQuery();
 
   const {
     company_name,
@@ -106,7 +115,6 @@ const DonorInput = ({ index, setIndex }) => {
     email,
     name,
   } = controller.DonaturInfo;
-
 
   React.useEffect(() => {
     setValue([
@@ -170,23 +178,53 @@ const DonorInput = ({ index, setIndex }) => {
   };
 
   const handleInputSubmit = async (e) => {
+    setLoading(true);
     if (controller.DonaturInfo.status === "") {
+      setLoading(false);
       setError(true);
     } else {
       if (_.isEmpty(errors)) {
-      
         if (controller.selected) {
           history.push(
-            `/dashboard/upz-transaction/${controller.DonationInfo.donor_id}?is_company=${controller.DonaturInfo.is_company}&kwitansi=${controller.DonationInfo.kwitansi}&tanggal=${controller.DonationInfo.created_at}&employee_id=${controller.DonationInfo.employee_id}`
+            `/dashboard/upz-transaction/${controller.DonationInfo.donor_id}?is_company=${controller.DonaturInfo.is_company}&kwitansi=${query.kwitansi}&tanggal=${query.tanggal}&employee_id=${query.employee_id}`
           );
         } else {
-          const [status, response] = await controller.postData();
-          if (status === "error") {
-            setStatusModal(true);
+          if (Number(phone[4] !== 0)) {
+            setErrorPhoneNumber(false);
+            const [status, response] = await controller.postData();
+            if (status === "error") {
+              setLoading(false);
+              if (response !== undefined) {
+                if (response.status === 400 || response.status === 402) {
+                  if (
+                    response.data.message ===
+                    "Nama dan Nomor Handphone yang sama ditemukan dalam database"
+                  ) {
+                    setStatusModal(true);
+                  } else {
+                    addToast(response.data.message, {
+                      appearance: "error",
+                    });
+                  }
+                } else {
+                  addToast(response.data.message, {
+                    appearance: "error",
+                  });
+                }
+              }
+            } else {
+              addToast("Data donatur telah tersimpan", {
+                appearance: "success",
+              });
+              setTimeout(() => {
+                history.push(
+                  `/dashboard/upz-transaction/${response.data.data.id}?is_company=${controller.DonaturInfo.is_company}&kwitansi=${query.kwitansi}&tanggal=${query.tanggal}&employee_id=${query.employee_id}`
+                );
+              }, 1000);
+            }
           } else {
-            history.push(
-              `/dashboard/upz-transaction/${response.data.data.id}?is_company=${controller.DonaturInfo.is_company}&kwitansi=${controller.DonationInfo.kwitansi}&tanggal=${controller.DonationInfo.created_at}&employee_id=${controller.DonationInfo.employee_id}`
-            );
+            setErrorPhoneNumber(true);
+            setLoading(false);
           }
         }
       }
@@ -194,13 +232,32 @@ const DonorInput = ({ index, setIndex }) => {
   };
 
   const handleUpdateInput = async () => {
-    const resp = await controller.postUpdateData();
-    if (resp) {
-      history.push(`/dashboard/retail-input/${resp.id}`);
+    const [status, response] = await controller.postUpdateData();
+    if (status === "success") {
+      addToast("Data donatur telah berhasil diperbarui", {
+        appearance: "success",
+      });
+      setTimeout(() => {
+        history.push(
+          `/dashboard/upz-transaction/${response.data.data.id}?is_company=${controller.DonaturInfo.is_company}&kwitansi=${query.kwitansi}&tanggal=${query.tanggal}&employee_id=${query.employee_id}`
+        );
+      }, 1000);
+    } else {
+      if (response !== undefined) {
+        if (response.status === 400 || response.status === 402) {
+          addToast(response.data.message, {
+            appearance: "error",
+          });
+        } else {
+          addToast(response.data.message, {
+            appearance: "error",
+          });
+        }
+      }
     }
   };
 
-  const company = query['?is_company'] === 'true'
+  const company = query["?is_company"] === "true";
 
   return (
     <React.Fragment>
@@ -246,9 +303,13 @@ const DonorInput = ({ index, setIndex }) => {
                   <GridItem xs={12} sm={6} md={6}>
                     <Card className={classes.container}>
                       <GridItem xs={12} sm={12} md={12}>
-                        <Box display="flex" flexDirection="column" style={{
-                          marginBottom: '15px'
-                        }}>
+                        <Box
+                          display="flex"
+                          flexDirection="column"
+                          style={{
+                            marginBottom: "15px",
+                          }}
+                        >
                           <label
                             htmlFor="comp-name"
                             className={
@@ -261,7 +322,7 @@ const DonorInput = ({ index, setIndex }) => {
                               ? "Pilih Status Perusahaan"
                               : "Pilih Status"}
                           </label>
-                          { company  ? (
+                          {company ? (
                             <>
                               <Controller
                                 as={
@@ -409,52 +470,60 @@ const DonorInput = ({ index, setIndex }) => {
 
                           <div className="row">
                             {company ? (
-                              <div className="col s12" style={{
-                                  marginTop: '15px',
-                                  marginBottom: '15px'
-                                }}>
-                                <Box display="flex" flexDirection="column" >
-                                <label
-                                  htmlFor="comp-name"
-                                  className={
-                                    errors && errors.company_name
-                                      ? "red-text"
-                                      : "black-text"
-                                  }
-                                >
-                                  Nama Perusahaan/Organisasi/Institusi
-                                </label>
-                                <TextField
-                                  id="company_name"
-                                  name="company_name"
-                                  variant="outlined"
-                                  type="text"
-                                  placeholder=" Nama Perusahaan/Organisasi/Institusi"
-                                  onChange={onChange}
-                                  disabled={controller.selected}
-                                  inputRef={register({ required: true })}
-                                  className={
-                                    errors && errors.company_name
-                                      ? "invalid"
-                                      : "validate"
-                                  }
-                                />
-                                {errors &&
-                                  errors.company_name &&
-                                  errors.company_name.type === "required" && (
-                                    <p
-                                      style={{ color: "red", fontSize: "12px" }}
-                                    >
-                                      {errorMessage.companyName}
-                                    </p>
-                                  )}
+                              <div
+                                className="col s12"
+                                style={{
+                                  marginTop: "15px",
+                                  marginBottom: "15px",
+                                }}
+                              >
+                                <Box display="flex" flexDirection="column">
+                                  <label
+                                    htmlFor="comp-name"
+                                    className={
+                                      errors && errors.company_name
+                                        ? "red-text"
+                                        : "black-text"
+                                    }
+                                  >
+                                    Nama Perusahaan/Organisasi/Institusi
+                                  </label>
+                                  <TextField
+                                    id="company_name"
+                                    name="company_name"
+                                    variant="outlined"
+                                    type="text"
+                                    placeholder=" Nama Perusahaan/Organisasi/Institusi"
+                                    onChange={onChange}
+                                    disabled={controller.selected}
+                                    inputRef={register({ required: true })}
+                                    className={
+                                      errors && errors.company_name
+                                        ? "invalid"
+                                        : "validate"
+                                    }
+                                  />
+                                  {errors &&
+                                    errors.company_name &&
+                                    errors.company_name.type === "required" && (
+                                      <p
+                                        style={{
+                                          color: "red",
+                                          fontSize: "12px",
+                                        }}
+                                      >
+                                        {errorMessage.companyName}
+                                      </p>
+                                    )}
                                 </Box>
-                              
                               </div>
                             ) : (
-                              <div className="col s12" style={{
-                                marginBottom: '20px'
-                              }}>
+                              <div
+                                className="col s12"
+                                style={{
+                                  marginBottom: "20px",
+                                }}
+                              >
                                 <label
                                   htmlFor="comp-name"
                                   className={
@@ -510,7 +579,6 @@ const DonorInput = ({ index, setIndex }) => {
                                 style={{
                                   minHeight: "100px",
                                   width: "100%",
-                                  
                                 }}
                               />
                             }
@@ -535,9 +603,13 @@ const DonorInput = ({ index, setIndex }) => {
                                 {errorMessage.address}
                               </p>
                             )}
-                          <label style={{
-                            marginTop: '20px'
-                          }}>Provinsi</label>
+                          <label
+                            style={{
+                              marginTop: "20px",
+                            }}
+                          >
+                            Provinsi
+                          </label>
                           <Controller
                             as={
                               <SimpleSelect
@@ -571,9 +643,13 @@ const DonorInput = ({ index, setIndex }) => {
                                 {errorMessage.province}
                               </p>
                             )}
-                          <label style={{
-                            marginTop: '20px'
-                          }}>Kota</label>
+                          <label
+                            style={{
+                              marginTop: "20px",
+                            }}
+                          >
+                            Kota
+                          </label>
                           <Controller
                             as={
                               <SimpleSelect
@@ -603,9 +679,9 @@ const DonorInput = ({ index, setIndex }) => {
                               </p>
                             )}
                           <label
-                          style={{
-                            marginTop: '20px'
-                          }}
+                            style={{
+                              marginTop: "20px",
+                            }}
                             htmlFor="zipcode"
                             className={
                               errors && errors.pos_code
@@ -620,7 +696,7 @@ const DonorInput = ({ index, setIndex }) => {
                             id="pos_code"
                             name="pos_code"
                             type="text"
-                            style={{ width: "100%", marginBottom: '20px' }}
+                            style={{ width: "100%", marginBottom: "20px" }}
                             disabled={controller.selected}
                             placeholder="Kode Pos"
                             onChange={onChange}
@@ -657,8 +733,8 @@ const DonorInput = ({ index, setIndex }) => {
                                       : "black-text"
                                   }
                                   style={{
-                            marginTop: '20px'
-                          }}
+                                    marginTop: "20px",
+                                  }}
                                 >
                                   Surel Perusahaan
                                 </label>
@@ -671,35 +747,8 @@ const DonorInput = ({ index, setIndex }) => {
                                   style={{ width: "100%" }}
                                   placeholder="Alamat Surel"
                                   onChange={onChange}
-                                  inputRef={register({
-                                    required: true,
-                                    pattern: /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/i,
-                                  })}
+                                  inputRef={register}
                                 />
-                                {errors &&
-                                  errors.email &&
-                                  errors.email.type === "required" && (
-                                    <p
-                                      style={{
-                                        color: "red",
-                                        fontSize: "12px",
-                                      }}
-                                    >
-                                      {errorMessage.email}
-                                    </p>
-                                  )}
-                                {errors &&
-                                  errors.email &&
-                                  errors.email.type === "pattern" && (
-                                    <p
-                                      style={{
-                                        color: "red",
-                                        fontSize: "12px",
-                                      }}
-                                    >
-                                      Email tidak valid
-                                    </p>
-                                  )}  
                               </div>
                             ) : (
                               <div />
@@ -714,9 +763,12 @@ const DonorInput = ({ index, setIndex }) => {
                       <GridItem xs={12} sm={12} md={12}>
                         {/* <Box display="flex" flexDirection="column"> */}
                         <GridItem xs={12} sm={12} md={12}>
-                          <label className={classes.label} style={{
-                            fontSize: '16px'
-                          }}>
+                          <label
+                            className={classes.label}
+                            style={{
+                              fontSize: "16px",
+                            }}
+                          >
                             Kontak Donatur
                           </label>
                         </GridItem>
@@ -731,8 +783,8 @@ const DonorInput = ({ index, setIndex }) => {
                                     : "black-text"
                                 }
                                 style={{
-                            marginTop: '20px'
-                          }}
+                                  marginTop: "20px",
+                                }}
                               >
                                 Nama Kontak Person
                               </label>
@@ -748,8 +800,8 @@ const DonorInput = ({ index, setIndex }) => {
                                 onChange={onChange}
                                 inputRef={register({ required: true })}
                                 style={{
-                                  width: '100%',
-                                  marginBottom: '20px'
+                                  width: "100%",
+                                  marginBottom: "20px",
                                 }}
                                 className={
                                   errors && errors.name ? "invalid" : "validate"
@@ -772,8 +824,8 @@ const DonorInput = ({ index, setIndex }) => {
                                     : "black-text"
                                 }
                                 style={{
-                            marginTop: '20px'
-                          }}
+                                  marginTop: "20px",
+                                }}
                               >
                                 Jabatan Kontak Person
                               </label>
@@ -788,8 +840,8 @@ const DonorInput = ({ index, setIndex }) => {
                                 placeholder="Jabatan Kontak Person"
                                 onChange={onChange}
                                 style={{
-                                  width: '100%',
-                                  marginBottom: '20px'
+                                  width: "100%",
+                                  marginBottom: "20px",
                                 }}
                                 inputRef={register}
                                 className={
@@ -815,27 +867,37 @@ const DonorInput = ({ index, setIndex }) => {
                                     : "black-text"
                                 }
                                 style={{
-                            marginTop: '20px'
-                          }}
+                                  marginTop: "20px",
+                                }}
                               >
                                 No Handphone
                               </label>
                             </GridItem>
                             <GridItem xs={12} sm={12} md={12}>
-                              <TextField
-                                id="phone"
-                                name="phone"
-                                variant="outlined"
-                                type="tel"
+                              <InputMask
+                                mask="+62 999 999 999 99"
+                                value={phone}
                                 disabled={controller.selected}
-                                style={{ width: "100%", marginBottom: '20px'}}
-                                placeholder="No Handphone"
+                                maskChar=" "
                                 onChange={onChange}
-                                inputRef={register({
-                                  required: true,
-                                  pattern: /^[0-9]*$/i,
-                                })}
-                              />
+                              >
+                                {() => (
+                                  <TextField
+                                    style={{
+                                      width: "100%",
+                                    }}
+                                    variant="outlined"
+                                    name="phone"
+                                    id="phone"
+                                    disabled={controller.selected}
+                                    placeholder="Contoh: +628567XXXXXXX"
+                                    size="small"
+                                    inputRef={register({
+                                      required: true,
+                                    })}
+                                  />
+                                )}
+                              </InputMask>
                               {errors &&
                                 errors.phone &&
                                 errors.phone.type === "required" && (
@@ -843,26 +905,32 @@ const DonorInput = ({ index, setIndex }) => {
                                     {errorMessage.phone}
                                   </p>
                                 )}
-                              {errors &&
-                                errors.phone &&
-                                errors.phone.type === "pattern" && (
-                                  <p style={{ color: "red", fontSize: "12px" }}>
-                                    Hanya Boleh diisi dengan angka
-                                  </p>
-                                )}
+                              {errorPhoneNumber && Number(phone[4]) === 0 && (
+                                <p style={{ color: "red", fontSize: "12px" }}>
+                                  No Handphone tidak valid. Silahkan coba
+                                  kembali. Contoh: +62857xxxxxx
+                                </p>
+                              )}
                             </GridItem>
                             <GridItem xs={12} sm={12} md={12}>
-                              <label className={classes.label} style={{
-                                fontSize: '16px',
-                                marginBottom: '20px'
-                              }}>
+                              <label
+                                className={classes.label}
+                                style={{
+                                  fontSize: "16px",
+                                  marginBottom: "20px",
+                                }}
+                              >
                                 Keterangan Tambahan
                               </label>
                             </GridItem>
                             <GridItem xs={12} sm={12} md={12}>
-                              <label htmlFor="npwp" className="black-text" style={{
-                            marginTop: '20px'
-                          }}>
+                              <label
+                                htmlFor="npwp"
+                                className="black-text"
+                                style={{
+                                  marginTop: "20px",
+                                }}
+                              >
                                 No NPWP
                               </label>
                             </GridItem>
@@ -874,26 +942,39 @@ const DonorInput = ({ index, setIndex }) => {
                                 type="text"
                                 disabled={controller.selected}
                                 placeholder="No NPWP"
-                                inputRef={register}
+                                inputRef={register({ pattern: /^[0-9]*$/i })}
                                 style={{
-                                  width: '100%',
-                                  marginBottom: '20px'
+                                  width: "100%",
+                                  marginBottom: "20px",
                                 }}
                                 onChange={onChange}
                               />
+                              {errors &&
+                                errors.npwp &&
+                                errors.npwp.type === "pattern" && (
+                                  <p style={{ color: "red", fontSize: "12px" }}>
+                                    Hanya Boleh diisi dengan angka
+                                  </p>
+                                )}
                             </GridItem>
+
                             <GridItem xs={12} sm={12} md={12}>
-                              <label htmlFor="info-donatur" style={{
-                            marginTop: '20px',
-                            fontSize: '16px'
-                          }}>Info Donatur</label>
+                              <label
+                                htmlFor="info-donatur"
+                                style={{
+                                  marginTop: "20px",
+                                  fontSize: "16px",
+                                }}
+                              >
+                                Info Donatur
+                              </label>
                             </GridItem>
                             <Controller
                               as={
                                 <TextField
                                   className="text-area"
                                   id="info"
-                                      variant="outlined"
+                                  variant="outlined"
                                   disabled={controller.selected}
                                   name="info"
                                   multiline
@@ -903,7 +984,7 @@ const DonorInput = ({ index, setIndex }) => {
                                   style={{
                                     minHeight: "100px",
                                     width: "100%",
-                                    marginBottom: '15px'
+                                    marginBottom: "15px",
                                   }}
                                 />
                               }
@@ -928,25 +1009,35 @@ const DonorInput = ({ index, setIndex }) => {
                                       : "black-text"
                                   }
                                   style={{
-                            marginTop: '20px'
-                          }}
+                                    marginTop: "20px",
+                                  }}
                                 >
                                   No Handphone
                                 </label>
-                                <TextField
-                                  id="phone"
-                                  name="phone"
-                                  variant="outlined"
-                                  type="tel"
+                                <InputMask
+                                  mask="+62 999 999 999 99"
+                                  value={phone}
                                   disabled={controller.selected}
-                                  style={{ width: "100%", marginBottom: '15px'}}
-                                  placeholder="No Handphone"
+                                  maskChar=" "
                                   onChange={onChange}
-                                  inputRef={register({
-                                    required: true,
-                                    pattern: /^[0-9]*$/i,
-                                  })}
-                                />
+                                >
+                                  {() => (
+                                    <TextField
+                                      style={{
+                                        width: "100%",
+                                      }}
+                                      variant="outlined"
+                                      name="phone"
+                                      id="phone"
+                                      disabled={controller.selected}
+                                      placeholder="Contoh: +628567XXXXXXX"
+                                      size="small"
+                                      inputRef={register({
+                                        required: true,
+                                      })}
+                                    />
+                                  )}
+                                </InputMask>
                                 {errors &&
                                   errors.phone &&
                                   errors.phone.type === "required" && (
@@ -956,15 +1047,13 @@ const DonorInput = ({ index, setIndex }) => {
                                       {errorMessage.phone}
                                     </p>
                                   )}
-                                {errors &&
-                                  errors.phone &&
-                                  errors.phone.type === "pattern" && (
-                                    <p
-                                      style={{ color: "red", fontSize: "12px" }}
-                                    >
-                                      Hanya Boleh diisi dengan angka
-                                    </p>
-                                  )}
+                                {errorPhoneNumber && Number(phone[4]) === 0 && (
+                                  <p style={{ color: "red", fontSize: "12px" }}>
+                                    No Handphone tidak valid. Silahkan coba
+                                    kembali. Contoh: +62857xxxxxx
+                                  </p>
+                                )}
+
                                 <div className="row">
                                   <label
                                     htmlFor="comp-email"
@@ -974,8 +1063,8 @@ const DonorInput = ({ index, setIndex }) => {
                                         : "black-text"
                                     }
                                     style={{
-                            marginTop: '20px'
-                          }}
+                                      marginTop: "20px",
+                                    }}
                                   >
                                     Alamat Surel
                                   </label>
@@ -985,45 +1074,22 @@ const DonorInput = ({ index, setIndex }) => {
                                     disabled={controller.selected}
                                     variant="outlined"
                                     type="email"
-                                    style={{ width: "100%", marginBottom: '20px' }}
+                                    style={{
+                                      width: "100%",
+                                      marginBottom: "20px",
+                                    }}
                                     placeholder="Alamat Surel"
                                     onChange={onChange}
-
-                                    inputRef={register({
-                                      required: true,
-                                      pattern: /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/i,
-                                    })}
+                                    inputRef={register}
                                   />
-                                  {errors &&
-                                    errors.email &&
-                                    errors.email.type === "required" && (
-                                      <p
-                                        style={{
-                                          color: "red",
-                                          fontSize: "12px",
-                                        }}
-                                      >
-                                        {errorMessage.email}
-                                      </p>
-                                    )}
-                                  {errors &&
-                                    errors.email &&
-                                    errors.email.type === "pattern" && (
-                                      <p
-                                        style={{
-                                          color: "red",
-                                          fontSize: "12px",
-                                        }}
-                                      >
-                                        Email tidak valid
-                                      </p>
-                                    )}
-                                  
                                 </div>
-                                <label className={classes.label} style={{
-                            marginTop: '20px',
-                            marginBottom: '15px'
-                          }}>
+                                <label
+                                  className={classes.label}
+                                  style={{
+                                    marginTop: "20px",
+                                    marginBottom: "15px",
+                                  }}
+                                >
                                   Keterangan Tambahan
                                 </label>
                                 <label htmlFor="npwp" className="black-text">
@@ -1036,34 +1102,34 @@ const DonorInput = ({ index, setIndex }) => {
                                   type="text"
                                   disabled={controller.selected}
                                   placeholder="No NPWP"
-                     
                                   inputRef={register}
                                   onChange={onChange}
                                 />
-                                <label style={{
-                            marginTop: '20px',
-                        
-                          }}>
+                                <label
+                                  style={{
+                                    marginTop: "20px",
+                                  }}
+                                >
                                   Info Donatur
                                 </label>
                                 <Controller
                                   as={
-                                   <TextField
-                                  className="text-area"
-                                  id="info"
-                                  disabled={controller.selected}
-                                  name="info"
-                                  multiline
-                                  variant="outlined"
-                                  rows={4}
-                                  placeholder="Info Donatur"
-                                  onChange={onChange}
-                                  style={{
-                                    minHeight: "100px",
-                                    width: "100%",
-                                    marginBottom: '70px'
-                                  }}
-                                />
+                                    <TextField
+                                      className="text-area"
+                                      id="info"
+                                      disabled={controller.selected}
+                                      name="info"
+                                      multiline
+                                      variant="outlined"
+                                      rows={4}
+                                      placeholder="Info Donatur"
+                                      onChange={onChange}
+                                      style={{
+                                        minHeight: "100px",
+                                        width: "100%",
+                                        marginBottom: "70px",
+                                      }}
+                                    />
                                   }
                                   name="info"
                                   onChange={(value) => {
@@ -1079,6 +1145,16 @@ const DonorInput = ({ index, setIndex }) => {
                         )}
                       </GridItem>
                     </Card>
+                    <GridItem
+                      xs={12}
+                      sm={12}
+                      md={12}
+                      style={{
+                        marginTop: "20px",
+                      }}
+                    >
+                      <Alert severity="info">{infoWarning}</Alert>
+                    </GridItem>
                   </GridItem>
                 </GridContainer>
                 <ModalWarningData
@@ -1124,6 +1200,8 @@ const DonorInput = ({ index, setIndex }) => {
                           type="submit"
                           color="success"
                           onClick={(e) => null}
+                          disabled={loading}
+                          loading={loading}
                         >
                           Simpan & Lanjutkan
                         </Button>

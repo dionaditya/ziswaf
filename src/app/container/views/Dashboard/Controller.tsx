@@ -87,10 +87,10 @@ const { status, role, username, school: school_name, } = getUserInfo()
 const idSchool = school_name?.id;
 const nameSchool = school_name?.name;
 
-const selected = moment().startOf('year').subtract(1, 'ms').add(1, 'day').format()
-const selectedEnd = moment().endOf('year').toDate()
-const dayNow = moment(new Date()).startOf('month').subtract(1, 'ms').add(1, 'day').format()
-const dayNextMonth = moment(new Date()).endOf('month').toDate()
+const selected = moment().utcOffset("+07:00").local().startOf('year').format()
+const selectedEnd = moment().endOf('year').format()
+const dayNow = moment().utcOffset("+07:00").local().startOf('month').subtract(1, 'ms').add(1, 'day').hours(0).minutes(0).seconds(0).milliseconds(0).format()
+const dayNextMonth = moment().utcOffset("+07:00").local().endOf('month').format()
 
 const startDateByRole = role !== 2 ? selected : dayNow
 const endDateByRole = role !== 2 ? selectedEnd : dayNextMonth

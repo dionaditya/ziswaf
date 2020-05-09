@@ -68,6 +68,7 @@ const ContentFilters: React.FC<{}> = () => {
       selected: selected,
     };
   };
+  
 
   const formatResponse = (val) => {
     switch (val) {

@@ -92,6 +92,8 @@ export interface IState {
   setFilterStatus: Function;
   isCompany: string;
   handleCloseModal: Function;
+  toogleSwitch: boolean;
+  setToogleSwitch: Function;
 }
 
 const initialState: IState = {
@@ -116,6 +118,11 @@ const initialState: IState = {
       label: "Alamat",
       name: "address",
       options: { filter: true, sort: true },
+    },
+    {
+      label: "Unit",
+      name: "school_id",
+      options: { filter: false, sort: false },
     },
     {
       label: "Kota",
@@ -168,23 +175,25 @@ const initialState: IState = {
     },
   },
   userInfo: {},
-  handleCTA: () => {},
-  handleChangeFilter: () => {},
-  handleModal: () => {},
-  handleSearch: () => {},
-  handleSearchDonorQuery: () => {},
-  handleSelectedColumn: () => {},
-  handleSort: () => {},
-  handleChangesRowsPerPage: () => {},
-  handleResetFilter: () => {},
-  handleDelete: () => {},
+  handleCTA: () => { },
+  handleChangeFilter: () => { },
+  handleModal: () => { },
+  handleSearch: () => { },
+  handleSearchDonorQuery: () => { },
+  handleSelectedColumn: () => { },
+  handleSort: () => { },
+  handleChangesRowsPerPage: () => { },
+  handleResetFilter: () => { },
+  handleDelete: () => { },
   optionsTable: {},
   tableIndex: 0,
-  loadData: () => {},
-  debounce: () => {},
-  setFilterStatus: () => {},
+  loadData: () => { },
+  debounce: () => { },
+  setFilterStatus: () => { },
   isCompany: "",
-  handleCloseModal: () => {},
+  handleCloseModal: () => { },
+  toogleSwitch: false,
+  setToogleSwitch: () => { },
 };
 
 const reducer: React.Reducer<IState, IAction> = (state, action) => {
@@ -300,8 +309,9 @@ const DonorController = ({ children }) => {
   const [userInfo, setUserInfo] = React.useState<any>({});
   const [isFilter, setFilter] = React.useState(false);
   const [querySchool, setQuerySchool] = React.useState("");
-  const debouncedSchool = useDebounce(querySchool, 100);
+  const debouncedSchool = useDebounce(querySchool, 40);
   const location = useLocation();
+  const [toogleSwitch, setToogleSwitch] = React.useState(false);
 
   function useQuery() {
     const location = useLocation();
@@ -374,7 +384,9 @@ const DonorController = ({ children }) => {
           ...filterStatus,
           filter: {
             ...filterStatus.filter,
-            school_id: query['?all'] !== 'true' ? userAccess.school.id : '',
+            school_id: toogleSwitch
+              ? userAccess.school.id
+              : initialState.filterStatus.filter.school_id,
           },
         });
         setUserInfo(userAccess);
@@ -382,7 +394,9 @@ const DonorController = ({ children }) => {
           ...prevState,
           filter: {
             ...prevState.filter,
-            school_id: query['?all'] !== 'true' ? userAccess.school.id : '',
+            school_id: toogleSwitch
+              ? userAccess.school.id
+              : initialState.filterStatus.filter.school_id,
           },
         }));
         if (listDonor.data.data !== null) {
@@ -415,7 +429,35 @@ const DonorController = ({ children }) => {
       }
     };
     getData();
-  }, [location.search]);
+  }, [toogleSwitch]);
+
+  React.useEffect(() => {
+    if (debouncedSchool !== "") {
+      (async () => {
+        const school: any = await schoolPresenter.loadData({
+          search: debouncedSchool,
+        });
+        dispatch({
+          type: ActionType.setSchool,
+          payload: school.data.data,
+        });
+      })();
+    } else {
+      (async () => {
+        const school: any = await schoolPresenter.loadData({
+          paging: {
+            page: 1,
+            limit: 10
+          }
+        });
+        dispatch({
+          type: ActionType.setSchool,
+          payload: school.data.data,
+        });
+      })();
+    }
+
+  }, [debouncedSchool]);
 
   const optionsTable = {
     filterType: "dropdown",
@@ -571,42 +613,29 @@ const DonorController = ({ children }) => {
       payload: true,
     });
 
-    let listSchool = await schoolPresenter.loadData();
+
     let listRegency = await regencyPresenter.loadData();
 
     if (userInfo.role === 1) {
-      dispatch({
-        type: ActionType.setSchool,
-        payload: listSchool.data.data,
-      });
+
       dispatch({ type: ActionType.setRegency, payload: listRegency });
       dispatch({
         type: ActionType.setLoading,
         payload: false,
       });
     } else {
-      let filterOperator = listSchool.data.data.filter(
-        (val) => val.id === userInfo.school.id
-      );
-
-      if (filterOperator !== null && filterOperator !== undefined) {
-        setFilterStatus((prevState) => ({
-          ...prevState,
-          filter: {
-            ...prevState.filter,
-            school_id: filterOperator[0].id,
-          },
-        }));
-        dispatch({
-          type: ActionType.setSchool,
-          payload: listSchool.data.data,
-        });
-        dispatch({ type: ActionType.setRegency, payload: listRegency });
-        dispatch({
-          type: ActionType.setLoading,
-          payload: false,
-        });
-      }
+      setFilterStatus((prevState) => ({
+        ...prevState,
+        filter: {
+          ...prevState.filter,
+          school_id: userAccess.school.id,
+        },
+      }));
+      dispatch({ type: ActionType.setRegency, payload: listRegency });
+      dispatch({
+        type: ActionType.setLoading,
+        payload: false,
+      });
     }
   };
 
@@ -739,7 +768,7 @@ const DonorController = ({ children }) => {
   const handleDelete = async (e) => {
     try {
       const deletedDonor = await donorPresenter.delete(tableIndex);
-      if (deletedDonor) {
+      if (deletedDonor !== null) {
         dispatch({
           type: ActionType.setLoading,
           payload: true,
@@ -747,44 +776,60 @@ const DonorController = ({ children }) => {
         const listDonor = await donorPresenter.getAllWithPagination({
           ...filterStatus,
         });
-        setPagination({
-          total: listDonor.data.pagination.total,
-          page: listDonor.data.pagination.current_page - 1,
-          rowsPerPage: listDonor.data.pagination.page_size,
-        });
-        dispatch({
-          type: ActionType.setData,
-          payload: listDonor.data.data,
-        });
-        dispatch({
-          type: ActionType.setLoading,
-          payload: false,
-        });
-        return true;
+        if (listDonor.data.data !== null) {
+          setPagination({
+            total: listDonor.data.pagination.total,
+            page: listDonor.data.pagination.current_page - 1,
+            rowsPerPage: listDonor.data.pagination.page_size,
+          });
+          dispatch({
+            type: ActionType.setData,
+            payload: listDonor.data.data,
+          });
+          dispatch({
+            type: ActionType.setLoading,
+            payload: false,
+          });
+        } else {
+          setPagination({
+            total: listDonor.data.pagination.total,
+            page: listDonor.data.pagination.current_page,
+            rowsPerPage: listDonor.data.pagination.page_size,
+          });
+          dispatch({
+            type: ActionType.setData,
+            payload: [],
+          });
+          dispatch({
+            type: ActionType.setLoading,
+            payload: false,
+          });
+        }
+        return ['success', deletedDonor]
       }
-    } catch {
-      return false;
+    } catch (e) {
+      return ['error', e.response];
     }
   };
 
   const loadData = (newValue, callback) => {
-    return setTimeout(async () => {
-      const school = await schoolPresenter.loadData({
-        search: newValue,
-      });
-      const transformData = school.data.data.map((val) => {
-        return {
-          value: val.id,
-          label: val.name,
-        };
-      });
-      callback(transformData);
-    }, 100);
+    const transformData = state.school.map((val) => {
+      return {
+        value: val.id,
+        label: val.name,
+      };
+    });
+    console.log(transformData)
+    const witHDefaultValue = [{
+      value: "",
+      label: "SEMUA"
+    }, ...transformData]
+
+    return callback(witHDefaultValue);
   };
-  const debounce = async (inputValue, action) => {
-    const inputValues = inputValue.replace(/\W/g, "");
-    setQuerySchool(inputValues);
-    return inputValues;
+
+  const debounce = async (inputValue) => {
+    setQuerySchool(inputValue);
   };
 
   return (
@@ -808,6 +853,8 @@ const DonorController = ({ children }) => {
         setFilterStatus,
         isCompany,
         handleCloseModal,
+        toogleSwitch,
+        setToogleSwitch,
       }}
     >
       {children}

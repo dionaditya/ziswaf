@@ -23,7 +23,7 @@ import {
 import Button from "@/app/container/commons/CustomButtons/Button.tsx";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/date-fns";
-import { KeyboardDatePicker } from "@material-ui/pickers";
+import { KeyboardDateTimePicker } from "@material-ui/pickers";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -32,6 +32,7 @@ import CircleCheckedFilled from "@material-ui/icons/CheckCircle";
 import CircleUnchecked from "@material-ui/icons/RadioButtonUnchecked";
 import _ from "lodash";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import idLocale from "date-fns/locale/id";
 
 const innerTheme = createMuiTheme({
   palette: {
@@ -78,6 +79,7 @@ const UpzInput = ({ index, setIndex }) => {
   const classes = useStyles();
   const [showComponent, setShowComponent] = useState(0);
   const [receipt_date, setDate] = React.useState(new Date());
+  const [now, setNow] = React.useState(false)
 
   const onChange = (e: any) => {
     controller.handleInput(e);
@@ -88,15 +90,22 @@ const UpzInput = ({ index, setIndex }) => {
   };
 
   const onSubmit = (data) => {
-    console.log(data)
-    controller.handleSubmit(data, showComponent);
+    if(now) {
+      const newData = {
+        ...data,
+        receipt_date: new Date()
+      }
+      controller.handleSubmit(newData, showComponent);
+    } else {
+      controller.handleSubmit(data, showComponent);
+    }
+   
   };
 
-  console.log(controller.selectedEmployee);
 
   return (
     <React.Fragment>
-      <MuiPickersUtilsProvider utils={MomentUtils}>
+      <MuiPickersUtilsProvider utils={MomentUtils} locale={idLocale}>
         <ThemeProvider theme={innerTheme}>
           <Paper
             elevation={0}
@@ -212,9 +221,10 @@ const UpzInput = ({ index, setIndex }) => {
                         </label>
                         <Controller
                           as={
-                            <KeyboardDatePicker
+                            <KeyboardDateTimePicker
                               autoOk
                               variant="inline"
+                              ampm={false}
                               inputVariant="outlined"
                               style={{
                                 width: "100%",
@@ -222,6 +232,8 @@ const UpzInput = ({ index, setIndex }) => {
                               format="dd/MM/yyyy"
                               placeholder={"Tanggal Kwitansi"}
                               name="receipt_date"
+                              disabled={now}
+                              showTodayButton
                               inputRef={register({ required: true })}
                               InputProps={{
                                 classes: { input: classes.input },
@@ -235,6 +247,18 @@ const UpzInput = ({ index, setIndex }) => {
                           name="receipt_date"
                           rules={{ required: true }}
                           control={control}
+                          defaultValue={receipt_date}
+                        />
+                           <FormControlLabel
+                          control={
+                            <Checkbox
+                              color="primary"
+                              checked={now}
+                              onChange={(e) => setNow(e.target.checked)}
+                              name="now_datte"
+                            />
+                          }
+                          label="Sekarang"
                         />
                         {errors &&
                           errors.receipt_date &&

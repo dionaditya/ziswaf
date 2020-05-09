@@ -1,8 +1,10 @@
 import { singleton } from 'tsyringe';
 import { AxiosResponse } from 'axios';
-import { Donation, DonationDetail, DonationTransactionDetail, DonationWithSort } from '@/domain/entities/Donation';
+import { Donation, DonationDetail, DonationTransactionDetail, DonationWithSort, DonationDetailForEdit } from '@/domain/entities/Donation';
 import moment from 'moment';
+import 'moment/locale/id'
 import { GoodsStatus } from '@/domain/entities/AllOptions';
+
 
 @singleton()
 export class DonationMapper {
@@ -64,10 +66,10 @@ export class DonationMapper {
             aResp.total,
             aResp.item_type,
             aResp.item_category,
-            aResp.ref_number,
+            aResp.ref_number,   
             aResp.quantity,
             aResp.status,
-            aResp.created_at,
+            `${moment(aResp.created_at).format('dddd, DD MMMM YYYY')} Pukul ${moment(aResp.created_at).format('HH:mm')}`,
             aResp.cash_description,
             aResp.good_description,
             aResp.donor_category,
@@ -75,6 +77,13 @@ export class DonationMapper {
             aResp.created_by,
             aResp.donor_address
 
+        );
+    }
+
+    public convertDonatioDetailForEditFromApi(result: AxiosResponse<any>): DonationDetailForEdit{
+        const aResp = result.data.data;
+        return new DonationDetailForEdit(
+            aResp
         );
     }
 
@@ -107,7 +116,7 @@ export class DonationMapper {
                     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(item.total),
                     item.kwitansi,
                     item.unit,
-                    item.phone,
+                    `+62${item.phone}`,
                     item.cash_description,
                     item.good_description,
                     item.statement_category,

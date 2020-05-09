@@ -29,6 +29,8 @@ import { CategoryPresenter } from '../Presenter/Category/Presenter';
 import { CategoryApiRepository } from '../repositories/api/CategoryApiRepository';
 import { PrognosisPresenter } from '../Presenter/Prognosis/Presenter';
 import { PrognosisApiRepository } from '../repositories/api/PrognosisApiRepository';
+import { RecordPresenter } from '../Presenter/Record/Presenter';
+import { RecordApiRepository } from '../repositories/api/RecordApiRepository';
 
 export class PresenterModule {
   public static init(container: DependencyContainer) {
@@ -118,6 +120,12 @@ export class PresenterModule {
     container.register<PrognosisPresenter>(PrognosisPresenter, {
       useFactory: d => {
         return new PrognosisPresenter(d.resolve(PrognosisApiRepository));
+      }
+    });
+
+    container.register<RecordPresenter>(RecordPresenter, {
+      useFactory: d => {
+        return new RecordPresenter(d.resolve(RecordApiRepository));
       }
     });
 

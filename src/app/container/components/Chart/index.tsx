@@ -1,6 +1,7 @@
 import React from 'react';
 import Chart from 'react-apexcharts'
 import formatPrice from '@/app/infrastructures/misc/Utils';
+import convertCurrency from '@/app/infrastructures/misc/LabelCurrency';
 
 export function MyChart({ type, width, colors, series, categories, role, categoriesPerday }) {
   const data = {
@@ -35,6 +36,13 @@ export function MyChart({ type, width, colors, series, categories, role, categor
       },
       xaxis: {
         categories: role === 1 ? categories : categoriesPerday,
+      },
+      yaxis: {
+        labels: {
+          formatter: function (value) {
+            return convertCurrency(value);
+          }
+        },
       },
       tooltip: {
         enabled: true,
@@ -102,6 +110,13 @@ export function ChartCategories({ type, width, colors, series, categories }) {
         offsetX: -5
       },
       xaxis: {},
+      yaxis: {
+        labels: {
+          formatter: function (value) {
+            return convertCurrency(value);
+          }
+        },
+      },
       tooltip: {
         enabled: true,
         y: {
@@ -207,17 +222,13 @@ export function ComboChartGeneral({ title, title2, type, width, color, dataProgn
       }
     },
     colors: color,
-    yaxis: [{
-      title: {
-        text: '',
+    yaxis: {
+      labels: {
+        formatter: function (value) {
+          return convertCurrency(value);
+        }
       },
-
-    }, {
-      opposite: true,
-      title: {
-        text: ''
-      }
-    }]
+    },
   };
   return (
     <div className="app">
@@ -273,17 +284,13 @@ export function ComboChartOperator({ title, type, width, color, dataTransaction,
       type: 'string',
     },
     colors: color,
-    yaxis: [{
-      title: {
-        text: '',
+    yaxis: {
+      labels: {
+        formatter: function (value) {
+          return convertCurrency(value);
+        }
       },
-
-    }, {
-      opposite: true,
-      title: {
-        text: ''
-      }
-    }]
+    },
   };
   return (
     <div className="app">
@@ -337,17 +344,13 @@ export function ComboCharts({ title, title2, type, width, color, dataPrognosis, 
       }
     },
     colors: color,
-    yaxis: [{
-      title: {
-        text: '',
+    yaxis: {
+      labels: {
+        formatter: function (value) {
+          return convertCurrency(value);
+        }
       },
-
-    }, {
-      opposite: true,
-      title: {
-        text: ''
-      }
-    }]
+    },
   };
   return (
     <div className="app">

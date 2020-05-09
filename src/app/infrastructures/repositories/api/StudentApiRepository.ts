@@ -65,7 +65,7 @@ export class StudentApiRepository implements StudentRepositoryInterface {
             )
             return req
         } catch (e) {
-            return e
+            return e.response
         }
 
     }
@@ -84,16 +84,12 @@ export class StudentApiRepository implements StudentRepositoryInterface {
         }
     }
 
-    public async deleteStudentData(id: number): Promise<Boolean> {
-        try {
+    public async deleteStudentData(id: number): Promise<any> {
             const response = await this.service.invoke(
                 "delete",
                 this.endpoints.deleteStudentData(id),
                 id
             )
-            return response !== null
-        } catch (error) {
-            return false
-        }
+            return response
     }
 }

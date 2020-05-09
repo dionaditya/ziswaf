@@ -2,27 +2,30 @@ import React, { useState } from "react";
 import { container } from "tsyringe";
 import { Province } from "@/domain/entities/Province";
 import { City } from "@/domain/entities/City";
-import { CreateDonorApiRequest, UpdateDonorApiRequest } from "@/data/payload/api/DonorApiRequest";
+import {
+  CreateDonorApiRequest,
+  UpdateDonorApiRequest,
+} from "@/data/payload/api/DonorApiRequest";
 import { DonorPresenter } from "@/app/infrastructures/Presenter/Donor/Presenter";
 import { ProvincePresenter } from "@/app/infrastructures/Presenter/Province/Presenter";
 import { CityPresenter } from "@/app/infrastructures/Presenter/City/Presenter";
-import {useParams, useLocation} from 'react-router-dom'
-import qs from 'qs'
+import { useParams, useLocation } from "react-router-dom";
+import qs from "qs";
 
 interface InitialState {
   province: any;
   regency: any;
-  provinceId: number;
-  regencyId: number;
-  status: number;
+  provinceId: any;
+  regencyId: any;
+  status: any;
   companyName: string;
   name: string;
   position: string;
   email: string;
   address: string;
   phone: string;
-  posCode: number;
-  npwp: number;
+  posCode: any;
+  npwp: any | null;
   info: string;
   checkbox: any;
   setName: Function;
@@ -43,8 +46,8 @@ interface InitialState {
   handleInput: Function;
   setCheckbox: Function;
   loading: boolean;
-  isDetailSession: boolean
-  postUpdateData: Function
+  isDetailSession: boolean;
+  postUpdateData: Function;
 }
 
 const initialState = {
@@ -55,9 +58,9 @@ const initialState = {
   email: "",
   address: "",
   phone: "",
-  status: 1,
-  npwp: 0,
-  posCode: 0,
+  status: "",
+  npwp: "",
+  posCode: "",
   info: "",
   provinceId: 0,
   regencyId: 0,
@@ -86,7 +89,7 @@ const initialState = {
   setCheckbox: () => {},
   isDetailSession: false,
   loading: false,
-  postUpdateData:() => {}
+  postUpdateData: () => {},
 };
 
 export const DonorContext = React.createContext<InitialState>(initialState);
@@ -100,17 +103,17 @@ export const DonorController = ({ children }) => {
   const [email, setEmail] = useState<string>("");
   const [address, setAddress] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
-  const [status, setStatus] = useState<number>(0);
-  const [npwp, setNpwp] = useState<number>(0);
-  const [posCode, setPosCode] = useState<number>(0);
+  const [status, setStatus] = useState<any>("");
+  const [npwp, setNpwp] = useState<any | null>("");
+  const [posCode, setPosCode] = useState<any>("");
   const [info, setInfo] = useState<string>("");
-  const [provinceId, setProvinceId] = useState<number>(0);
-  const [regencyId, setRegencyId] = useState<number>(0);
+  const [provinceId, setProvinceId] = useState<any>("");
+  const [regencyId, setRegencyId] = useState<any>("");
   const [province, setProvince] = useState<Province[]>([]);
   const [regency, setRegency] = useState<City[]>([]);
   const [checkbox, setCheckbox] = useState(1);
-  const [loading, setLoading] = useState(false)
-  const [isDetailSession, setDetailSession] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [isDetailSession, setDetailSession] = useState(false);
 
   const donorPresenter: DonorPresenter = container.resolve(DonorPresenter);
   const provincePresenter: ProvincePresenter = container.resolve(
@@ -118,156 +121,159 @@ export const DonorController = ({ children }) => {
   );
   const cityPresenter: CityPresenter = container.resolve(CityPresenter);
 
-  const {id} = useParams()
-  const location = useLocation()
-  const query = qs.parse(location.search)
+  const { id } = useParams();
+  const location = useLocation();
+  const query = qs.parse(location.search);
 
-  console.log(location)
+  console.log(location);
 
   React.useEffect(() => {
-    if(id !== undefined) {
+    if (id !== undefined) {
       (async () => {
-        setLoading(true)
-        const donorData = await donorPresenter.getById(parseInt(id))
-         const province = await provincePresenter.loadData();
-        const city = await cityPresenter.loadData()
-        setName(donorData.name)
-        setCompanyName(donorData.company_name)
-        setCompany(donorData.is_company)
-        setPosition(donorData.position)
-        setEmail(donorData.email)
-        setAddress(donorData.address)
-        setPhone(donorData.phone)
-        setStatus(donorData.status)
-        setNpwp(donorData.npwp)
-        setPosCode(donorData.pos_code)
-        setInfo(donorData.info)
-        setCheckbox(donorData.status)
-  
-        setProvinceId(donorData.province_id)
-        setRegencyId(donorData.regency_id)
-        setProvince(province)
-        setRegency(city)
-         setLoading(false)
-      })()  
-      if(query['?is_detail'] !== undefined) {
-        setDetailSession(true)
+        setLoading(true);
+        const donorData = await donorPresenter.getById(parseInt(id));
+        const province = await provincePresenter.loadData();
+        const city = await cityPresenter.loadData();
+        setName(donorData.name);
+        setCompanyName(donorData.company_name);
+        setCompany(donorData.is_company);
+        setPosition(donorData.position);
+        setEmail(donorData.email);
+        setAddress(donorData.address);
+        setPhone(donorData.phone);
+        setStatus(donorData.status);
+        setNpwp(donorData.npwp);
+        setPosCode(donorData.pos_code);
+        setInfo(donorData.info);
+        setCheckbox(donorData.status);
+
+        setProvinceId(donorData.province_id);
+        setRegencyId(donorData.regency_id);
+        setProvince(province);
+        setRegency(city);
+        setLoading(false);
+      })();
+      if (query["?is_detail"] !== undefined) {
+        setDetailSession(true);
       } else {
-        setDetailSession(false)
+        setDetailSession(false);
       }
-      
     } else {
-      if(location.pathname === '/dashboard/donatur-perorangan') {
+      if (location.pathname === "/dashboard/donatur-perorangan") {
         (async () => {
           const province = await provincePresenter.loadData();
           setProvince(province);
         })();
-        setCompany(false)
-        if(query['?is_detail'] !== undefined) {
-          setDetailSession(true)
+        setCompany(false);
+        if (query["?is_detail"] !== undefined) {
+          setDetailSession(true);
         } else {
-          setDetailSession(false)
+          setDetailSession(false);
         }
       } else {
         (async () => {
           const province = await provincePresenter.loadData();
           setProvince(province);
         })();
-        setCompany(true)
-        if(query['?is_detail'] !== undefined) {
-          setDetailSession(true)
+        setCompany(true);
+        if (query["?is_detail"] !== undefined) {
+          setDetailSession(true);
         } else {
-          setDetailSession(false)
+          setDetailSession(false);
         }
       }
     }
-
-  
   }, []);
 
-  const _onStoreCorporate = async (e) => {
-     if(id === undefined) {
+  const phoneNumber: any = phone
+    .slice(3, phone.length)
+    .replace(/\s+/g, "")
+    .match(/(\d+)/);
 
-        const resp = await donorPresenter.store(
-          new CreateDonorApiRequest(
-            name,
-            companyName,
-            isCompany,
-            position,
-            email,
-            address,
-            phone,
-            Number(status),
-            Number(npwp),
-            Number(posCode),
-            info,
-            provinceId,
-            regencyId
-          )
-        );
-        return resp
-      } else {
-        const resp = await donorPresenter.update(
-          new UpdateDonorApiRequest(
-            name,
-            companyName,
-            isCompany,
-            position,
-            email,
-            address,
-            phone,
-            Number(status),
-            Number(npwp),
-            Number(posCode),
-            info,
-            provinceId,
-            regencyId
-          ), Number(id)
-        );
-       return resp
-      }
+  const _onStoreCorporate = async (e) => {
+    if (id === undefined) {
+      const resp = await donorPresenter.store(
+        new CreateDonorApiRequest(
+          name,
+          companyName,
+          isCompany,
+          position,
+          email,
+          address,
+          phoneNumber[0],
+          Number(status),
+          Number(npwp),
+          Number(posCode),
+          info,
+          provinceId,
+          regencyId
+        )
+      );
+      return resp;
+    } else {
+      const resp = await donorPresenter.update(
+        new UpdateDonorApiRequest(
+          name,
+          companyName,
+          isCompany,
+          position,
+          email,
+          address,
+          phoneNumber[0],
+          Number(status),
+          Number(npwp),
+          Number(posCode),
+          info,
+          provinceId,
+          regencyId
+        ),
+        Number(id)
+      );
+      return resp;
+    }
   };
 
   const _onStoreRetail = async (e) => {
-    if(id === undefined) {
-        const resp = await donorPresenter.store(
-          new CreateDonorApiRequest(
-            name,
-            '',
-            false,
-            position,
-            email,
-            address,
-            phone,
-            Number(checkbox),
-            Number(npwp),
-            Number(posCode),
-            info,
-            provinceId,
-            regencyId
-          )
-        );
-        return resp
-      } else {
-        const resp = await donorPresenter.update(
-          new UpdateDonorApiRequest(
-            name,
-            '',
-            false,
-            position,
-            email,
-            address,
-            phone,
-            Number(checkbox),
-            Number(npwp),
-            Number(posCode),
-            info,
-            provinceId,
-            regencyId
-          ), Number(id)
-        );
-       return resp
-      }
+    if (id === undefined) {
+      const resp = await donorPresenter.store(
+        new CreateDonorApiRequest(
+          name,
+          "",
+          false,
+          position,
+          email,
+          address,
+          phoneNumber[0],
+          Number(checkbox),
+          Number(npwp),
+          Number(posCode),
+          info,
+          provinceId,
+          regencyId
+        )
+      );
+      return resp;
+    } else {
+      const resp = await donorPresenter.update(
+        new UpdateDonorApiRequest(
+          name,
+          "",
+          false,
+          position,
+          email,
+          address,
+          phoneNumber[0],
+          Number(checkbox),
+          Number(npwp),
+          Number(posCode),
+          info,
+          provinceId,
+          regencyId
+        ),
+        Number(id)
+      );
+      return resp;
+    }
   };
 
   const handleInput = async (e) => {
@@ -287,28 +293,25 @@ export const DonorController = ({ children }) => {
   };
 
   const postUpdateData = async () => {
-        try {
-            const res = await donorPresenter.storeNewData(new CreateDonorApiRequest(
-            name,
-            companyName,
-            isCompany,
-            position,
-            email,
-            address,
-            phone,
-            Number(status),
-            Number(npwp),
-            Number(posCode),
-            info,
-            provinceId,
-            regencyId
-            ))
-            return res
-        } catch (error) {
-            return false
-        }
-    }
-
+    const res = await donorPresenter.storeNewData(
+      new CreateDonorApiRequest(
+        name,
+        companyName,
+        isCompany,
+        position,
+        email,
+        address,
+        phoneNumber[0],
+        Number(status),
+        Number(npwp),
+        Number(posCode),
+        info,
+        provinceId,
+        regencyId
+      )
+    );
+    return res;
+  };
 
   return (
     <DonorProvider
@@ -347,7 +350,7 @@ export const DonorController = ({ children }) => {
         setCheckbox,
         loading,
         isDetailSession,
-        postUpdateData
+        postUpdateData,
       }}
     >
       {children}

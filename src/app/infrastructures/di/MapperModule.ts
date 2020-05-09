@@ -17,6 +17,7 @@ import { EmployeeMapper } from '@/data/persistences/mappers/EmployeeMapper';
 // import { EmployeeMapper } from '@/data/persistences/mappers/EmployeeMapper';
 import { DashboardMapper } from '@/data/persistences/mappers/DashboardAdminMapper';
 import { DashboardOperatorMapper } from '@/data/persistences/mappers/DashboardOperatorMapper';
+import { RecordMapper } from '@/data/persistences/mappers/RecordMapper';
 
 
 
@@ -89,6 +90,11 @@ export class MapperModule {
     container.register<DashboardOperatorMapper>(DashboardOperatorMapper, {
       useClass: DashboardOperatorMapper
     });
+
+    container.register<RecordMapper>(RecordMapper, {
+      useClass: RecordMapper
+    });
+
 
   }
 }

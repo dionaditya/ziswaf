@@ -57,7 +57,7 @@ export class EmployeeApiRequest implements createEmployeeInterface {
                     const [file, name] = data[val]
                     formData.append(val, file, name)
                 } else {
-                    if(val === 'province_id' || val === 'regency_id') {
+                    if(val === 'province_id' || val === 'regency_id' || val === 'school_id') {
                         if(_.isNumber(data[val])) {
                              formData.append(val, data[val])
                         } else {
@@ -126,7 +126,7 @@ export class EmployeeApiRequestWithoutImage implements createEmployeeInterface {
         const formData = new FormData()
         Object.keys(data).forEach(val => {
             if(data[val] !== null || data[val] !== '')  {
-                if(val === 'province_id' || val === 'regency_id') {
+                if(val === 'province_id' || val === 'regency_id' || val === 'school_id') {
                     if(_.isNumber(data[val])) {
                         formData.append(val, data[val])
                     } else {

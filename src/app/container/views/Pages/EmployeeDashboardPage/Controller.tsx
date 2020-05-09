@@ -293,8 +293,7 @@ export const StudentListController = ({ children }) => {
   const [isFilter, setFilter] = React.useState(false);
   const [querySchool, setQuerySchool] = React.useState("");
 
-  const debouncedSchool = useDebounce(querySchool, 100);
-  const [school, setSchool] = React.useState<any>([])
+  const debouncedSchool = useDebounce(querySchool, 40);
 
   const [filterStatus, setFilterStatus] = React.useState<any>({
     paging: {
@@ -369,16 +368,28 @@ export const StudentListController = ({ children }) => {
   }, []);
 
   React.useEffect(() => {
-    if (debouncedSchool !== "" && debouncedSchool.length > 0) {
+    if(debouncedSchool !== "") {
       (async () => {
-        const school = await schoolPresenter.loadData({
+        const school: any = await schoolPresenter.loadData({
           search: debouncedSchool,
         });
-        if (school.data.data !== null) {
-          setSchool(school.data.data)
-        } else {
-          dispatch({ type: ActionType.setSchool, payload: [] });
-        }
+        dispatch({
+          type: ActionType.setSchool,
+          payload: school.data.data,
+        });
+      })();
+    } else {
+      (async () => {
+        const school: any = await schoolPresenter.loadData({
+         paging: {
+           page: 1,
+           limit: 10
+         }
+        });
+        dispatch({
+          type: ActionType.setSchool,
+          payload: school.data.data,
+        });
       })();
     }
   }, [debouncedSchool]);
@@ -535,7 +546,10 @@ export const StudentListController = ({ children }) => {
       if (state.statusModal === false) {
         const province = await provincePresenter.loadData();
         const city = await cityPresenter.loadData();
-        const school = await schoolPresenter.loadData();
+        const school = await schoolPresenter.loadData({paging: {
+          page: 1,
+          limit: 10
+        }});
         dispatch({ type: ActionType.setProvince, payload: province });
         dispatch({ type: ActionType.setCity, payload: city });
         dispatch({ type: ActionType.setSchool, payload: school.data.data });
@@ -691,23 +705,39 @@ export const StudentListController = ({ children }) => {
         const listEmployee = await employeePresenter.loadData({
           ...filterStatus,
         });
-        setPagintion({
-          total: listEmployee.data.pagination.total,
-          page: listEmployee.data.pagination.current_page - 1,
-          rowsPerPage: listEmployee.data.pagination.page_size,
-        });
-        dispatch({
-          type: ActionType.setData,
-          payload: listEmployee.data.data,
-        });
-        dispatch({
-          type: ActionType.setLoading,
-          payload: false,
-        });
-        return true;
+        if(listEmployee.data.data !== null){
+          setPagintion({
+            total: listEmployee.data.pagination.total,
+            page: listEmployee.data.pagination.current_page - 1,
+            rowsPerPage: listEmployee.data.pagination.page_size,
+          });
+          dispatch({
+            type: ActionType.setData,
+            payload: [],
+          });
+          dispatch({
+            type: ActionType.setLoading,
+            payload: false,
+          });
+        }else {
+          setPagintion({
+            total: listEmployee.data.pagination.total,
+            page: listEmployee.data.pagination.current_page,
+            rowsPerPage: listEmployee.data.pagination.page_size,
+          });
+          dispatch({
+            type: ActionType.setData,
+            payload: listEmployee.data.data,
+          });
+          dispatch({
+            type: ActionType.setLoading,
+            payload: false,
+          });
+        }
+        return ['success', deletedEmployee];
       }
-    } catch {
-      return false;
+    } catch(error) {
+      return ['error', error.response];
     }
   };
 
@@ -734,6 +764,26 @@ export const StudentListController = ({ children }) => {
   };
   
 
+  const loadData = (newValue, callback) => {
+    const transformData = state.school.map((val) => {
+      return {
+        value: val.id,
+        label: val.name,
+      };
+    });
+    console.log(transformData)
+    const witHDefaultValue = [{
+      value: "",
+      label: "SEMUA"
+    }, ...transformData]
+
+    return callback(witHDefaultValue);
+  };
+
+  const debounce = async (inputValue) => {
+    setQuerySchool(inputValue);
+  };
+
 
 
  
@@ -757,6 +807,8 @@ export const StudentListController = ({ children }) => {
         userInfo: userAccess,
         tableIndex: tableIndex,
         setFilterStatus,
+        debounce,
+        loadData
       }}
     >
       {children}

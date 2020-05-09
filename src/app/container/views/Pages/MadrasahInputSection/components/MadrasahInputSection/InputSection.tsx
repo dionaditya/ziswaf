@@ -20,6 +20,8 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import SelectWithSearch from "@/app/container/components/SelectWithSearch";
 import Button from "@/app/container/commons/CustomButtons/Button.tsx";
 import { green } from "@material-ui/core/colors";
+import idLocale from "date-fns/locale/id";
+import InputMask from "react-input-mask";
 
 const innerTheme = createMuiTheme({
   palette: {
@@ -77,21 +79,12 @@ const SectionInput = () => {
   const [processing, setProccessing] = React.useState(false);
   const [isSubmit, setSubmit] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [loadingSubmit, setLoadingSubmit] = React.useState(false);
+  const [error, setError] = React.useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    errors,
-    control,
-    setValue,
-  } = useForm();
+  const { register, handleSubmit, errors, control, setValue } = useForm();
 
   const classes = useStyles();
-  const [error, setError] = React.useState({
-    province: false,
-    regency: false,
-  });
 
   const handleChange = (e) => {
     controller.handleInput(e)(controller.dispatch)(ActionType.handleInput);
@@ -99,66 +92,52 @@ const SectionInput = () => {
 
   const { addToast } = useToasts();
 
-  const handleValidation = (data) => {
-    if (controller.inputSchoolData.province_id === 0) {
-      setError({
-        ...error,
-        province: true,
-      });
-      return false;
-    } else if (controller.inputSchoolData.regency_id === 0) {
-      setError({
-        ...error,
-        regency: true,
-      });
-      return false;
-    } else {
-      setError({
-        province: false,
-        regency: false,
-      });
-      return true;
-    }
-  };
-
   const onSubmit = async (e) => {
+    setLoadingSubmit(true);
     setSubmit(true);
-    const isValid = handleValidation(e);
-    if (isValid) {
-      const [status, response] = await controller.handleSubmit(e)(
-        controller.dispatch
-      );
-      if (status === "success") {
-        addToast("Data ma`had telah tersimpan", { appearance: "success" });
-        setTimeout(() => {
-          history.push("/dashboard/madrasah");
-        }, 2000);
-      } else {
-        if (response !== undefined) {
-          if (response.status === 422) {
-            addToast(response.data.message, { appearance: "error" });
-          } else if (response.status === 400) {
-            addToast(response.data.message, { appearance: "error" });
-          } else if (response.status === 500) {
+    if (_.isEmpty(errors)) {
+      if (Number(phone[4]) !== 0) {
+        setError(false);
+        const [status, response] = await controller.handleSubmit(e)(
+          controller.dispatch
+        );
+        if (status === "success") {
+          addToast("Data ma`had telah tersimpan", { appearance: "success" });
+          setTimeout(() => {
+            history.push("/dashboard/madrasah");
+          }, 1000);
+        } else {
+          setLoadingSubmit(false);
+          if (response !== undefined) {
+            if (response.status === 422) {
+              addToast(response.data.message, { appearance: "error" });
+            } else if (response.status === 400) {
+              addToast(response.data.message, { appearance: "error" });
+            } else if (response.status === 500) {
+              addToast(
+                "Tidak dapat menyimpan data ma`had karena gangguan server",
+                { appearance: "error" }
+              );
+            } else {
+              addToast("Tidak dapat menyimpan data ma`had ke sever", {
+                appearance: "error",
+              });
+            }
+          } else {
             addToast(
               "Tidak dapat menyimpan data ma`had karena gangguan server",
-              { appearance: "error" }
+              {
+                appearance: "error",
+              }
             );
-          } else {
-            addToast("Tidak dapat menyimpan data ma`had ke sever", {
-              appearance: "error",
-            });
           }
-        } else {
-          addToast("Tidak dapat menyimpan data ma`had karena gangguan server", {
-            appearance: "error",
-          });
         }
+      } else {
+        setError(true);
+        setLoadingSubmit(false);
       }
     }
   };
-
-  const watchAllFields = watch();
 
   const {
     name,
@@ -208,10 +187,8 @@ const SectionInput = () => {
     setProccessing(false);
   }, [controller.inputSchoolData]);
 
-  console.log(controller.inputSchoolData)
-
   return (
-    <MuiPickersUtilsProvider utils={MomentUtils}>
+    <MuiPickersUtilsProvider utils={MomentUtils} locale={idLocale}>
       <ThemeProvider theme={innerTheme}>
         <div>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -221,43 +198,48 @@ const SectionInput = () => {
                   {controller.inputSchoolData.id === "" || undefined ? (
                     <div />
                   ) : (
-                      <GridItem
-                        xs={12}
-                        sm={12}
-                        md={12}
-                        style={{ marginTop: "5vh" }}
+                    <GridItem
+                      xs={12}
+                      sm={12}
+                      md={12}
+                      style={{ marginTop: "5vh" }}
+                    >
+                      <label
+                        className={
+                          errors && errors.address ? "red-text" : "black-text"
+                        }
+                        style={{ fontSize: "12px", fontWeight: "bold" }}
                       >
-                        <label
-                          className={
-                            errors && errors.address ? "red-text" : "black-text"
-                          }
-                          style={{ fontSize: '12px', fontWeight: 'bold' }}
-                        >
-                          ID Ma'had
-                    </label>
-                        <TextField
-                          id="id"
-                          name="id"
-                          type="text"
-                          style={{
-                            width: "100%",
-                          }}
-                          disabled
-                          value={controller.inputSchoolData.id.toString()}
-                          placeholder="ID Ma'had"
-                          onChange={handleChange}
-                        />
-                      </GridItem>
-                    )}
-                  <GridItem xs={12} sm={12} md={12} style={{ marginTop: "5vh" }}>
+                        ID Ma'had
+                      </label>
+                      <TextField
+                        id="id"
+                        name="id"
+                        type="text"
+                        style={{
+                          width: "100%",
+                        }}
+                        disabled
+                        value={controller.inputSchoolData.id.toString()}
+                        placeholder="ID Ma'had"
+                        onChange={handleChange}
+                      />
+                    </GridItem>
+                  )}
+                  <GridItem
+                    xs={12}
+                    sm={12}
+                    md={12}
+                    style={{ marginTop: "5vh" }}
+                  >
                     <label
                       className={
                         errors && errors.address ? "red-text" : "black-text"
                       }
-                      style={{ fontSize: '12px', fontWeight: 'bold' }}
+                      style={{ fontSize: "12px", fontWeight: "bold" }}
                     >
                       Nama Ma'had
-                  </label>
+                    </label>
                     <TextField
                       label=""
                       style={{
@@ -276,14 +258,14 @@ const SectionInput = () => {
                       InputProps={
                         processing
                           ? {
-                            classes: { input: classes.input },
-                            endAdornment: (
-                              <CircularProgress
-                                className={classes.loadingReset}
-                                size={14}
-                              />
-                            ),
-                          }
+                              classes: { input: classes.input },
+                              endAdornment: (
+                                <CircularProgress
+                                  className={classes.loadingReset}
+                                  size={14}
+                                />
+                              ),
+                            }
                           : { classes: { input: classes.input } }
                       }
                       onChange={handleChange}
@@ -291,22 +273,29 @@ const SectionInput = () => {
                         required: "Tidak boleh kosong",
                       })}
                     />
-                    {errors && errors.name && errors.name.type === "required" && (
-                      <p style={{ color: "red", fontSize: "12px" }}>
-                        {errorMessage.name}
-                      </p>
-                    )}
+                    {errors &&
+                      errors.name &&
+                      errors.name.type === "required" && (
+                        <p style={{ color: "red", fontSize: "12px" }}>
+                          {errorMessage.name}
+                        </p>
+                      )}
                   </GridItem>
-                  <GridItem xs={12} sm={12} md={12} style={{ marginTop: "5vh" }}>
+                  <GridItem
+                    xs={12}
+                    sm={12}
+                    md={12}
+                    style={{ marginTop: "5vh" }}
+                  >
                     <label
                       htmlFor="address"
                       className={
                         errors && errors.address ? "red-text" : "black-text"
                       }
-                      style={{ fontSize: '12px', fontWeight: 'bold' }}
+                      style={{ fontSize: "12px", fontWeight: "bold" }}
                     >
                       Alamat Ma'had
-                  </label>
+                    </label>
                     <TextField
                       // value={controller.inputSchoolData.address || ''}
                       onChange={handleChange}
@@ -326,14 +315,14 @@ const SectionInput = () => {
                       InputProps={
                         processing
                           ? {
-                            classes: { input: classes.inputTextarea },
-                            endAdornment: (
-                              <CircularProgress
-                                className={classes.loadingReset}
-                                size={14}
-                              />
-                            ),
-                          }
+                              classes: { input: classes.inputTextarea },
+                              endAdornment: (
+                                <CircularProgress
+                                  className={classes.loadingReset}
+                                  size={14}
+                                />
+                              ),
+                            }
                           : { classes: { input: classes.inputTextarea } }
                       }
                     />
@@ -345,16 +334,21 @@ const SectionInput = () => {
                         </p>
                       )}
                   </GridItem>
-                  <GridItem xs={12} sm={12} md={12} style={{ marginTop: "5vh" }}>
-                  <label
+                  <GridItem
+                    xs={12}
+                    sm={12}
+                    md={12}
+                    style={{ marginTop: "5vh" }}
+                  >
+                    <label
                       htmlFor="address"
                       className={
                         errors && errors.address ? "red-text" : "black-text"
                       }
-                      style={{ fontSize: '12px', fontWeight: 'bold' }}
+                      style={{ fontSize: "12px", fontWeight: "bold" }}
                     >
                       Pilih Provinsi
-                  </label>
+                    </label>
                     <Controller
                       as={
                         <SelectWithSearch
@@ -373,7 +367,10 @@ const SectionInput = () => {
                           data={controller.province || ""}
                           name="province_id"
                           label="Provinsi"
-                          placeholder={controller.inputSchoolData.province_id || 'Pilih Provinsi'}
+                          placeholder={
+                            controller.inputSchoolData.province_id ||
+                            "Pilih Provinsi"
+                          }
                         />
                       }
                       name="province_id"
@@ -399,16 +396,21 @@ const SectionInput = () => {
                         </p>
                       )}
                   </GridItem>
-                  <GridItem xs={12} sm={12} md={12} style={{ marginTop: "5vh" }}>
-                  <label
+                  <GridItem
+                    xs={12}
+                    sm={12}
+                    md={12}
+                    style={{ marginTop: "5vh" }}
+                  >
+                    <label
                       htmlFor="address"
                       className={
                         errors && errors.address ? "red-text" : "black-text"
                       }
-                      style={{ fontSize: '12px', fontWeight: 'bold' }}
+                      style={{ fontSize: "12px", fontWeight: "bold" }}
                     >
                       Pilih Kota
-                  </label>
+                    </label>
                     <Controller
                       as={
                         <SelectWithSearch
@@ -427,7 +429,10 @@ const SectionInput = () => {
                           data={controller.city}
                           name="regency_id"
                           label="Kota"
-                          placeholder={controller.inputSchoolData.regency_id || 'Pilih Kota'}
+                          placeholder={
+                            controller.inputSchoolData.regency_id ||
+                            "Pilih Kota"
+                          }
                         />
                       }
                       name="regency_id"
@@ -454,16 +459,21 @@ const SectionInput = () => {
                       )}
                   </GridItem>
                   <Box display="flex" flexDirection="row">
-                    <GridItem xs={12} sm={12} md={6} style={{ marginTop: "5vh" }}>
+                    <GridItem
+                      xs={12}
+                      sm={12}
+                      md={6}
+                      style={{ marginTop: "5vh" }}
+                    >
                       <label
                         htmlFor="pos_code"
                         className={
                           errors && errors.pos_code ? "red-text" : "black-text"
                         }
-                        style={{ fontSize: '12px', fontWeight: 'bold' }}
+                        style={{ fontSize: "12px", fontWeight: "bold" }}
                       >
                         Kode Pos
-                    </label>
+                      </label>
                       <TextField
                         onChange={handleChange}
                         style={{
@@ -475,7 +485,8 @@ const SectionInput = () => {
                         name="pos_code"
                         placeholder="Kode Pos"
                         inputRef={register({
-                          required: "Tidak boleh kosong",
+                          required: true,
+                          pattern: /^[0-9]*$/i,
                         })}
                       />
                       {errors &&
@@ -485,17 +496,33 @@ const SectionInput = () => {
                             {errorMessage.pos_code}
                           </p>
                         )}
+                      {errors &&
+                        errors.pos_code &&
+                        errors.pos_code.type === "pattern" && (
+                          <p style={{ color: "red", fontSize: "12px" }}>
+                            Kode pos hanya boleh diisi dengan angka
+                          </p>
+                        )}
                     </GridItem>
-                    <GridItem xs={12} sm={12} md={6} style={{ marginTop: "5vh" }}>
+                    <GridItem
+                      xs={12}
+                      sm={12}
+                      md={6}
+                      style={{ marginTop: "5vh" }}
+                    >
                       <label
                         htmlFor="birth_of_date"
                         className={
                           errors && errors.opened_at ? "red-text" : "black-text"
                         }
-                        style={{ marginTop: "5vh", fontSize: '12px', fontWeight: 'bold' }}
+                        style={{
+                          marginTop: "5vh",
+                          fontSize: "12px",
+                          fontWeight: "bold",
+                        }}
                       >
                         Tanggal Dibuka
-                    </label>
+                      </label>
                       <Controller
                         as={
                           <KeyboardDatePicker
@@ -515,8 +542,8 @@ const SectionInput = () => {
                               controller.inputSchoolData.opened_at === ""
                                 ? null
                                 : moment(
-                                  controller.inputSchoolData.opened_at
-                                ).toDate()
+                                    controller.inputSchoolData.opened_at
+                                  ).toDate()
                             }
                             onChange={(date: any) => {
                               const data = {
@@ -575,7 +602,7 @@ const SectionInput = () => {
                     >
                       <span style={{ fontSize: "20px", fontWeight: "bold" }}>
                         Kontak Ma'had
-                    </span>
+                      </span>
                     </GridItem>
                     <GridItem
                       xs={12}
@@ -588,26 +615,34 @@ const SectionInput = () => {
                         className={
                           errors && errors.phone ? "red-text" : "black-text"
                         }
-                        style={{ fontSize: '12px', fontWeight: 'bold' }}
+                        style={{ fontSize: "12px", fontWeight: "bold" }}
                       >
                         No Telp / HP
-                    </label>
-                      <TextField
-                        placeholder="No telp / HP"
-                        // value={controller.inputSchoolData.phone}
+                      </label>
+                      <InputMask
+                        mask="+62 999 999 999 99"
+                        value={phone}
+                        maskChar=" "
                         onChange={handleChange}
-                        style={{
-                          width: "100%",
-                        }}
-                        id="phone"
-                        variant="outlined"
-                        type="text"
-                        name="phone"
-                        inputRef={register({
-                          required: true,
-                          pattern: /^[0-9]*$/i,
-                        })}
-                      />
+                      >
+                        {() => (
+                          <TextField
+                            style={{
+                              width: "100%",
+                            }}
+                            variant="outlined"
+                            name="phone"
+                            id="phone"
+                            placeholder="Contoh: +628567XXXXXXX"
+                            InputProps={{
+                              classes: { input: classes.input },
+                            }}
+                            inputRef={register({
+                              required: true,
+                            })}
+                          />
+                        )}
+                      </InputMask>
                       {errors &&
                         errors.phone &&
                         errors.phone.type === "required" && (
@@ -615,13 +650,11 @@ const SectionInput = () => {
                             {errorMessage.phone}
                           </p>
                         )}
-                      {errors &&
-                        errors.phone &&
-                        errors.phone.type === "pattern" && (
-                          <p style={{ color: "red", fontSize: "12px" }}>
-                            NO HP hanya boleh diisi dengan angka
-                          </p>
-                        )}
+                      {error && Number(phone[4]) === 0 && (
+                        <p style={{ color: "red", fontSize: "12px" }}>
+                          No Handphone tidak valid. Silahkan coba kembali
+                        </p>
+                      )}
                     </GridItem>
                     <GridItem
                       xs={12}
@@ -634,10 +667,10 @@ const SectionInput = () => {
                         className={
                           errors && errors.email ? "red-text" : "black-text"
                         }
-                        style={{ fontSize: '12px', fontWeight: 'bold' }}
+                        style={{ fontSize: "12px", fontWeight: "bold" }}
                       >
                         Email
-                    </label>
+                      </label>
                       <TextField
                         onChange={handleChange}
                         placeholder="Alamat surel"
@@ -669,12 +702,14 @@ const SectionInput = () => {
                       <label
                         htmlFor="description"
                         className={
-                          errors && errors.description ? "red-text" : "black-text"
+                          errors && errors.description
+                            ? "red-text"
+                            : "black-text"
                         }
-                        style={{ fontSize: '12px', fontWeight: 'bold' }}
+                        style={{ fontSize: "12px", fontWeight: "bold" }}
                       >
                         Info lain
-                    </label>
+                      </label>
                       <TextField
                         // value={controller.inputSchoolData.description || ''}
                         onChange={handleChange}
@@ -711,15 +746,16 @@ const SectionInput = () => {
                       color: "#fff",
                       marginTop: "40px",
                       width: "174px",
-                      height: '49px'
+                      height: "49px",
                     }}
-                    isLoading={loading ? true : false}
+                    loading={loadingSubmit}
+                    disabled={loadingSubmit}
                     color="primary"
                     type="submit"
                     onClick={(e) => null}
                   >
                     SIMPAN
-                </Button>
+                  </Button>
                 </Box>
               </GridItem>
             </Box>

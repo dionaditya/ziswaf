@@ -125,4 +125,5 @@ export interface IState {
   message: string;
   setMessage: Function;
   handleExportPdf: Function
+  generalOperatorPerDay: any
 }

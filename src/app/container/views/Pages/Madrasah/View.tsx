@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import { AppProvider } from './Controller';
 import MadrasahDashboardPage from './components/MadrasahDashboard'
+import {ToastProvider} from 'react-toast-notifications'
 
 const Madrasah: React.FC<{}> = () => {
   return (
     <div>
+      
       <AppProvider>
-        <MadrasahDashboardPage />
+        <ToastProvider>
+            <MadrasahDashboardPage />
+        </ToastProvider>
       </AppProvider>
     </div>
   );

@@ -74,7 +74,7 @@ export class DonorApiRepository implements DonorRepositoryInterface {
         "post",
         this.endpoints.managerDonor(),
         {},
-        payload as CreateDonorApiRequest
+        payload.toJson()
       );
    
       return ['success', {
@@ -88,14 +88,21 @@ export class DonorApiRepository implements DonorRepositoryInterface {
 
   public async storeNewData(
     payload: CreateDonorRequestInterface
-  ): Promise<DonorDetails> {
-    const resp = await this.service.invoke(
-      "post",
-      this.endpoints.updateDonor(),
-      {},
-      payload as CreateDonorApiRequest
-    );
-    return this.mapper.convertDonorDetailsFromApi(resp);
+  ): Promise<any> {
+    try {
+      const resp = await this.service.invoke(
+        "post",
+        this.endpoints.updateDonor(),
+        {},
+        payload
+      );
+      return ['success', {
+        ...resp,
+        data: {...resp.data, data: this.mapper.convertDonorDetailsFromApi(resp)}
+      }]
+    } catch(e) {
+      return ['error', e.response]
+    }
   }
 
 
@@ -122,7 +129,6 @@ export class DonorApiRepository implements DonorRepositoryInterface {
   }
 
   public async delete(id: number): Promise<Donor[]> {
-    try {
       const resp = await this.service.invoke(
         "delete",
         this.endpoints.deleteDonorData(id),
@@ -130,8 +136,5 @@ export class DonorApiRepository implements DonorRepositoryInterface {
         id
       );
       return resp;
-    } catch (error) {
-      return error;
-    }
   }
 }

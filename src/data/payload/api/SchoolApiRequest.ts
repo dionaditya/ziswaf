@@ -42,9 +42,8 @@ export class SchoolApiRequest implements createSchooInterface {
         const data= {...this} 
         const transformData = {}
         Object.keys(data).forEach(val => {
-            if(data[val] !== null || '') {
+            if(data[val] !== null) {
                 if(val === 'province_id' || val === 'regency_id') {
-                    console.log(val, data[val], _.isNumber(data[val]))
                      if(_.isNumber(data[val]) === true) {
                           transformData[val] = data[val]
                       } else {

@@ -69,23 +69,23 @@ const useStyles = makeStyles((theme: Theme) =>
 const Content = () => {
   const classes = useStyles();
   const controller = useContext(DashboardContext);
-    
+
   const handleFilterUnit = (value) => {
     controller.role !== 2
       ? controller.setFilterParamAdmin((prevState) => ({
-          ...prevState,
-          filter: {
-            ...prevState.filter,
-            school_id: value,
-          },
-        }))
+        ...prevState,
+        filter: {
+          ...prevState.filter,
+          school_id: value,
+        },
+      }))
       : controller.setFilterParam((prevState) => ({
-          ...prevState,
-          filter: {
-            ...prevState.filter,
-            school_id: value,
-          },
-        }));
+        ...prevState,
+        filter: {
+          ...prevState.filter,
+          school_id: value,
+        },
+      }));
   };
 
   const handleSearchSchool = (value) => {
@@ -95,20 +95,22 @@ const Content = () => {
   const handleFilterDate = (field, value) => {
     controller.role !== 2
       ? controller.setFilterParamAdmin((prevState) => ({
-          ...prevState,
-          filter: {
-            ...prevState.filter,
-            [field]: moment(value).toISOString(),
-          },
-        }))
+        ...prevState,
+        filter: {
+          ...prevState.filter,
+          [field]: field === 'start_end' ? moment(value).utcOffset("+07:00").local().format() :
+            moment(value).utcOffset("+07:00").local().format()
+        },
+      }))
       : controller.setFilterParam((prevState) => ({
-          ...prevState,
-          filter: {
-            ...prevState.filter,
-           [field]: moment(value).toISOString(),
-            school_id: controller.idSchool,
-          },
-        }));
+        ...prevState,
+        filter: {
+          ...prevState.filter,
+          [field]: field === 'start_end' ? moment(value).utcOffset("+07:00").local().format() :
+            moment(value).utcOffset("+07:00").local().format(),
+          school_id: controller.idSchool,
+        },
+      }));
   };
 
   const startDateAdmin = controller.filterParamAdmin.filter.start_date;
@@ -134,7 +136,7 @@ const Content = () => {
       <GridContainer className={classes.container}>
         <GridItem xs={12} sm={12} md={12} className={classes.rows}>
           <Greetings status={controller.role} name={controller.name} />
-          {controller.loading && <span style={{height: 7, width: "auto", backgroundColor: "#FFA500", fontSize: 12, padding: "1px 5px", borderRadius: 5, color: "#FFFFFF"}}>Loading...</span>}
+          {controller.loading && <span style={{ height: 7, width: "auto", backgroundColor: "#FFA500", fontSize: 12, padding: "1px 5px", borderRadius: 5, color: "#FFFFFF" }}>Loading...</span>}
         </GridItem>
         <GridItem
           xs={12}
@@ -243,91 +245,91 @@ const Content = () => {
           />
         </GridItem>
         <GridItem xs={12} sm={12} md={12}>
-          <Box style={{marginTop: 20}}>
-          <Card>
-            <div style={{ padding: "20px 10px 10px 10px", borderRadius: 5 }}>
-              <div style={{ marginBottom: 0, marginLeft: 15 }}>
-                <span
-                  style={{
-                    fontFamily: "roboto",
-                    fontSize: "18px",
-                    color: "#31394D",
-                  }}
-                >
-                  Grafik Donasi Per Jenis Donasi
-                </span>
-              </div>
-              <GridContainer style={{ alignItems: "center" }}>
-                <GridItem xs={12} sm={12} md={10}>
-                  <Box display="flex" flexWrap="wrap" p={1} m={1}>
-                    <DonationTypeChartLegend
-                      colors={controller.colors}
-                      series={controller.dataSeries}
-                      selected={controller.role !== 2 ? controller.selectedSeries : controller.operatorData}
-                      onClick={controller.role !== 2 ? controller.handleClick : controller.handleClickOperator}
-                    />
-                  </Box>
-                </GridItem>
-                <GridItem xs={12} sm={12} md={2}>
-                  <div
+          <Box style={{ marginTop: 20 }}>
+            <Card>
+              <div style={{ padding: "20px 10px 10px 10px", borderRadius: 5 }}>
+                <div style={{ marginBottom: 0, marginLeft: 15 }}>
+                  <span
                     style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      alignItems: "center",
+                      fontFamily: "roboto",
+                      fontSize: "18px",
+                      color: "#31394D",
                     }}
                   >
+                    Grafik Donasi Per Jenis Donasi
+                </span>
+                </div>
+                <GridContainer style={{ alignItems: "center" }}>
+                  <GridItem xs={12} sm={12} md={10}>
+                    <Box display="flex" flexWrap="wrap" p={1} m={1}>
+                      <DonationTypeChartLegend
+                        colors={controller.colors}
+                        series={controller.dataSeries}
+                        selected={controller.role !== 2 ? controller.selectedSeries : controller.operatorData}
+                        onClick={controller.role !== 2 ? controller.handleClick : controller.handleClickOperator}
+                      />
+                    </Box>
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={2}>
                     <div
                       style={{
-                        position: "relative",
-                        marginTop: "5px",
-                        height: "100%",
-                        marginRight: "5px",
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center",
                       }}
                     >
                       <div
                         style={{
-                          height: "1px",
-                          width: "30px",
-                          border: "1px solid  #4072EE",
-                          backgroundColor: "#4072EE",
+                          position: "relative",
+                          marginTop: "5px",
+                          height: "100%",
+                          marginRight: "5px",
                         }}
-                      />
-                      <div
-                        className="legend"
+                      >
+                        <div
+                          style={{
+                            height: "1px",
+                            width: "30px",
+                            border: "1px solid  #4072EE",
+                            backgroundColor: "#4072EE",
+                          }}
+                        />
+                        <div
+                          className="legend"
+                          style={{
+                            width: "15px",
+                            height: "15px",
+                            border: "2px solid  #4072EE",
+                            borderRadius: "50%",
+                            position: "absolute",
+                            left: "8px",
+                            top: "-7px",
+                          }}
+                        />
+                      </div>
+                      <span
                         style={{
-                          width: "15px",
-                          height: "15px",
-                          border: "2px solid  #4072EE",
-                          borderRadius: "50%",
-                          position: "absolute",
-                          left: "8px",
-                          top: "-7px",
+                          fontSize: 12,
                         }}
-                      />
-                    </div>
-                    <span
-                      style={{
-                        fontSize: 12,
-                      }}
-                    >
-                      Total penerimaan
+                      >
+                        Total penerimaan
                     </span>
-                  </div>
-                </GridItem>
-              </GridContainer>
-              <MyChart
-                type="line"
-                width="100%"
-                role={controller.role}
-                series={controller.role !== 2 ? controller.selectedSeries : controller.operatorData}
-                categories={controller.categories}
-                categoriesPerday={controller.categoriesPerDay}
-                colors={controller.role !== 2 ? showColor : showColorOPerator}
-              />
-            </div>
-          </Card>
-        
+                    </div>
+                  </GridItem>
+                </GridContainer>
+                <MyChart
+                  type="line"
+                  width="100%"
+                  role={controller.role}
+                  series={controller.role !== 2 ? controller.selectedSeries : controller.operatorData}
+                  categories={controller.categories}
+                  categoriesPerday={controller.categoriesPerDay}
+                  colors={controller.role !== 2 ? showColor : showColorOPerator}
+                />
+              </div>
+            </Card>
+
           </Box>
         </GridItem>
         <GridItem xs={12} sm={12} md={12}>

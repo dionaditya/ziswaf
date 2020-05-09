@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import { Input, Textarea } from "@/app/container/components/index";
 import { CorporateContext } from "../Controller";
 import SimpleSelect from "@/app/container/components/SelectMUI";
 import { CoorporateStatus } from "@/domain/entities/AllOptions";
@@ -21,6 +20,12 @@ import {
 import Button from "@/app/container/commons/CustomButtons/Button.tsx";
 import ModalWarningData from "../../Retail/components/ModalWarningData";
 import _ from "lodash";
+import { useToasts } from "react-toast-notifications";
+import Alert from "@material-ui/lab/Alert";
+import InputMask from "react-input-mask";
+
+const infoWarning = `Catatan: Jika menemui info error nama dan email perusahaan yang sama walaupun nama kontaknya berbeda. 
+Silahkan dapat memperbarui nama kontak person perusahaan di fitur edit donatur terlebih dahulu atau dapat menggunakan data donatur perusahaan yang telah di daftarkan sebelumnya dengan melakukan pencarian melalui fitur cari donatur`;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -63,14 +68,9 @@ const DonorInput = ({ index, setIndex }) => {
   const history = useHistory();
   const classes = useStyles();
   const [statusModal, setStatusModal] = React.useState(false);
-  const {
-    register,
-    handleSubmit,
-    watch,
-    errors,
-    control,
-    setValue,
-  } = useForm();
+  const { register, handleSubmit, errors, control, setValue } = useForm();
+  const { addToast } = useToasts();
+  const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(false);
 
   const {
@@ -134,33 +134,79 @@ const DonorInput = ({ index, setIndex }) => {
   };
 
   const handleSubmitInput = async (e) => {
+    setLoading(true);
     if (_.isEmpty(errors)) {
-      
       if (controller.selected) {
         history.push(
           `/dashboard/corporate-transaction/${controller.DonationInfo.donor_id}`
         );
       } else {
-        const [status, response] = await controller.postData();
-        if (status === "error") {
-          setStatusModal(true);
+        if (Number(phone[4]) !== 0) {
+          setError(false);
+          const [status, response] = await controller.postData();
+          if (status === "error") {
+            setLoading(false);
+            if (response !== undefined) {
+              if (response.status === 400 || response.status === 402) {
+                if (
+                  response.data.message ===
+                  "Nama dan Nomor Handphone yang sama ditemukan dalam database"
+                ) {
+                  setStatusModal(true);
+                } else {
+                  addToast(response.data.message, {
+                    appearance: "error",
+                  });
+                }
+              } else {
+                addToast(response.data.message, {
+                  appearance: "error",
+                });
+              }
+            }
+          } else {
+            addToast("Data donatur telah tersimpan", {
+              appearance: "success",
+            });
+            setTimeout(() => {
+              history.push(
+                `/dashboard/corporate-transaction/${response.data.data.id}`
+              );
+            }, 1000);
+          }
         } else {
-          
-          history.push(
-            `/dashboard/corporate-transaction/${response.data.data.id}`
-          );
+          setError(true);
+          setLoading(false);
         }
       }
     }
   };
 
   const handleUpdateInput = async () => {
-    const resp = await controller.postUpdateData();
-    if (resp) {
-      history.push(`/dashboard/corporate-transaction/${resp.id}`);
+    const [status, response] = await controller.postUpdateData();
+    if (status === "success") {
+      addToast("Data donatur telah berhasil diperbarui", {
+        appearance: "success",
+      });
+      setTimeout(() => {
+        history.push(
+          `/dashboard/corporate-transaction/${response.data.data.id}`
+        );
+      }, 1000);
+    } else {
+      if (response !== undefined) {
+        if (response.status === 400 || response.status === 402) {
+          addToast(response.data.message, {
+            appearance: "error",
+          });
+        } else {
+          addToast(response.data.message, {
+            appearance: "error",
+          });
+        }
+      }
     }
   };
-
 
   return (
     <React.Fragment>
@@ -420,35 +466,8 @@ const DonorInput = ({ index, setIndex }) => {
                           style={{ width: "100%" }}
                           placeholder="Alamat Surel"
                           onChange={onChange}
-                          inputRef={register({
-                            required: true,
-                            pattern: /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/i,
-                          })}
+                          inputRef={register}
                         />
-                        {errors &&
-                          errors.email &&
-                          errors.email.type === "required" && (
-                            <p
-                              style={{
-                                color: "red",
-                                fontSize: "12px",
-                              }}
-                            >
-                              {errorMessage.email}
-                            </p>
-                          )}
-                        {errors &&
-                          errors.email &&
-                          errors.email.type === "pattern" && (
-                            <p
-                              style={{
-                                color: "red",
-                                fontSize: "12px",
-                              }}
-                            >
-                              Email tidak valid
-                            </p>
-                          )}
                       </Box>
                     </GridItem>
                   </Card>
@@ -524,20 +543,30 @@ const DonorInput = ({ index, setIndex }) => {
                         >
                           No Handphone
                         </label>
-                        <TextField
-                          id="phone"
-                          name="phone"
-                          variant="outlined"
-                          type="tel"
+                        <InputMask
+                          mask="+62 999 999 999 99"
+                          value={phone}
                           disabled={controller.selected}
-                          style={{ width: "100%" }}
-                          placeholder="No Handphone"
+                          maskChar=" "
                           onChange={onChange}
-                          inputRef={register({
-                            required: true,
-                            pattern: /^[0-9]*$/i,
-                          })}
-                        />
+                        >
+                          {() => (
+                            <TextField
+                              style={{
+                                width: "100%",
+                              }}
+                              variant="outlined"
+                              name="phone"
+                              id="phone"
+                              disabled={controller.selected}
+                              placeholder="Contoh: +628567XXXXXXX"
+                              type="tel"
+                              inputRef={register({
+                                required: true,
+                              })}
+                            />
+                          )}
+                        </InputMask>
                         {errors &&
                           errors.phone &&
                           errors.phone.type === "required" && (
@@ -545,13 +574,12 @@ const DonorInput = ({ index, setIndex }) => {
                               {errorMessage.phone}
                             </p>
                           )}
-                        {errors &&
-                          errors.phone &&
-                          errors.phone.type === "pattern" && (
-                            <p style={{ color: "red", fontSize: "12px" }}>
-                              Hanya Boleh diisi dengan angka
-                            </p>
-                          )}
+                        {error && Number(phone[4]) === 0 && (
+                          <p style={{ color: "red", fontSize: "12px" }}>
+                            No Handphone tidak valid. Silahkan coba kembali
+                          </p>
+                        )}
+                     
                         <h2 className="black-text">Keterangan Tambahan</h2>
                         <label htmlFor="npwp" className="black-text">
                           No NPWP
@@ -563,9 +591,16 @@ const DonorInput = ({ index, setIndex }) => {
                           type="text"
                           disabled={controller.selected}
                           placeholder="No NPWP"
-                          inputRef={register}
+                          inputRef={register({ pattern: /^[0-9]*$/i })}
                           onChange={onChange}
                         />
+                        {errors &&
+                          errors.npwp &&
+                          errors.npwp.type === "pattern" && (
+                            <p style={{ color: "red", fontSize: "12px" }}>
+                              Hanya Boleh diisi dengan angka
+                            </p>
+                          )}
                         <label htmlFor="info-donatur" className="black-text">
                           Info Donatur
                         </label>
@@ -595,6 +630,16 @@ const DonorInput = ({ index, setIndex }) => {
                       </Box>
                     </GridItem>
                   </Card>
+                  <GridItem
+                    xs={12}
+                    sm={12}
+                    md={12}
+                    style={{
+                      marginTop: "20px",
+                    }}
+                  >
+                    <Alert severity="info">{infoWarning}</Alert>
+                  </GridItem>
                 </GridItem>
               </GridContainer>
               <ModalWarningData
@@ -640,6 +685,8 @@ const DonorInput = ({ index, setIndex }) => {
                         }}
                         type="submit"
                         color="success"
+                        loading={loading}
+                        disabled={loading}
                         onClick={(e) => null}
                       >
                         Simpan & Lanjutkan

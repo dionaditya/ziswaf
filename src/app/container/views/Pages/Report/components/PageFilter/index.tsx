@@ -8,6 +8,7 @@ import CardHeader from "@/app/container/commons/Card/CardHeader.js";
 import CardBody from "@/app/container/commons/Card/CardBody.js";
 import Button from "@/app/container/commons/CustomButtons/Button.tsx";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import  history  from '@/app/infrastructures/misc/BrowserHistory';
 
 import ContentFilters from "../ContentFilters";
 import { ReportContext } from "../../Controller";
@@ -51,6 +52,27 @@ const useStyles = makeStyles((theme: Theme) =>
 const PageFilters = () => {
   const classes = useStyles();
   const controller = useContext(ReportContext);
+  const filterData = controller.filterData;
+
+
+  const handleFieldSelected = (field, data, valueAll) => {
+    const label =
+      filterData[field].length > 0
+        ? `${filterData[field][0].label}`
+        : "Semua";
+    const selected =
+      filterData[field].length > 0
+        ? filterData[field]
+        : [{ name: valueAll, label: "Semua" }];
+
+    return {
+      label: label,
+      selected: selected,
+    };
+  };
+
+  const citySelected = handleFieldSelected("citySelected", "cityData", 0).label
+  const unitSelected = handleFieldSelected("unitSelected", "unitData", 0).label
 
   return (
     <React.Fragment>
@@ -97,7 +119,8 @@ const PageFilters = () => {
                             backgroundColor: "#00923F",
                             fontWeight: 800,
                           }}
-                          onClick={(e) => controller.fetchReportData()}
+                          onClick={(e) => controller.fetchReportData(history.push(`/dashboard/reports?city=${citySelected};unit=${unitSelected}`)) 
+                          }
                         >
                           {controller.loading && (
                             <CircularProgress

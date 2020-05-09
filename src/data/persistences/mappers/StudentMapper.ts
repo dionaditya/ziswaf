@@ -15,10 +15,10 @@ export class StudentMapper extends BaseResponseMapper {
 
         return data.data.map(val => {
             const educationStatus = EducationStatus.filter(e => e[0] === val.education_status)
-            const parentStatus = ParentStatusMaster.filter(e => e[0] === val.parent_status)
             const studentStatus = StudentStatus.filter(e => e[0] === val.sosial_status)
             const fatherStatus = ParentStatus.filter(e => e[0] === val.father_status)
             const motherStatus = ParentStatus.filter(e => e[0] === val.mother_status)
+
             
             return new Student(
                 val.id,
@@ -39,10 +39,10 @@ export class StudentMapper extends BaseResponseMapper {
                 val.village_name,
                 educationStatus[0][1],
                 moment(val.registered_at).format('dddd, DD MMMM YYYY'),
-                moment(val.finished_at).format('DD-MM-YYYY') === '01-01-0001' ? '-' :  moment(val.finished_at).format('dddd, DD MMMM YYYY') ,
+                moment(val.finished_at).format('DD-MM-YYYY') === '01-01-0001' || val.finished_at === null ? '-' :  moment(val.finished_at).format('dddd, DD MMMM YYYY') ,
                 val.punishment_count,
-                moment(val.punishment_start).format('DD-MM-YYYY') === '01-01-0001' ? '-' :  moment(val.punishment_start).format('dddd, DD MMMM YYYY'),
-                moment(val.punishment_end).format('DD-MM-YYYY') === '01-01-0001' ? '-' : moment(val.punishment_end).format('dddd, DD MMMM YYYY'),
+                moment(val.punishment_start).format('DD-MM-YYYY') === '01-01-0001' || val.punishment_start === null? '-' :  moment(val.punishment_start).format('dddd, DD MMMM YYYY'),
+                moment(val.punishment_end).format('DD-MM-YYYY') === '01-01-0001' || val.punishment_end === null ? '-' : moment(val.punishment_end).format('dddd, DD MMMM YYYY'),
                 val.juz_kuran_description,
                 val.chapter_kuran_description,
                 val.hadist_description,
@@ -50,15 +50,15 @@ export class StudentMapper extends BaseResponseMapper {
                 ParentStatusMaster[0][1],
                 val.father_name,
                 val.place_of_birth_father,
-                moment(val.birth_of_date_father).format('dddd, DD MMMM YYYY'),
+                val.birth_of_date_father === null ? '-' : moment(val.birth_of_date_father).format('dddd, DD MMMM YYYY'),
                 val.father_occupation,
-                val.father_phone,
+                val.father_phone === '' ? '-' : `+62${val.father_phone}`,
                 fatherStatus[0][1],
                 val.mother_name,
                 val.place_of_birth_mother,
-                moment(val.birth_of_date_mother).format('dddd, DD MMMM YYYY'),
+                val.birth_of_date_mother === null ? '-' :  moment(val.birth_of_date_mother).format('dddd, DD MMMM YYYY'),
                 val.mother_occupation,
-                val.mother_phone,
+                val.mother_phone === '' ? '-' : `+62${val.mother_phone}`,
                 motherStatus[0][1],
                 val.image,
                 val.province_id,
@@ -75,6 +75,7 @@ export class StudentMapper extends BaseResponseMapper {
         if(data === null) {
             return null
         }
+
         return new Student(
             data.id,
             data.identity_number,
@@ -94,10 +95,10 @@ export class StudentMapper extends BaseResponseMapper {
             data.village_name,
             data.education_status,
             moment(data.registered_at).format('YYYY-MM-DD'),
-            moment(data.finished_at).format('YYYY-MM-DD'),
+            data.finished_at === null ? null : moment(data.finished_at).format('YYYY-MM-DD'),
             data.punishment_count,
-            moment(data.punishment_start).format('YYYY-MM-DD'),
-            moment(data.punishment_end).format('YYYY-MM-DD'),
+            data.punishment_start === null ? null : moment(data.punishment_start).format('YYYY-MM-DD'),
+            data.punishment_end === null ? null : moment(data.punishment_end).format('YYYY-MM-DD'),
             data.juz_kuran_description,
             data.chapter_kuran_description,
             data.hadist_description,
@@ -105,16 +106,16 @@ export class StudentMapper extends BaseResponseMapper {
             data.parent_status,
             data.father_name,
             data.place_of_birth_father,
-            moment(data.birth_of_date_father).format('dddd, DD MMMM YYYY'),
+            data.birth_of_date_father === null ? null : moment(data.birth_of_date_father).toDate(),
             data.father_occupation,
             data.father_phone,
-            data.father_status+1,
+            data.father_status,
             data.mother_name,
             data.place_of_birth_mother,
-            moment(data.birth_of_date_mother).format('dddd, DD MMMM YYYY'),
+            data.birth_of_date_mother === null ? null : moment(data.birth_of_date_mother).toDate(),
             data.mother_occupation,
             data.mother_phone,
-            data.mother_status+1,
+            data.mother_status,
             data.image,
             data.province_id,
             data.regency_id,

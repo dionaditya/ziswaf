@@ -16,6 +16,7 @@ import { getUserInfo } from '@/app/infrastructures/misc/Cookies';
 import axios from 'axios'
 import qs from 'qs'
 import {useLocation} from 'react-router-dom'
+import { useDebounce } from "use-lodash-debounce";
 
 export enum ActionType {
     handleStudentInfoInputData = 'HANDLESTUDENTINFOINPUTDATA',
@@ -25,13 +26,14 @@ export enum ActionType {
     setLoading = 'SETLOADING',
     setError = 'SETERROR',
     handleSubmit = 'HANDLESUBMIT',
-    setProvinceSchool = 'SETPROVINCESCHOOL',
+    setProvince = 'SETPROVINCE',
     setCity = 'SETCITY',
     setDistrict = 'SETDISTRICT',
     setVillage = 'SETVILLAGE',
     setImagePreview = 'SETIMAGEPREVIEW',
     setExisitingStudentData = 'SETEXISTINGSTUDENTDATA',
-    setScholId = 'SETSCHOOLID'
+    setScholId = 'SETSCHOOLID',
+    setSchool = 'SETSCHOOL'
 }
 
 
@@ -67,6 +69,8 @@ export interface IState {
     setUpdateSession: Function
     userInfo: any
     isDetailSession: boolean
+    loadData: Function
+    debounce: Function
 }
 
 export const initialState: IState = {
@@ -133,7 +137,9 @@ export const initialState: IState = {
     isUpdateSession: false,
     setUpdateSession: () => { },
     userInfo: {},
-    isDetailSession: false
+    isDetailSession: false,
+    loadData: () => {},
+    debounce: () => {}
 
 }
 
@@ -155,8 +161,12 @@ const reducer: React.Reducer<IState, IAction> = (state, action) => {
         case ActionType.handleImageUpload:
             return { ...state, student_info: { ...state.student_info, image: action.payload } }
 
-        case ActionType.setProvinceSchool:
-            return { ...state, province: action.payload.province, school: action.payload.school }
+        case ActionType.setProvince:
+            return { ...state, province: action.payload  }
+
+        case ActionType.setSchool:
+                return { ...state, school: action.payload  }
+
 
         case ActionType.setCity:
             return { ...state, city: action.payload }
@@ -253,13 +263,13 @@ const reducer: React.Reducer<IState, IAction> = (state, action) => {
                     parent_status: parent_status,
                     father_name: father_name,
                     place_of_birth_father: place_of_birth_father,
-                    birth_of_date_father: moment(birth_of_date_father).format('YYYY-MM-DD'),
+                    birth_of_date_father: birth_of_date_father === null ? null : moment(birth_of_date_father).format('YYYY-MM-DD'),
                     father_occupation: father_occupation,
                     father_phone: father_phone,
                     father_status: father_status,
                     mother_name: mother_name,
                     place_of_birth_mother: place_of_birth_mother,
-                    birth_of_date_mother: moment(birth_of_date_mother).format('YYYY-MM-DD'),
+                    birth_of_date_mother:  birth_of_date_mother === null ? null : moment(birth_of_date_mother).format('YYYY-MM-DD'),
                     mother_occupation: mother_occupation,
                     mother_phone: mother_phone,
                     mother_status: mother_status,
@@ -298,7 +308,24 @@ export const StudentListInputController = ({ children }) => {
     const location = useLocation()
 
     const query = qs.parse(location.search)
-    
+
+    const [querySchool, setQuerySchool] = React.useState("");
+
+    const debouncedSchool = useDebounce(querySchool, 40);
+  
+    const formatPhone: any = (phoneNumber) => {
+        const formatValue = phoneNumber
+        .slice(3, phoneNumber.length)
+        .replace(/\s+/g, "")
+        .match(/(\d+)/);
+
+        if(formatValue === null) {
+            return ''
+        } else {
+            return formatValue[0]
+        }
+    }
+
 
     useEffect(() => {
 
@@ -309,7 +336,6 @@ export const StudentListInputController = ({ children }) => {
                 dispatch({ type: ActionType.setExisitingStudentData, payload: studentData.data.data })
                 
                 let listProvincePresenter = await provincePresenter.loadData()
-                let listSchoolPresenter = await schoolPresenter.loadData()
                 let listCity = await cityPresenter.loadData({
                     filter: {
                         province_id: studentData.data.data.province
@@ -326,10 +352,7 @@ export const StudentListInputController = ({ children }) => {
                     }
                 })
                 dispatch({
-                    type: ActionType.setProvinceSchool, payload: {
-                        province: listProvincePresenter,
-                        school: listSchoolPresenter.data.data
-                    }
+                    type: ActionType.setProvince, payload: listProvincePresenter
                 })
                 dispatch({
                     type: ActionType.setCity,
@@ -346,44 +369,18 @@ export const StudentListInputController = ({ children }) => {
 
                 setUserInfo(useraccess)
 
-               
                 setUpdateSession(true)
                 dispatch({ type: ActionType.setLoading, payload: false })
-
-            
-
 
             } else {
                 dispatch({ type: ActionType.setLoading, payload: true })
                 let listProvincePresenter = await provincePresenter.loadData()
-                let listSchool = await schoolPresenter.loadData()
-                if (listSchool !== null) {
-                    const school = listSchool.data.data.filter(school => school.id === _.toNumber(useraccess.school.id))
-                    if (school.length > 0) {
-                        dispatch({ type: ActionType.setScholId, payload: school[0].id })
-                        dispatch({
-                            type: ActionType.setProvinceSchool, payload: {
-                                province: listProvincePresenter,
-                                school: listSchool.data.data
-                            }
-                        })
-                        setUserInfo(useraccess)
-                        dispatch({ type: ActionType.setLoading, payload: false })
-                    } else {
-                        dispatch({ type: ActionType.setScholId, payload: useraccess.school.id })
-                        dispatch({
-                            type: ActionType.setProvinceSchool, payload: {
-                                province: listProvincePresenter,
-                                school: listSchool.data.data
-                            }
-                        })
-                        setUserInfo(useraccess)
-                        dispatch({ type: ActionType.setLoading, payload: false })
-                    }
-                }
+                dispatch({
+                    type: ActionType.setProvince, payload: listProvincePresenter
+                })
+                setUserInfo(useraccess)
+                dispatch({ type: ActionType.setLoading, payload: false })
             }
-
-
         }
 
         getData()
@@ -395,6 +392,33 @@ export const StudentListInputController = ({ children }) => {
         }
         
     }, [])
+
+    React.useEffect(() => {
+        if (debouncedSchool !== "") {
+          (async () => {
+            const school: any = await schoolPresenter.loadData({
+              search: debouncedSchool,
+            });
+            dispatch({
+              type: ActionType.setSchool,
+              payload: school.data.data,
+            });
+          })();
+        } else {
+          (async () => {
+            const school: any = await schoolPresenter.loadData({
+              paging: {
+                page: 1,
+                limit: 10,
+              },
+            });
+            dispatch({
+              type: ActionType.setSchool,
+              payload: school.data.data,
+            });
+          })();
+        }
+      }, [debouncedSchool]);
 
     const handleSubmit = controller => async dispatch => {
 
@@ -477,13 +501,13 @@ export const StudentListInputController = ({ children }) => {
                         place_of_birth_father,
                         moment(birth_of_date_father).toISOString(),
                         father_occupation,
-                        father_phone,
+                        formatPhone(father_phone),
                         father_status,
                         mother_name,
                         place_of_birth_mother,
                         moment(birth_of_date_mother).toISOString(),
                         mother_occupation,
-                        mother_phone,
+                        formatPhone(mother_phone),
                         mother_status,
                         image,
     
@@ -565,13 +589,13 @@ export const StudentListInputController = ({ children }) => {
                         place_of_birth_father,
                         moment(birth_of_date_father).toISOString(),
                         father_occupation,
-                        father_phone,
+                        formatPhone(father_phone),
                         father_status,
                         mother_name,
                         place_of_birth_mother,
                         moment(birth_of_date_mother).toISOString(),
                         mother_occupation,
-                        mother_phone,
+                        formatPhone(mother_phone),
                         mother_status,
     
                     ))
@@ -664,13 +688,13 @@ export const StudentListInputController = ({ children }) => {
                         place_of_birth_father,
                         moment(birth_of_date_father).toISOString(),
                         father_occupation,
-                        father_phone,
+                        formatPhone(father_phone),
                         father_status,
                         mother_name,
                         place_of_birth_mother,
                         moment(birth_of_date_mother).toISOString(),
                         mother_occupation,
-                        mother_phone,
+                        formatPhone(mother_phone),
                         mother_status,
                         image,
                     ), parseInt(id))
@@ -752,13 +776,13 @@ export const StudentListInputController = ({ children }) => {
                         place_of_birth_father,
                         moment(birth_of_date_father).toISOString(),
                         father_occupation,
-                        father_phone,
+                        formatPhone(father_phone),
                         father_status,
                         mother_name,
                         place_of_birth_mother,
                         moment(birth_of_date_mother).toISOString(),
                         mother_occupation,
-                        mother_phone,
+                        formatPhone(mother_phone),
                         mother_status,
                     ), parseInt(id))
                     return updateStudent
@@ -840,6 +864,28 @@ export const StudentListInputController = ({ children }) => {
             dispatch({ type: actiontype, payload: [e.target.files[0], e.target.files[0].name] })
         }
 
+        const loadData = (newValue, callback) => {
+            const transformData = state.school.map((val) => {
+              return {
+                value: val.id,
+                label: val.name,
+              };
+            });
+            console.log(transformData);
+            const witHDefaultValue = [
+              {
+                value: "",
+                label: "SEMUA",
+              },
+              ...transformData,
+            ];
+        
+            return callback(witHDefaultValue);
+          };
+        
+          const debounce = async (inputValue) => {
+            setQuerySchool(inputValue);
+          };
 
     return (
         <StudentListInputProvider value={{
@@ -851,7 +897,9 @@ export const StudentListInputController = ({ children }) => {
             isUpdateSession: isUpdateSession,
             setUpdateSession: setUpdateSession,
             userInfo: useraccess,
-            isDetailSession
+            isDetailSession,
+            loadData,
+            debounce
         }}>
             {children}
         </StudentListInputProvider>

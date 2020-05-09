@@ -35,6 +35,8 @@ import { DashboardAdminApiRepository } from '../repositories/api/DashboardAdminA
 import { DashboardMapper } from '@/data/persistences/mappers/DashboardAdminMapper';
 import { DashboardOperatorApiRepository } from '../repositories/api/DashboardOperatorApiRepository';
 import { DashboardOperatorMapper } from '@/data/persistences/mappers/DashboardOperatorMapper';
+import { RecordApiRepository } from '../repositories/api/RecordApiRepository';
+import { RecordMapper } from '@/data/persistences/mappers/RecordMapper';
 
 
 export class RepositoryModule {
@@ -218,6 +220,16 @@ export class RepositoryModule {
         return new DashboardOperatorApiRepository(
           d.resolve(ApiService),
           d.resolve(DashboardOperatorMapper),
+          d.resolve(Endpoints)
+        );
+      }
+    }); 
+
+    container.register<RecordApiRepository>(RecordApiRepository, {
+      useFactory: d => {
+        return new RecordApiRepository(
+          d.resolve(ApiService),
+          d.resolve(RecordMapper),
           d.resolve(Endpoints)
         );
       }

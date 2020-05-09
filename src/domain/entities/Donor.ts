@@ -8,7 +8,7 @@ export class Donor {
   address: string;
   phone: string;
   status: number ;
-  npwp: number;
+  npwp: number | null;
   pos_code: number;
   info: string;
   province_id: number;
@@ -24,11 +24,11 @@ export class Donor {
     address: string,
     phone: string,
     status: number,
-    npwp: number,
+    npwp: number | null,
     pos_code: number,
     info: string,
     province_id: number,
-    regency_id: number
+    regency_id: number,
   ) {
     this.id = id;
     this.company_name = company_name;
@@ -117,6 +117,7 @@ export class DonorWithSort {
   position: string;
   info: string;
   contact_number: string;
+  school_id: string;
 
   constructor(
     id: number,
@@ -133,8 +134,8 @@ export class DonorWithSort {
     name: string,
     position: string,
     info: string,
-    contact_number: string
-
+    contact_number: string,
+    school_id: string
   ) {
     this.id = id;
     this.is_company = is_company;
@@ -151,5 +152,6 @@ export class DonorWithSort {
     this.position = position;
     this.info = info;
     this.contact_number = contact_number
+    this.school_id = school_id
   }
 }

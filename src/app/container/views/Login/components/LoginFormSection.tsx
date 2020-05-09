@@ -36,7 +36,6 @@ const LoginFormSection = () => {
 
   const handlePost = async() => {
     const res =  await controller._onPost()
-    console.log('RES', res)
   }
 
   const messageTimeOut = setTimeout(() => {
@@ -98,7 +97,7 @@ const LoginFormSection = () => {
               <Checkbox
                 className="filled-in"
                 checked={controller.checked}
-                onChange={handlePost}
+                onChange={controller.toggleChange}
               />
               <span>Remember Me</span>
             </GridItem>

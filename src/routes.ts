@@ -465,6 +465,17 @@ const dashboardRoutes = [
     show: false,
     exact: false,
   },
+  {
+    path: "/corporate-transaction",
+    name: "Input Corporate",
+    rtlName: "",
+    icon: 'subject',
+    component: Corporate,
+    layout: "/dashboard",
+    divider: false,
+    show: false,
+    exact: true
+  }
 ];
 
 export default dashboardRoutes;

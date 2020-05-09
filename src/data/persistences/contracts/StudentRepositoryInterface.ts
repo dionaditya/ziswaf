@@ -6,5 +6,5 @@ export interface StudentRepositoryInterface {
     loadDataDetail(id: number): Promise<any | null>,
     postNewStudentData(payload: createStudentInterface): Promise<any>
     updateStudentdData(payload, id: number): Promise<any>
-    deleteStudentData(id: number): Promise<Boolean>
+    deleteStudentData(id: number): Promise<any>
 }

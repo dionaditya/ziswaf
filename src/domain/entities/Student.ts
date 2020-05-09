@@ -17,10 +17,10 @@ export class Student {
     village_id: string | number= '';
     education_status: string | number = '' ;
     registered_at: string = '';
-    finished_at: string = '';
+    finished_at: string | null = '';
     punishment_count: number = 0;
-    punishment_start: string = '';
-    punishment_end: string = '';
+    punishment_start: string | null = '';
+    punishment_end: string | null = '';
     juz_kuran_description: string = '';
     chapter_kuran_description: string = '';
     hadist_description: string = '';
@@ -28,13 +28,13 @@ export class Student {
     parent_status: string | number = '';
     father_name: string = '';
     place_of_birth_father: string = '';
-    birth_of_date_father: string = '';
+    birth_of_date_father: string | any = '';
     father_occupation: string = '';
     father_phone: string = '';
     father_status: any = '';
     mother_name: string = '';
     place_of_birth_mother: string = '';
-    birth_of_date_mother: string = '';
+    birth_of_date_mother: string | any = '';
     mother_occupation: string = '';
     mother_phone: string = '';
     mother_status: any = '';
@@ -64,10 +64,10 @@ export class Student {
         village_id: string | number,
         education_status: string | number,
         registered_at: string,
-        finished_at: string,
+        finished_at: string | null,
         punishment_count: number,
-        punishment_start: string,
-        punishment_end: string,
+        punishment_start: string | null,
+        punishment_end: string | null,
         juz_kuran_description: string,
         chapter_kuran_description: string,
         hadist_description: string,
@@ -75,13 +75,13 @@ export class Student {
         parent_status: string | number,
         father_name: string,
         place_of_birth_father: string,
-        birth_of_date_father: string,
+        birth_of_date_father: string | any,
         father_occupation: string,
         father_phone: string,
         father_status: any,
         mother_name: string,
         place_of_birth_mother: string,
-        birth_of_date_mother: string,
+        birth_of_date_mother: string | any,
         mother_occupation: string,
         mother_phone: string,
         mother_status: any,

@@ -12,28 +12,28 @@ import {
   StudentListDashboardContext,
 } from "../../Controller";
 import moment from "moment";
-import SelectWithSearch from "@/app/container/components/SelectWithSearch";
+import SelectWithSearch, {SelectWithSearchWithDebounced} from "@/app/container/components/SelectWithSearch";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import _ from "lodash";
 import GridContainer from "@/app/container/commons/Grid/GridContainer";
 import GridItem from "@/app/container/commons/Grid/GridItem";
 import Box from "@material-ui/core/Box";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import { Typography } from '@material-ui/core';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import MomentUtils from '@date-io/date-fns';
-
+import { Typography } from "@material-ui/core";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import MomentUtils from "@date-io/date-fns";
+import idLocale from "date-fns/locale/id";
 
 const asyncDefaultValue = {
-  name: 'SEMUA',
-  id: ""
-}
+  name: "SEMUA",
+  id: "",
+};
 
-const nonasyncDefaultValue = ["", "SEMUA"]
+const nonasyncDefaultValue = ["", "SEMUA"];
 
-const transformData = age.map(val => {
-  return [val[0], val[1].toString()]
-})
+const transformData = age.map((val) => {
+  return [val[0], val[1].toString()];
+});
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -60,12 +60,12 @@ const ModalContentItems = () => {
   } = controller.filterStatus.filter;
 
   const handleChange = (value) => {
-    controller.handleChangeFilter(value)
+    controller.handleChangeFilter(value);
   };
 
+  console.log(controller.school)
   return (
-    <MuiPickersUtilsProvider utils={MomentUtils}>
-
+    <MuiPickersUtilsProvider utils={MomentUtils} locale={idLocale}>
       <GridContainer>
         <GridItem xs={12} sm={12} md={12}>
           <GridContainer>
@@ -73,8 +73,17 @@ const ModalContentItems = () => {
               <Box className={classes.marginOptions}>
                 {controller.userInfo.role === 2 ? (
                   <>
-                    <Box style={{ marginBottom: '10px' }}>
-                      <label htmlFor="" style={{ fontWeight: 'bold', color: '#757575', fontSize: '14px', }}>UNIT MADRASAH</label>
+                    <Box style={{ marginBottom: "10px" }}>
+                      <label
+                        htmlFor=""
+                        style={{
+                          fontWeight: "bold",
+                          color: "#757575",
+                          fontSize: "14px",
+                        }}
+                      >
+                        UNIT MADRASAH
+                      </label>
                     </Box>
                     <SelectWithSearch
                       async
@@ -93,39 +102,56 @@ const ModalContentItems = () => {
                     />
                   </>
                 ) : (
-                    <>
-                      <Box style={{ marginBottom: '10px' }}>
-                        <label htmlFor="" style={{ fontWeight: 'bold', color: '#757575', fontSize: '14px', }}>UNIT MADRASAH</label>
-                      </Box>
-                      <SelectWithSearch
-                        async
-                        isDisabled={false}
-                        onChange={(selectedValue) => {
-                          controller.setFilterStatus((prevState) => ({
-                            ...prevState,
-                            filter: {
-                              ...prevState.filter,
-                              school_id: selectedValue.value,
-                            },
-                          }));
+                  <>
+                    <Box style={{ marginBottom: "10px" }}>
+                      <label
+                        htmlFor=""
+                        style={{
+                          fontWeight: "bold",
+                          color: "#757575",
+                          fontSize: "14px",
                         }}
-                        value={school_id}
-                        data={[
-                          asyncDefaultValue,
-                          ...controller.school
-                        ]}
-                        name="school_id"
-                        label="UNIT MADRASAH"
-                        placeholder={controller.loading ? "Loading..." : "SEMUA UNIT"}
-                      />
-                    </>
-                  )}
+                      >
+                        UNIT MADRASAH
+                      </label>
+                    </Box>
+                    <SelectWithSearchWithDebounced
+                      isDisabled={false}
+                      loadOptions={controller.loadData}
+                      onChange={(e) => {
+                        controller.setFilterStatus((prevState) => ({
+                          ...prevState,
+                          filter: {
+                            ...prevState.filter,
+                            school_id: e.value,
+                          },
+                        }));
+                      }}
+                      value={school_id}
+                      data={[asyncDefaultValue, ...controller.school]}
+                      name="school_id"
+                      label="UNIT"
+                      debounced={controller.debounce}
+                      placeholder={controller.loading ? "loading..." : "SEMUA"}
+                    />
+                   
+                  </>
+                )}
               </Box>
             </GridItem>
             <GridItem xs={12} sm={12} md={6}>
               <Box className={classes.marginOptions}>
-                <Box style={{ marginBottom: '10px' }}>
-                  <label htmlFor="" style={{ fontWeight: 'bold', color: '#757575', fontSize: '14px', }}>PROVINSI MADRASAH</label>
+                <Box style={{ marginBottom: "10px" }}>
+                  <label
+                    htmlFor=""
+                    style={{
+                      fontWeight: "bold",
+                      color: "#757575",
+                      fontSize: "14px",
+                    }}
+                  >
+                    PROVINSI MADRASAH
+                  </label>
                 </Box>
                 <SelectWithSearch
                   async
@@ -133,20 +159,19 @@ const ModalContentItems = () => {
                   onChange={(selectedValue) => {
                     const e = {
                       target: {
-                        name: 'province',
-                        value: selectedValue.value
-                      }
-                    }
-                    handleChange(e)
+                        name: "province",
+                        value: selectedValue.value,
+                      },
+                    };
+                    handleChange(e);
                   }}
                   value={province}
-                  data={[
-                    asyncDefaultValue,
-                    ...controller.province
-                  ]}
+                  data={[asyncDefaultValue, ...controller.province]}
                   name="province"
                   label="PROVINSI MADRASAH"
-                  placeholder={controller.loading ? "Loading..." : "SEMUA PROVINSI"}
+                  placeholder={
+                    controller.loading ? "Loading..." : "SEMUA PROVINSI"
+                  }
                 />
               </Box>
             </GridItem>
@@ -154,8 +179,17 @@ const ModalContentItems = () => {
           <GridContainer>
             <GridItem xs={12} sm={12} md={6}>
               <Box className={classes.marginOptions}>
-                <Box style={{ marginBottom: '10px' }}>
-                  <label htmlFor="" style={{ fontWeight: 'bold', color: '#757575', fontSize: '14px', }}>KOTA MADRASAH</label>
+                <Box style={{ marginBottom: "10px" }}>
+                  <label
+                    htmlFor=""
+                    style={{
+                      fontWeight: "bold",
+                      color: "#757575",
+                      fontSize: "14px",
+                    }}
+                  >
+                    KOTA MADRASAH
+                  </label>
                 </Box>
                 <SelectWithSearch
                   async
@@ -170,10 +204,7 @@ const ModalContentItems = () => {
                     }));
                   }}
                   value={regency}
-                  data={[
-                    asyncDefaultValue,
-                    ...controller.regency
-                  ]}
+                  data={[asyncDefaultValue, ...controller.regency]}
                   name="regency"
                   label="KOTA MADRASAH"
                   placeholder={controller.loading ? "Loading..." : "SEMUA KOTA"}
@@ -182,8 +213,17 @@ const ModalContentItems = () => {
             </GridItem>
             <GridItem xs={12} sm={12} md={6}>
               <Box className={classes.marginOptions}>
-                <Box style={{ marginBottom: '10px' }}>
-                  <label htmlFor="" style={{ fontWeight: 'bold', color: '#757575', fontSize: '14px' }}>STATUS SOSIAL</label>
+                <Box style={{ marginBottom: "10px" }}>
+                  <label
+                    htmlFor=""
+                    style={{
+                      fontWeight: "bold",
+                      color: "#757575",
+                      fontSize: "14px",
+                    }}
+                  >
+                    STATUS SOSIAL
+                  </label>
                 </Box>
                 <SelectWithSearch
                   async={false}
@@ -199,28 +239,35 @@ const ModalContentItems = () => {
                   }}
                   value={sosial_status}
                   name="sosial_status"
-                  data={[
-                    nonasyncDefaultValue,
-                    ...StudentStatus
-                  ]}
+                  data={[nonasyncDefaultValue, ...StudentStatus]}
                   label="STATUS SOSIAL"
                   placeholder="SEMUA"
                 />
               </Box>
             </GridItem>
           </GridContainer>
-
         </GridItem>
         <GridItem xs={12} sm={12} md={12}>
           <GridContainer>
             <GridItem xs={12} sm={12} md={12}>
-              <Typography component="h5" style={{ fontWeight: 'bold', color: '#757575', fontSize: '16px', }}>Usia Siswa</Typography>
+              <Typography
+                component="h5"
+                style={{
+                  fontWeight: "bold",
+                  color: "#757575",
+                  fontSize: "16px",
+                }}
+              >
+                Usia Siswa
+              </Typography>
             </GridItem>
           </GridContainer>
           <GridContainer>
             <GridItem xs={12} sm={12} md={6}>
               <Box className={classes.marginOptions}>
-                <label htmlFor="" style={{fontSize:'12px'}}>Mulai</label>
+                <label htmlFor="" style={{ fontSize: "12px" }}>
+                  Mulai
+                </label>
                 <SelectWithSearch
                   async={false}
                   onChange={(selectedValue) => {
@@ -234,10 +281,7 @@ const ModalContentItems = () => {
                   }}
                   value={controller.filterStatus.filter.age_start}
                   name="age_start"
-                  data={[
-                    nonasyncDefaultValue,
-                    ...transformData
-                  ]}
+                  data={[nonasyncDefaultValue, ...transformData]}
                   label="Mulai"
                   placeholder="Mulai"
                 />
@@ -245,7 +289,9 @@ const ModalContentItems = () => {
             </GridItem>
             <GridItem xs={12} sm={12} md={6}>
               <Box className={classes.marginOptions}>
-                <label htmlFor="" style={{fontSize:'12px'}}>Hingga</label>
+                <label htmlFor="" style={{ fontSize: "12px" }}>
+                  Hingga
+                </label>
                 <SelectWithSearch
                   async={false}
                   isDisabled={false}
@@ -260,10 +306,7 @@ const ModalContentItems = () => {
                   }}
                   value={controller.filterStatus.filter.age_end}
                   name="age_end"
-                  data={[
-                    nonasyncDefaultValue,
-                    ...transformData
-                  ]}
+                  data={[nonasyncDefaultValue, ...transformData]}
                   label="Hingga"
                   placeholder="Hingga"
                 />
@@ -272,13 +315,27 @@ const ModalContentItems = () => {
           </GridContainer>
           <GridContainer>
             <GridItem xs={12} sm={12} md={12}>
-              <Typography component="h5" style={{ fontWeight: 'bold', color: '#757575', fontSize: '16px', }}>Tahun Masuk</Typography>
+              <Typography
+                component="h5"
+                style={{
+                  fontWeight: "bold",
+                  color: "#757575",
+                  fontSize: "16px",
+                }}
+              >
+                Tahun Masuk
+              </Typography>
             </GridItem>
           </GridContainer>
           <GridContainer>
             <GridItem xs={12} sm={12} md={6}>
               <Box className={classes.marginOptions}>
-                <label htmlFor="registered_year_start" style={{ fontSize: '12px' }}>Mulai</label>
+                <label
+                  htmlFor="registered_year_start"
+                  style={{ fontSize: "12px" }}
+                >
+                  Mulai
+                </label>
                 <KeyboardDatePicker
                   disableToolbar
                   variant="inline"
@@ -296,7 +353,8 @@ const ModalContentItems = () => {
                   label=""
                   value={
                     registered_start === ""
-                      ? null : moment(registered_start).toDate()
+                      ? null
+                      : moment(registered_start).toDate()
                   }
                   onChange={(date: any) => {
                     controller.setFilterStatus((prevState) => ({
@@ -315,7 +373,9 @@ const ModalContentItems = () => {
             </GridItem>
             <GridItem xs={12} sm={12} md={6}>
               <Box className={classes.marginOptions}>
-                <label htmlFor="" style={{ fontSize: '12px' }}>Hingga</label>
+                <label htmlFor="" style={{ fontSize: "12px" }}>
+                  Hingga
+                </label>
                 {_.toNumber(registered_end) < _.toNumber(registered_start) ? (
                   <KeyboardDatePicker
                     disableToolbar
@@ -347,40 +407,40 @@ const ModalContentItems = () => {
                     }}
                   />
                 ) : (
-                    <KeyboardDatePicker
-                      disableToolbar
-                      variant="inline"
-                      views={["year"]}
-                      inputVariant="outlined"
-                      placeholder={
-                        registered_end === ""
-                          ? "Tahun Masuk"
-                          : moment(registered_end).toString()
-                      }
-                      id="date-picker-inline"
-                      label=""
-                      style={{
-                        width: "100%",
-                      }}
-                      value={
-                        registered_end === ""
-                          ? null
-                          : moment(registered_end).toDate()
-                      }
-                      onChange={(date: any) => {
-                        controller.setFilterStatus((prevState) => ({
-                          ...prevState,
-                          filter: {
-                            ...prevState.filter,
-                            registered_end: moment(date).format("YYYY"),
-                          },
-                        }));
-                      }}
-                      KeyboardButtonProps={{
-                        "aria-label": "change date",
-                      }}
-                    />
-                  )}
+                  <KeyboardDatePicker
+                    disableToolbar
+                    variant="inline"
+                    views={["year"]}
+                    inputVariant="outlined"
+                    placeholder={
+                      registered_end === ""
+                        ? "Tahun Masuk"
+                        : moment(registered_end).toString()
+                    }
+                    id="date-picker-inline"
+                    label=""
+                    style={{
+                      width: "100%",
+                    }}
+                    value={
+                      registered_end === ""
+                        ? null
+                        : moment(registered_end).toDate()
+                    }
+                    onChange={(date: any) => {
+                      controller.setFilterStatus((prevState) => ({
+                        ...prevState,
+                        filter: {
+                          ...prevState.filter,
+                          registered_end: moment(date).format("YYYY"),
+                        },
+                      }));
+                    }}
+                    KeyboardButtonProps={{
+                      "aria-label": "change date",
+                    }}
+                  />
+                )}
               </Box>
             </GridItem>
           </GridContainer>

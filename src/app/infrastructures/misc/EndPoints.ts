@@ -69,6 +69,14 @@ export class Endpoints {
     return `/transaction/detail/${id}`;
   }
 
+  detailDonation(id: number): string {
+    return `manager/transaction/detail/${id}`
+  }
+
+  updateDonation(id: number): string {
+    return `/manager/transaction/${id}`
+  }
+
   managerPrognosis(id: string = ""): string {
     if (id === "") {
       return "/prognosis";
@@ -166,6 +174,10 @@ export class Endpoints {
     return "/transaction/report-donation";
   }
 
+  getRecordSchool(id: number = 0): string {
+    return "/record/school/" + id;
+  }
+  
   deleteStudentData(id: number): string {
     return "/student/" + id;
   }
@@ -184,5 +196,9 @@ export class Endpoints {
 
   deleteEmployeeData(id: number): string {
     return "/employee/" + id;
+  }
+
+  deleteTransaction(id: number): string {
+    return "/manager/transaction/" + id;
   }
 }

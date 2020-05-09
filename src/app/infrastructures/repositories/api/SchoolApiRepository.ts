@@ -56,9 +56,9 @@ export class SchoolApiRepository implements SchoolRepositoryInterface {
                 {},
                 payload as SchoolApiRequest
             )
-            return ['succes', response]
+            return ['success', response]
         } catch (e) {
-            return ['error', e]
+            return ['error', e.response]
         }
     }
 
@@ -70,7 +70,7 @@ export class SchoolApiRepository implements SchoolRepositoryInterface {
                 {},
                 payload.toJson()
             )
-            return ['succes', response]
+            return ['success', response]
         } catch (e) {
             return ['error', e.response]
         }
@@ -83,9 +83,9 @@ export class SchoolApiRepository implements SchoolRepositoryInterface {
                 this.endpoints.deleteSchoolData(id),
                 id
             )
-            return response !== null
+            return ['success', response]
         } catch (error) {
-            return false
+            return ['error', error.response]
         }
     }
 }

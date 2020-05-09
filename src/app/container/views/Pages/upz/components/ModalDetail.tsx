@@ -7,6 +7,7 @@ import { makeStyles, createStyles, Theme, Modal, Box } from "@material-ui/core";
 import GridContainer from "@/app/container/commons/Grid/GridContainer";
 import GridItem from "@/app/container/commons/Grid/GridItem";
 import { NominalFormat } from '@/app/infrastructures/misc/NominalFormat';
+import AskarKauny from "@/app/container/assets/img/ziswaf/AskarKauny.png";
 
 function getModalStyle() {
   const top = 50;
@@ -70,17 +71,26 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
       <GridItem sm={12} md={12}>
         <div style={modalStyle} className={classes.paper}>
           <GridContainer>
-            <GridItem xs={12} sm={12} md={12}>
+            <GridItem xs={12} sm={12} md={12} style={{
+              marginBottom: '20px',
+              justifyContent: 'space-between',
+              display: 'flex'
+            }}>
               <span
                 style={{
                   color: "rgba(50, 60, 71, 0.8)",
                   fontSize: "18px",
                   fontWeight: "bold",
-                  marginBottom: '20px'
+                  marginTop: "5vh"
                 }}
               >
                 DETAIL ZISWAF
-              </span>
+                </span>
+              <img
+                src={AskarKauny}
+                alt="Askar Kauny Apps"
+                style={{ width: "10vh", height: "10vh" }}
+              />
             </GridItem>
             <GridItem xs={12} sm={12} md={12}>
               <GridContainer>
@@ -112,7 +122,7 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
                           TANGGAL & WAKTU
                         </span>
                         <p className="black-text">
-                          {moment(created_at).format("dddd, MMM YYYY")}
+                          {created_at}
                         </p>
                       </div>
                     </GridItem>
@@ -360,51 +370,51 @@ const ModalDetail = ({ showModal, setCloseModal }) => {
                         </GridItem>
                       </>
                     ) : (
-                      <>
-                        <GridItem xs={12} sm={12} md={12}>
-                          <div className="row mb-4">
-                            <span
-                              style={{
-                                color: "#828282",
-                                fontSize: "12px",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              DESKRIPSI BARANG
+                        <>
+                          <GridItem xs={12} sm={12} md={12}>
+                            <div className="row mb-4">
+                              <span
+                                style={{
+                                  color: "#828282",
+                                  fontSize: "12px",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                DESKRIPSI BARANG
                             </span>
-                            <p className="black-text">{good_description}</p>
-                          </div>
-                        </GridItem>
-                        <GridItem xs={12} sm={12} md={12}>
-                          <div className="row mb-4">
-                            <span
-                              style={{
-                                color: "#828282",
-                                fontSize: "12px",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              JUMLAH
+                              <p className="black-text">{good_description}</p>
+                            </div>
+                          </GridItem>
+                          <GridItem xs={12} sm={12} md={12}>
+                            <div className="row mb-4">
+                              <span
+                                style={{
+                                  color: "#828282",
+                                  fontSize: "12px",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                JUMLAH
                             </span>
-                            <p className="black-text">{quantity}</p>
-                          </div>
-                        </GridItem>
-                        <GridItem xs={12} sm={12} md={12}>
-                          <div className="row mb-4">
-                            <span
-                              style={{
-                                color: "#828282",
-                                fontSize: "12px",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              STATUS BARANG
+                              <p className="black-text">{quantity}</p>
+                            </div>
+                          </GridItem>
+                          <GridItem xs={12} sm={12} md={12}>
+                            <div className="row mb-4">
+                              <span
+                                style={{
+                                  color: "#828282",
+                                  fontSize: "12px",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                STATUS BARANG
                             </span>
-                            <p className="black-text">{good_status}</p>
-                          </div>
-                        </GridItem>
-                      </>
-                    )}
+                              <p className="black-text">{good_status}</p>
+                            </div>
+                          </GridItem>
+                        </>
+                      )}
                   </GridContainer>
                 </GridItem>
               </GridContainer>

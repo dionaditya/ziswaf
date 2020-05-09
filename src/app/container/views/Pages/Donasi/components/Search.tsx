@@ -83,7 +83,6 @@ export const SearchDonation: React.FC<{}> = () => {
 
   const handleOpen = () => {
     setOpen(true);
-    controller.fetchSchool()
     controller.fetchRegency()
   };
 
@@ -172,7 +171,7 @@ export const SearchDonation: React.FC<{}> = () => {
           </GridItem>
           <GridItem xs={12} sm={12} md={6}>
             <Box display="flex" justifyContent="flex-end" mb={4} mt={2}>
-              {userAccess.role !== 1 ?
+              {userAccess.user_id !== 1  ?
                 (
                   <>
                     <Button

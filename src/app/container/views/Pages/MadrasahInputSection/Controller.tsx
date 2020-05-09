@@ -127,6 +127,10 @@ export const UserListInputController = ({ children }) => {
     const provincePresenter: ProvincePresenter = container.resolve(ProvincePresenter)
     const cityPresenter: CityPresenter = container.resolve(CityPresenter)
     const { id } = useParams()
+    const phoneNumber: any = state.inputSchoolData.phone
+    .slice(3, state.inputSchoolData.phone.length)
+    .replace(/\s+/g, "")
+    .match(/(\d+)/);
     
     let userAccess = getUserInfo()
 
@@ -201,7 +205,7 @@ export const UserListInputController = ({ children }) => {
         if(id !== undefined) {
             const updateSchool = await schoolPresenter.updateSchoolData(new SchoolApiRequest(
                 state.inputSchoolData.name,
-                state.inputSchoolData.phone,
+                phoneNumber[0],
                 state.inputSchoolData.email,
                 _.toNumber(state.inputSchoolData.pos_code),
                 state.inputSchoolData.description,
@@ -219,7 +223,7 @@ export const UserListInputController = ({ children }) => {
             })
             const postSchool = await schoolPresenter.postNewSchoolData(new SchoolApiRequest(
                 state.inputSchoolData.name,
-                state.inputSchoolData.phone,
+                phoneNumber[0],
                 state.inputSchoolData.email,
                 _.toNumber(state.inputSchoolData.pos_code),
                 state.inputSchoolData.description,

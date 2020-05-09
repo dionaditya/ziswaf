@@ -7,7 +7,8 @@ import InputDataPendidikanSection from '../InputEducationDataSection'
 import InputDataOrangTuaSection from '../InputParentsDataSection'
 import { ToastProvider } from 'react-toast-notifications'
 import qs from 'qs'
-import {useLocation} from 'react-router-dom'
+import {useLocation, useParams} from 'react-router-dom'
+import TabNavDisable from '@/app/container/components/TabNavDisable';
 
 const tabs = [
     {
@@ -40,6 +41,7 @@ const HalamanInputDataSiswa = () => {
     }
     
     const location = useLocation()
+    const {id} = useParams()
 
     const query = qs.parse(location.search)
 
@@ -52,13 +54,26 @@ const HalamanInputDataSiswa = () => {
         <ToastProvider>
             <React.Fragment>
                 <BackNavigation title={query['?is_detail'] !== undefined ? title.detail : title.input} />
-                <TabNav
-                    link={false}
-                    value={value}
-                    handleChange={handleChange}
-                    tabs={tabs}
-                    render={(render) =>
-                        <TabContent value={value} setValue={setValue} />} />
+                {
+                    query['?is_detail'] !== undefined || id !== undefined ? (
+                        <TabNav
+                        link={false}
+                        value={value}
+                        handleChange={handleChange}
+                        tabs={tabs}
+                        render={(render) =>
+                            <TabContent value={value} setValue={setValue} />} />
+                    ) : (
+                        <TabNavDisable
+                        link={false}
+                        value={value}
+                        handleChange={handleChange}
+                        tabs={tabs}
+                        render={(render) =>
+                            <TabContent value={value} setValue={setValue} />} />
+                    )
+                }
+              
             </React.Fragment>
         </ToastProvider>
     )

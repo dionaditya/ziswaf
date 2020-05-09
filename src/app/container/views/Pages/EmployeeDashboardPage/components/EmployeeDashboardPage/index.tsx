@@ -31,6 +31,7 @@ import SearchInput from "@/app/container/commons/SearchInput";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
+import {useToasts} from 'react-toast-notifications'
 
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -79,16 +80,21 @@ const EmployeeDashboardPage = () => {
   const classes = useStyles();
   const xsmall = useMediaQuery("(min-width: 300px)" && "(max-width: 700px");
   const medium = useMediaQuery("(min-width: 701px)");
+  const {addToast} = useToasts()
 
   const controller = React.useContext(StudentListDashboardContext);
 
   const handleDeleteData = async (e) => {
     setLoading(true);
-    const isSuccess = await controller.handleDelete(e);
+    const [status, response] = await controller.handleDelete(e);
     setLoading(false);
-    if (isSuccess) {
+    if (status === 'success') {
       setSuccess(true);
       setDialogOpen(false);
+    } else {
+      addToast(`Gagal menghapus data donatur karena ${response.data.message}`, {
+        appearance: "error",
+      });
     }
   };
 
@@ -103,96 +109,6 @@ const EmployeeDashboardPage = () => {
   const handleSearchFunc = (e) => {
     controller.handleSearch(controller)(controller.dispatch)(
       ActionType.setData
-    );
-  };
-
-  const ModalComponent = () => {
-    return (
-      <ModalFilters
-        onShow={controller.statusModal}
-        handleClose={(e) =>
-          controller.handleModal(e)(controller.dispatch)(ActionType.handleModal)
-        }
-        titleModal="Filter"
-      >
-        <ModalBody>
-          <ModalContentItems />
-        </ModalBody>
-        <ModalFooter>
-          {isLoading ? (
-            <Button
-              disabled
-              style={{
-                backgroundColor: "transparent !important",
-                color: "#00923F",
-              }}
-              color="transparent"
-              onClick={(e) =>
-                controller.handleResetFilter(e)(controller.dispatch)(
-                  ActionType.resetFilter
-                )
-              }
-            >
-              {<CircularProgress size={16} className={classes.loadingReset} />}
-              Reset
-            </Button>
-          ) : (
-            <Button
-              style={{
-                color: "#00923F",
-              }}
-              color="transparent"
-              onClick={async (e) => {
-                setLoading(true);
-                controller.handleResetFilter(e)(controller.dispatch)(
-                  ActionType.resetFilter
-                );
-                setTimeout(() => {
-                  setLoading(false);
-                }, 300);
-              }}
-            >
-              Reset
-            </Button>
-          )}
-
-          {isLoading ? (
-            <Button
-              disabled
-              color="primary"
-              style={{
-                color: "#fff",
-              }}
-              onClick={(e) =>
-                controller.handleCTA(e)(controller.dispatch)(
-                  ActionType.handleCTA
-                )
-              }
-            >
-              {<CircularProgress size={16} className={classes.root} />}
-              Terapkan Filter
-            </Button>
-          ) : (
-            <Button
-              color="primary"
-              style={{
-                color: "#fff",
-              }}
-              onClick={async (e) => {
-                setLoading(true);
-                controller.handleCTA(e)(controller.dispatch)(
-                  ActionType.handleCTA
-                );
-                setTimeout(() => {
-                  setLoading(false);
-                }, 300);
-              }}
-            >
-              Terapkan Filter
-            </Button>
-          )}
-        </ModalFooter>
-      </ModalFilters>
     );
   };
 
@@ -324,10 +240,6 @@ const EmployeeDashboardPage = () => {
               loading={controller.loading}
               data={controller.data}
               column={controller.displayColumns}
-              // page={controller.filterStatus.paging.page}
-              // count={controller.filterStatus.paging.limit}
-              // handleSort={controller.handleSort}
-              // handleChangesRowsPerPage={controller.handleChangesRowsPerPage}
             >
               <CustomizedMenus>
                 <Link
@@ -372,6 +284,100 @@ const EmployeeDashboardPage = () => {
             </TableDataSiswa>
           </GridItem>
         </GridContainer>
+        <ModalFilters
+          onShow={controller.statusModal}
+          handleClose={(e) =>
+            controller.handleModal(e)(controller.dispatch)(
+              ActionType.handleModal
+            )
+          }
+          titleModal="Filter"
+        >
+          <ModalBody>
+            <ModalContentItems />
+          </ModalBody>
+          <ModalFooter>
+            <Box display="flex" flexDirection="row">
+              {isLoading ? (
+                <Button
+                  disabled
+                  style={{
+                    backgroundColor: "transparent !important",
+                    color: "#00923F",
+                  }}
+                  color="transparent"
+                  onClick={(e) =>
+                    controller.handleResetFilter(e)(controller.dispatch)(
+                      ActionType.resetFilter
+                    )
+                  }
+                >
+                  {
+                    <CircularProgress
+                      size={16}
+                      className={classes.loadingReset}
+                    />
+                  }
+                  Reset
+                </Button>
+              ) : (
+                <Button
+                  style={{
+                    color: "#00923F",
+                  }}
+                  color="transparent"
+                  onClick={async (e) => {
+                    setLoading(true);
+                    controller.handleResetFilter(e)(controller.dispatch)(
+                      ActionType.resetFilter
+                    );
+                    setTimeout(() => {
+                      setLoading(false);
+                    }, 300);
+                  }}
+                >
+                  Reset
+                </Button>
+              )}
+
+              {isLoading ? (
+                <Button
+                  disabled
+                  color="primary"
+                  style={{
+                    color: "#fff",
+                  }}
+                  onClick={(e) =>
+                    controller.handleCTA(e)(controller.dispatch)(
+                      ActionType.handleCTA
+                    )
+                  }
+                >
+                  {<CircularProgress size={16} className={classes.root} />}
+                  Terapkan Filter
+                </Button>
+              ) : (
+                <Button
+                  color="primary"
+                  style={{
+                    color: "#fff",
+                  }}
+                  onClick={async (e) => {
+                    setLoading(true);
+                    controller.handleCTA(e)(controller.dispatch)(
+                      ActionType.handleCTA
+                    );
+                    setTimeout(() => {
+                      setLoading(false);
+                    }, 300);
+                  }}
+                >
+                  Terapkan Filter
+                </Button>
+              )}
+            </Box>
+          </ModalFooter>
+        </ModalFilters>
 
         <DialogDelete
           open={dialogOpen}
@@ -388,7 +394,6 @@ const EmployeeDashboardPage = () => {
             Sukses menghapus data personel Madrasah
           </Alert>
         </Snackbar>
-        <ModalComponent />
       </GridItem>
     </Box>
   );

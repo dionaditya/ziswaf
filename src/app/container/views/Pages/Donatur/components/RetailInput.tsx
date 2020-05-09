@@ -16,9 +16,10 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import _ from 'lodash'
+import _ from "lodash";
 import { ToastProvider, useToasts } from "react-toast-notifications";
 import ModalWarningData from "../../Retail/components/ModalWarningData";
+import InputMask from "react-input-mask";
 
 const errorMessage = {
   nameField: "Nama tidak boleh kosong",
@@ -31,9 +32,9 @@ const errorMessage = {
 };
 
 const title = {
-  info: 'Info Donatur Perorangan',
-  input: 'Input Donatur Perorangan'
-}
+  info: "Info Donatur Perorangan",
+  input: "Input Donatur Perorangan",
+};
 
 const innerTheme = createMuiTheme({
   palette: {
@@ -80,12 +81,10 @@ const DataInput = () => {
   const history = useHistory();
   const { register, handleSubmit, errors, control, setValue } = useForm();
   const classes = useStyles();
-  const [error, setError] = useState({
-    province: false,
-    regency: false,
-  });
+  const [error, setError] = useState(false);
   const { addToast } = useToasts();
-   const [statusModal, setStatusModal] = React.useState(false);
+  const [statusModal, setStatusModal] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   const {
     name,
@@ -99,60 +98,47 @@ const DataInput = () => {
     npwp,
     info,
     isDetailSession,
-    status
+    status,
   } = controller;
 
 
-
-  const handleValidation = (data) => {
-    if (controller.provinceId === 0) {
-      setError({
-        ...error,
-        province: true,
-      });
-      return false;
-    } else if (controller.regencyId === 0) {
-      setError({
-        ...error,
-        regency: true,
-      });
-      return false;
-    } else {
-      setError({
-        province: false,
-        regency: false,
-      });
-      return true;
-    }
-  };
-
   const onSubmit = async (e: any) => {
+    setLoading(true);
     if (_.isEmpty(errors)) {
-       const [status, response] = await controller._onStoreRetail(e);
-      if (status === "error") {
-         console.log(response)
-        if (response !== undefined) {
-          if (response.status === 400 || response.status === 402) {
-           if(response.data.message === 'Nama dan Nomor Handphone yang sama ditemukan dalam database') {
-                setStatusModal(true)
+      if(Number(phone[4]) !== 0 ) {
+        setError(false)
+        const [status, response] = await controller._onStoreRetail(e);
+        if (status === "error") {
+          setLoading(false);
+          if (response !== undefined) {
+            if (response.status === 400 || response.status === 402) {
+              if (
+                response.data.message ===
+                "Nama dan Nomor Handphone yang sama ditemukan dalam database"
+              ) {
+                setStatusModal(true);
+              } else {
+                addToast(response.data.message, {
+                  appearance: "error",
+                });
+              }
             } else {
-                  addToast(response.data.message, {
-              appearance: "error",
-            });
+              addToast(response.data.message, {
+                appearance: "error",
+              });
             }
-          } else {
-            addToast(response.data.message, {
-              appearance: "error",
-            });
           }
-        } 
+        } else {
+          addToast("Data donatur telah tersimpan", {
+            appearance: "success",
+          });
+          setTimeout(() => {
+            history.push(`/dashboard/donatur?all=true`);
+          }, 1000);
+        }
       } else {
-        addToast("Data donatur telah tersimpan", {
-          appearance: "success",
-        });
-        setTimeout(() => {
-          history.push(`/dashboard/donatur?all=true`);
-        }, 1000);
+        setLoading(false);
+        setError(true)
       }
     }
   };
@@ -162,15 +148,31 @@ const DataInput = () => {
     controller.setStatus(val);
   };
 
-
   const onChange = (e) => {
     controller.handleInput(e);
   };
 
-   const handleUpdateInput = async () => {
-    const resp = await controller.postUpdateData();
-    if (resp) {
-      history.push(`/dashboard/donatur`);
+  const handleUpdateInput = async () => {
+    const [status, response] = await controller.postUpdateData();
+    if (status === "success") {
+      addToast("Data donatur telah berhasil diperbarui", {
+        appearance: "success",
+      });
+      setTimeout(() => {
+        history.push(`/dashboard/donatur`);
+      }, 1000);
+    } else {
+      if (response !== undefined) {
+        if (response.status === 400 || response.status === 402) {
+          addToast(response.data.message, {
+            appearance: "error",
+          });
+        } else {
+          addToast(response.data.message, {
+            appearance: "error",
+          });
+        }
+      }
     }
   };
 
@@ -190,16 +192,17 @@ const DataInput = () => {
     ]);
   }, [controller]);
 
-
-  
-
   if (controller.loading) {
     return (
-      <Box display="flex" flexDirection="column" justifyItems="center" alignItems="center">
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyItems="center"
+        alignItems="center"
+      >
         <div
           style={{
-           
-            height: '100vh'
+            height: "100vh",
           }}
         >
           <CircularProgress size={16} className={classes.loadingReset} />
@@ -239,7 +242,10 @@ const DataInput = () => {
                           <FormControlLabel
                             control={
                               <Checkbox
-                                checked={controller.checkbox === 1 || controller.status === 1}
+                                checked={
+                                  controller.checkbox === 1 ||
+                                  controller.status === 1
+                                }
                                 onChange={() => handleInputValue(1)}
                                 name="status"
                                 value={1}
@@ -253,7 +259,10 @@ const DataInput = () => {
                           <FormControlLabel
                             control={
                               <Checkbox
-                                checked={controller.checkbox === 2 || controller.status === 2}
+                                checked={
+                                  controller.checkbox === 2 ||
+                                  controller.status === 2
+                                }
                                 onChange={() => handleInputValue(2)}
                                 name="status"
                                 value={2}
@@ -267,7 +276,10 @@ const DataInput = () => {
                           <FormControlLabel
                             control={
                               <Checkbox
-                                checked={controller.checkbox === 3 || controller.status === 3}
+                                checked={
+                                  controller.checkbox === 3 ||
+                                  controller.status === 3
+                                }
                                 onChange={() => handleInputValue(3)}
                                 name="status"
                                 value={3}
@@ -281,7 +293,10 @@ const DataInput = () => {
                           <FormControlLabel
                             control={
                               <Checkbox
-                                checked={controller.checkbox === 4 || controller.status === 4}
+                                checked={
+                                  controller.checkbox === 4 ||
+                                  controller.status === 4
+                                }
                                 onChange={() => handleInputValue(4)}
                                 name="status"
                                 value={4}
@@ -336,8 +351,6 @@ const DataInput = () => {
                           as={
                             <TextField
                               aria-label="minimum height"
-                            
-
                               disabled={isDetailSession}
                               style={{
                                 width: "100%",
@@ -358,8 +371,11 @@ const DataInput = () => {
                           name="address"
                           rules={{ required: true }}
                           control={control}
-                          onChange={(e) =>
+                          onChange={(e) => {
                             controller.setAddress(e[0].target.value)
+                            return e[0].target.value
+                           }
+                         
                           }
                           defaultValue={address}
                         />
@@ -397,7 +413,9 @@ const DataInput = () => {
                               data={controller.province}
                               name="province_id"
                               label="Provinsi"
-                              placeholder={controller.provinceId || "Pilih Provinsi"}
+                              placeholder={
+                                controller.provinceId || "Pilih Provinsi"
+                              }
                             />
                           }
                           name="province_id"
@@ -508,9 +526,9 @@ const DataInput = () => {
                               {errorMessage.poscodeField}
                             </p>
                           )}
-                              {errors &&
-                          errors.phone &&
-                          errors.phone.type === "pattern" && (
+                        {errors &&
+                          errors.pos_code &&
+                          errors.pos_code.type === "pattern" && (
                             <p style={{ color: "red", fontSize: "12px" }}>
                               Kode pos hanya boleh diisi dengan angka
                             </p>
@@ -533,22 +551,33 @@ const DataInput = () => {
                         No Handphone
                       </label>
                       <Box className={classes.formControl}>
-                        <TextField
-                          style={{
-                            width: "100%",
-                          }}
-                          variant="outlined"
-                          name="phone"
-                          id="phone"
+                        <InputMask
+                          mask="+62 999 999 999 99"
+                          value={phone}
                           disabled={isDetailSession}
-                          placeholder="e.g. 08567XXXXXXX"
-                          size="small"
-                          onChange={(e) => controller.setPhone(e.target.value)}
-                          inputRef={register({
-                            required: true,
-                            pattern: /^[0-9]*$/i,
-                          })}
-                        />
+                          maskChar=" "
+                          onChange={(e) => {
+                            controller.setPhone(e.target.value);
+                          }}
+                        >
+                          {() => (
+                            <TextField
+                              style={{
+                                width: "100%",
+                              }}
+                              variant="outlined"
+                              name="phone"
+                              id="phone"
+                              disabled={isDetailSession}
+                              placeholder="Contoh: +628567XXXXXXX"
+                              size="small"
+                              inputRef={register({
+                                required: true,
+                          
+                              })}
+                            />
+                          )}
+                        </InputMask>
                         {errors &&
                           errors.phone &&
                           errors.phone.type === "required" && (
@@ -556,13 +585,13 @@ const DataInput = () => {
                               {errorMessage.phoneField}
                             </p>
                           )}
-                              {errors &&
-                          errors.phone &&
-                          errors.phone.type === "pattern" && (
+                           {error &&
+                          Number(phone[4]) === 0  && (
                             <p style={{ color: "red", fontSize: "12px" }}>
-                              NO HP hanya boleh diisi dengan angka
+                              No Handphone tidak valid. Silahkan coba kembali
                             </p>
                           )}
+                       
                       </Box>
                     </GridItem>
                   </GridContainer>
@@ -584,35 +613,8 @@ const DataInput = () => {
                           placeholder="e.g. andre@mail.com"
                           size="small"
                           onChange={(e) => controller.setEmail(e.target.value)}
-                           inputRef={register({
-                                    required: true,
-                                    pattern: /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/i,
-                                  })}
-                                />
-                                {errors &&
-                                  errors.email &&
-                                  errors.email.type === "required" && (
-                                    <p
-                                      style={{
-                                        color: "red",
-                                        fontSize: "12px",
-                                      }}
-                                    >
-                                      {errorMessage.emailField}
-                                    </p>
-                                  )}
-                                {errors &&
-                                  errors.email &&
-                                  errors.email.type === "pattern" && (
-                                    <p
-                                      style={{
-                                        color: "red",
-                                        fontSize: "12px",
-                                      }}
-                                    >
-                                      Email tidak valid
-                                    </p>
-                                  )}  
+                          inputRef={register}
+                        />
                       </Box>
                     </GridItem>
                   </GridContainer>
@@ -639,9 +641,16 @@ const DataInput = () => {
                           id="npwp"
                           placeholder="Nomor NPWP"
                           size="small"
-                          inputRef={register}
+                          inputRef={register({ pattern: /^[0-9]*$/i })}
                           onChange={(e) => controller.setNpwp(e.target.value)}
                         />
+                        {errors &&
+                          errors.npwp &&
+                          errors.npwp.type === "pattern" && (
+                            <p style={{ color: "red", fontSize: "12px" }}>
+                              Hanya Boleh diisi dengan angka saja
+                            </p>
+                          )}
                       </Box>
                     </GridItem>
                   </GridContainer>
@@ -683,7 +692,7 @@ const DataInput = () => {
                     </GridItem>
                   </GridContainer>
                 </GridItem>
-                     <ModalWarningData
+                <ModalWarningData
                   showModal={statusModal}
                   setShowModal={() => setStatusModal(false)}
                   donor={{
@@ -706,8 +715,9 @@ const DataInput = () => {
                           }}
                           color="primary"
                           type="submit"
-                          onClick={e => null}
-                          disabled={isDetailSession}
+                          onClick={(e) => null}
+                          disabled={isDetailSession || loading}
+                          loading={loading}
                         >
                           Simpan & Lanjutkan
                         </Button>
@@ -728,8 +738,7 @@ const RetailInput = () => {
   return (
     <DonorController>
       <ToastProvider>
-
-      <DataInput />
+        <DataInput />
       </ToastProvider>
     </DonorController>
   );

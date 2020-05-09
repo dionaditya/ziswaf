@@ -15,6 +15,7 @@ import Card from "@/app/container/commons/Card/Card.js";
 import CardHeader from "@/app/container/commons/Card/CardHeader.js";
 import CardBody from "@/app/container/commons/Card/CardBody.js";
 import InputMask from "@/app/container/components/InputMask";
+import _ from 'lodash'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -46,7 +47,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const JenisUang = ({ controller, onChange, error}) => {
+const JenisUang = ({ controller, onChange, error }) => {
   const classes = useStyles();
   const {
     type_id,
@@ -68,15 +69,20 @@ const JenisUang = ({ controller, onChange, error}) => {
                 <GridItem xs={12} sm={12} md={12}>
                   <Box className={classes.formContainer}>
                     <GridItem xs={12} sm={12} md={12}>
-                      <label className={classes.label}>PIlihan Tunai / Non Tunai</label>
+                      <label className={classes.label}>
+                        PIlihan Tunai / Non Tunai
+                      </label>
                       <SimpleSelect
-                        async={false}
-                        name="type_id"
-                        onChange={onChange}
-                        value={type_id}
-                        data={[[0, "Tunai"], [1, "Non Tunai"]]}
-                        label="Tunai / Non Tunai"
-                      />
+                          async={false}
+                          name="type_id"
+                          onChange={onChange}
+                          value={
+                            type_id
+                          }
+                          data={[[0, "Tunai"], [1, "Non Tunai"]]}
+                          label="Tunai / Non Tunai"
+                        />
+                   
                     </GridItem>
                   </Box>
                   <Box className={classes.formContainer}>
@@ -102,15 +108,11 @@ const JenisUang = ({ controller, onChange, error}) => {
                           label="Non Tunai"
                         />
                       )}
-                      {
-                        error && (
-                          <p
-                                      style={{ color: "red", fontSize: "12px" }}
-                                    >
-                                      Belum memilih tipe pembayaran non tunai
-                                    </p>
-                          )
-                      }
+                      {error && _.isNumber(category_id) === false && (
+                        <p style={{ color: "red", fontSize: "12px" }}>
+                           Belum memilih tipe pembayaran
+                        </p>
+                      )}
                     </GridItem>
                   </Box>
                   <Box className={classes.formContainer}>
@@ -132,7 +134,11 @@ const JenisUang = ({ controller, onChange, error}) => {
                           onChange(e);
                         }}
                       />
-                  
+                      {error && value === 0 && (
+                        <p style={{ color: "red", fontSize: "12px" }}>
+                          Jumlah donasi harus lebih dari Rp. 0
+                        </p>
+                      )}
                     </GridItem>
                   </Box>
                   <Box className={classes.formContainer}>

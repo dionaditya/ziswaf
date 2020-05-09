@@ -6,23 +6,27 @@ import Modal from "@/app/container/commons/Modal/index.js";
 import SelectWithSearch, {
   SelectWithSearchWithDebounced,
 } from "@/app/container/components/SelectWithSearch";
-import { statement_category, DonationCategory, donatur_category, Division, PaymentTypeFilter} from "@/domain/entities/AllOptions";
+import {
+  DonationCategory,
+  donatur_category,
+  Division,
+  PaymentTypeFilter,
+} from "@/domain/entities/AllOptions";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { makeStyles, Theme, createStyles, Box } from '@material-ui/core';
-import DatePicker from "react-datepicker";
+import { makeStyles, Theme, createStyles, Box } from "@material-ui/core";
 import DateTimePicker from "@/app/container/commons/DateTimePicker";
 import _ from "lodash";
 import InputMask from "@/app/container/components/InputMask";
-import GridContainer from '@/app/container/commons/Grid/GridContainer';
-import GridItem from '@/app/container/commons/Grid/GridItem';
+import GridContainer from "@/app/container/commons/Grid/GridContainer";
+import GridItem from "@/app/container/commons/Grid/GridItem";
 import Button from "@/app/container/commons/CustomButtons/Button.tsx";
 
 const asyncDefaultValue = {
-  name: 'SEMUA',
-  id: ""
-}
+  name: "SEMUA",
+  id: "",
+};
 
-const nonasyncDefaultValue = ["", "SEMUA"]
+const nonasyncDefaultValue = ["", "SEMUA"];
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -33,17 +37,17 @@ const useStyles = makeStyles((theme: Theme) =>
       color: "#00923F",
     },
     paper: {
-      position: 'absolute',
+      position: "absolute",
       width: 450,
       backgroundColor: theme.palette.background.paper,
-      border: '2px solid #000',
+      border: "2px solid #000",
       boxShadow: theme.shadows[5],
       padding: theme.spacing(2, 4, 3),
     },
     modal: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
     },
     labels: {
       fontSize: 14,
@@ -58,8 +62,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
-
-
 
 const ModalFilter = ({ showModal, setShowModal }) => {
   const [loading, setLoading] = React.useState(false);
@@ -140,8 +142,8 @@ const ModalFilter = ({ showModal, setShowModal }) => {
                   data={[
                     {
                       id: controller.userInfo.school.id,
-                      name: controller.userInfo.school.name
-                    }
+                      name: controller.userInfo.school.name,
+                    },
                   ]}
                   isDisabled
                   name="school_id"
@@ -157,35 +159,33 @@ const ModalFilter = ({ showModal, setShowModal }) => {
                   }
                 />
               ) : (
-                  <SelectWithSearch
-                    onChange={(e) =>
-                      controller.setFilterParam((prevState) => ({
-                        ...prevState,
-                        filter: {
-                          ...prevState.filter,
-                          school_id: e.value,
-                        },
-                      }))
-                    }
-                    async
-                    isDisabled={false}
-                    value={controller.filterParam.filter.school_id}
-                    data={[
-                      asyncDefaultValue,
-                      ...controller.school
-                      ]}
-                    name="school_id"
-                    label="SEMUA"
-                    placeholder="SEMUA"
-                  />
-                )}
+                <SelectWithSearchWithDebounced
+                  isDisabled={false}
+                  loadOptions={controller.loadSchool}
+                  onChange={(e) => {
+                    controller.setFilterParam((prevState) => ({
+                      ...prevState,
+                      filter: {
+                        ...prevState.filter,
+                        school_id: e.value,
+                      },
+                    }));
+                  }}
+                  value={controller.filterParam.filter.school_id}
+                  data={[asyncDefaultValue, ...controller.school]}
+                  name="school_id"
+                  label="UNIT"
+                  debounced={controller.debouncedSchool}
+                  placeholder={controller.loading ? "loading..." : "SEMUA"}
+                />
+              )}
             </Box>
           </GridItem>
           <GridItem xs={12} sm={12} md={6}>
             <Box style={{ width: "100%" }}>
               <label htmlFor="end-date" className="black-text">
                 KOTA
-                </label>
+              </label>
               <SelectWithSearch
                 async
                 isDisabled={false}
@@ -199,10 +199,7 @@ const ModalFilter = ({ showModal, setShowModal }) => {
                   }));
                 }}
                 value={controller.filterParam.filter.regency}
-                data={[
-                   asyncDefaultValue,
-                   ...controller.regency
-                  ]}
+                data={[asyncDefaultValue, ...controller.regency]}
                 name="regency"
                 label="SEMUA"
                 placeholder="SEMUA"
@@ -217,14 +214,11 @@ const ModalFilter = ({ showModal, setShowModal }) => {
             <Box style={{ width: "100%" }}>
               <label htmlFor="donatur-type" className="black-text">
                 KATEGORI DONATUR
-                       </label>
+              </label>
               <SelectWithSearch
                 async={false}
                 value={controller.filterParam.filter.donor_category}
-                data={[
-                  nonasyncDefaultValue,
-                  ...donatur_category
-                ]}
+                data={[nonasyncDefaultValue, ...donatur_category]}
                 onChange={(e) =>
                   controller.setFilterParam((prevState) => ({
                     ...prevState,
@@ -245,14 +239,11 @@ const ModalFilter = ({ showModal, setShowModal }) => {
             <Box style={{ width: "100%" }}>
               <label htmlFor="end-date" className="black-text">
                 KATEGORI SUMBER
-                       </label>
+              </label>
               <SelectWithSearch
                 async={false}
                 value={controller.filterParam.filter.division_id}
-                data={[
-                  nonasyncDefaultValue,
-                  ...Division
-                ]}
+                data={[nonasyncDefaultValue, ...Division]}
                 onChange={(e) =>
                   controller.setFilterParam((prevState) => ({
                     ...prevState,
@@ -277,14 +268,11 @@ const ModalFilter = ({ showModal, setShowModal }) => {
             <Box style={{ width: "100%" }}>
               <label htmlFor="end-date" className="black-text">
                 JENIS DONASI
-                       </label>
+              </label>
               <SelectWithSearch
                 async={false}
                 value={controller.filterParam.filter.category_id}
-                data={[
-                  nonasyncDefaultValue,
-                  ...DonationCategory
-                  ]}
+                data={[nonasyncDefaultValue, ...DonationCategory]}
                 onChange={(e) =>
                   controller.setFilterParam((prevState) => ({
                     ...prevState,
@@ -305,14 +293,11 @@ const ModalFilter = ({ showModal, setShowModal }) => {
             <Box style={{ width: "100%" }}>
               <label htmlFor="end-date" className="black-text">
                 TUNAI / NON TUNAI
-               </label>
+              </label>
               <SelectWithSearch
                 async={false}
                 value={controller.filterParam.filter.category_type}
-                data={[
-                  nonasyncDefaultValue,
-                  ...PaymentTypeFilter
-                ]}
+                data={[nonasyncDefaultValue, ...PaymentTypeFilter]}
                 onChange={(e) =>
                   controller.setFilterParam((prevState) => ({
                     ...prevState,
@@ -382,11 +367,7 @@ const ModalFilter = ({ showModal, setShowModal }) => {
       <GridItem xs={12} sm={12} md={12}>
         <GridContainer style={{ marginTop: 20 }}>
           <GridItem xs={12} sm={6} md={6}>
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-            >
+            <Box display="flex" justifyContent="center" alignItems="center">
               <Button
                 flat
                 node="button"
@@ -425,19 +406,15 @@ const ModalFilter = ({ showModal, setShowModal }) => {
                     <span>CLEAR ALL</span>
                   </div>
                 ) : (
-                    <div>
-                      <span>CLEAR ALL</span>
-                    </div>
-                  )}
+                  <div>
+                    <span>CLEAR ALL</span>
+                  </div>
+                )}
               </Button>
             </Box>
           </GridItem>
           <GridItem xs={12} sm={6} md={6}>
-            <Box
-              display="flex"
-              justifyContent="flex-end"
-              alignItems="center"
-            >
+            <Box display="flex" justifyContent="flex-end" alignItems="center">
               {loading ? (
                 <Button
                   onClick={async (e) => {
@@ -458,31 +435,31 @@ const ModalFilter = ({ showModal, setShowModal }) => {
                   <span>Terapkan Filter</span>
                 </Button>
               ) : (
-                  <Button
-                    small
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      setLoading(true);
-                      await controller.fetchData();
-                      setLoading(false);
-                      setShowModal(false);
-                    }}
-                    node="button"
-                    style={{
-                      background: "#228B22",
-                      color: "#FFFFFF",
-                      fontWeight: "bold",
-                      marginLeft: "4px",
-                    }}
-                  >
-                    <span>Terapkan Filter</span>
-                  </Button>
-                )}
+                <Button
+                  small
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    setLoading(true);
+                    await controller.fetchData();
+                    setLoading(false);
+                    setShowModal(false);
+                  }}
+                  node="button"
+                  style={{
+                    background: "#228B22",
+                    color: "#FFFFFF",
+                    fontWeight: "bold",
+                    marginLeft: "4px",
+                  }}
+                >
+                  <span>Terapkan Filter</span>
+                </Button>
+              )}
             </Box>
           </GridItem>
         </GridContainer>
       </GridItem>
-    </GridContainer >
+    </GridContainer>
   );
 
   return (

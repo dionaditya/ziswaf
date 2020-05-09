@@ -41,6 +41,9 @@ import CircleCheckedFilled from "@material-ui/icons/CheckCircle";
 import CircleUnchecked from "@material-ui/icons/RadioButtonUnchecked";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { withStyles } from "@material-ui/core/styles";
+import idLocale from "date-fns/locale/id";
+import InputMask from "react-input-mask";
+
 
 const innerTheme = createMuiTheme({
   palette: {
@@ -195,36 +198,44 @@ const InputDataOrangTuaSection = ({ value, setValues }) => {
   };
 
   const onSubmit = async (data) => {
+    setLoading(true);
     if (_.isEmpty(errors)) {
-      setLoading(true);
-      const res = await controller.handleSubmit(controller)(
-        controller.dispatch
-      );
-      if (res !== undefined) {
-        if (res.status === 201 || res.status === 200) {
-          addToast("Data siswa telah tersimpan", { appearance: "success" });
-          setLoading(false);
-          setTimeout(() => {
-            history.push("/dashboard/students");
-          }, 1000);
-        } else if (res.status === 422) {
-          addToast(res.data.message, { appearance: "error" });
-        } else if (res.status === 400) {
-          addToast(res.data.message, { appearance: "error" });
-        } else if (res.status === 500) {
-          addToast("Tidak dapat menyimpan data karena gangguan server", {
-            appearance: "error",
-          });
+      if(Number(father_phone[4]) !== 0 && Number(father_phone[4] !== 0)) {
+        setError(false)
+        const res = await controller.handleSubmit(controller)(
+          controller.dispatch
+        );
+        if (res !== undefined) {
+          if (res.status === 201 || res.status === 200) {
+            addToast("Data siswa telah tersimpan", { appearance: "success" });
+            setLoading(false);
+            setTimeout(() => {
+              history.push("/dashboard/students");
+            }, 1000);
+          } else if (res.status === 422) {
+            addToast(res.data.message, { appearance: "error" });
+          } else if (res.status === 400) {
+            addToast(res.data.message, { appearance: "error" });
+          } else if (res.status === 500) {
+            addToast("Tidak dapat menyimpan data karena gangguan server", {
+              appearance: "error",
+            });
+          } else {
+            addToast("Tidak dapat menyimpan data ke server", {
+              appearance: "error",
+            });
+          }
         } else {
-          addToast("Tidak dapat menyimpan data ke server", {
+          setLoading(false);
+          addToast("Tidak dapat menyimpan data karena gangguan server", {
             appearance: "error",
           });
         }
       } else {
-        addToast("Tidak dapat menyimpan data karena gangguan server", {
-          appearance: "error",
-        });
+        setError(true)
+        setLoading(false)
       }
+     
     }
   };
 
@@ -249,7 +260,7 @@ const InputDataOrangTuaSection = ({ value, setValues }) => {
   }
 
   return (
-    <MuiPickersUtilsProvider utils={MomentUtils}>
+    <MuiPickersUtilsProvider utils={MomentUtils} locale={idLocale}>
       <ThemeProvider theme={innerTheme}>
         <Box>
           <Paper
@@ -277,6 +288,7 @@ const InputDataOrangTuaSection = ({ value, setValues }) => {
                                 : false
                             }
                             color="primary"
+                            disabled={isDetailSession}
                             name="parent_status_A"
                             onChange={onChange}
                           />
@@ -289,6 +301,7 @@ const InputDataOrangTuaSection = ({ value, setValues }) => {
                             icon={<CircleUnchecked />}
                             color="primary"
                             checkedIcon={<CircleCheckedFilled />}
+                            disabled={isDetailSession}
                             checked={
                               controller.parent_info.parent_status === 1
                                 ? true
@@ -388,17 +401,9 @@ const InputDataOrangTuaSection = ({ value, setValues }) => {
                               : { classes: { input: classes.input } }
                           }
                           onChange={onChange}
-                          inputRef={register({
-                            required: true,
-                          })}
+                          inputRef={register}
                         />
-                        {errors &&
-                          errors.place_of_birth &&
-                          errors.place_of_birth.type === "required" && (
-                            <p style={{ color: "red", fontSize: "12px" }}>
-                              {errorMessage.empty}
-                            </p>
-                          )}
+                    
                       </Box>
                     </GridItem>
                     <GridItem xs={12} sm={12} md={6}>
@@ -443,7 +448,6 @@ const InputDataOrangTuaSection = ({ value, setValues }) => {
                             />
                           }
                           name="birth_of_date_father"
-                          rules={{ required: true }}
                           control={control}
                           onChange={(date: any) => {
                             const data = {
@@ -524,56 +528,47 @@ const InputDataOrangTuaSection = ({ value, setValues }) => {
                     <GridItem xs={12} sm={12} md={12}>
                       <Box className={classes.marginBottom}>
                         <label className={classes.label}>No HP Ayah</label>
-                        <TextField
-                          label=""
-                          style={{
-                            width: "100%",
-                          }}
-                          variant="outlined"
-                          type="text"
-                          disabled={isDetailSession}
-                          placeholder="Nomor HP Ayah"
-                          id={
-                            errors &&
-                            errors.father_phone &&
-                            errors.father_phone.type === "required"
-                              ? "filled-error-helper-text"
-                              : "name"
-                          }
-                          name="father_phone"
-                          InputProps={
-                            editing
-                              ? {
-                                  classes: { input: classes.input },
-                                  endAdornment: (
-                                    <CircularProgress
-                                      className={classes.loadingReset}
-                                      size={14}
-                                    />
-                                  ),
-                                }
-                              : { classes: { input: classes.input } }
-                          }
-                          onChange={onChange}
-                          inputRef={register({
-                            required: true,
-                            pattern: /^[0-9]*$/i,
-                          })}
-                        />
-                        {errors &&
-                          errors.father_phone &&
-                          errors.father_phone.type === "required" && (
-                            <p style={{ color: "red", fontSize: "12px" }}>
-                              {errorMessage.empty}
-                            </p>
-                          )}
-                        {errors &&
-                          errors.father_phone &&
-                          errors.father_phone.type === "pattern" && (
-                            <p style={{ color: "red", fontSize: "12px" }}>
-                              {errorMessage.shouldNumber}
-                            </p>
-                          )}
+                        <InputMask
+                        mask="+62 999 999 999 99"
+                        value={father_phone}
+                        maskChar=" "
+                        disabled={isDetailSession}
+                        onChange={onChange}
+                      >
+                        {() => (
+                          <TextField
+                            style={{
+                              width: "100%",
+                            }}
+                            variant="outlined"
+                            name="father_phone"
+                            id="phone"
+                            disabled={isDetailSession}
+                            placeholder="Contoh: +628567XXXXXXX"
+                            InputProps={
+                              editing
+                                ? {
+                                    classes: { input: classes.input },
+                                    endAdornment: (
+                                      <CircularProgress
+                                        className={classes.loadingReset}
+                                        size={14}
+                                      />
+                                    ),
+                                  }
+                                : { classes: { input: classes.input } }
+                            }
+                            inputRef={register}
+                          />
+                        )}
+                      </InputMask>
+                    
+                      {error && Number(father_phone[4]) === 0 && (
+                        <p style={{ color: "red", fontSize: "12px" }}>
+                          No Handphone tidak valid. Silahkan coba kembali
+                        </p>
+                      )}
+                        {/* d */}
                       </Box>
                     </GridItem>
                   </GridContainer>
@@ -599,11 +594,11 @@ const InputDataOrangTuaSection = ({ value, setValues }) => {
                               value={father_status}
                               placeholder="Status Ayah"
                               data={ParentStatus}
-                              name="status"
+                              name="father_status"
                               label="Status Ayah"
                             />
                           }
-                          name="status"
+                          name="father_status"
                           onChange={(value) => {
                             const e = {
                               target: {
@@ -714,17 +709,8 @@ const InputDataOrangTuaSection = ({ value, setValues }) => {
                               : { classes: { input: classes.input } }
                           }
                           onChange={onChange}
-                          inputRef={register({
-                            required: true,
-                          })}
+                          inputRef={register}
                         />
-                        {errors &&
-                          errors.place_of_birth_mother &&
-                          errors.place_of_birth_mother.type === "required" && (
-                            <p style={{ color: "red", fontSize: "12px" }}>
-                              {errorMessage.empty}
-                            </p>
-                          )}
                       </Box>
                     </GridItem>
                     <GridItem xs={12} sm={12} md={6}>
@@ -769,7 +755,6 @@ const InputDataOrangTuaSection = ({ value, setValues }) => {
                             />
                           }
                           name="birth_of_date_mother"
-                          rules={{ required: true }}
                           control={control}
                           onChange={(date: any) => {
                             const data = {
@@ -850,56 +835,47 @@ const InputDataOrangTuaSection = ({ value, setValues }) => {
                     <GridItem xs={12} sm={12} md={12}>
                       <Box className={classes.marginBottom}>
                         <label className={classes.label}>No HP Ibu</label>
-                        <TextField
-                          label=""
-                          style={{
-                            width: "100%",
-                          }}
-                          variant="outlined"
-                          type="text"
-                          disabled={isDetailSession}
-                          placeholder="Nomor HP Ibu"
-                          id={
-                            errors &&
-                            errors.mother_phone &&
-                            errors.mother_phone.type === "required"
-                              ? "filled-error-helper-text"
-                              : "name"
-                          }
-                          name="mother_phone"
-                          InputProps={
-                            editing
-                              ? {
-                                  classes: { input: classes.input },
-                                  endAdornment: (
-                                    <CircularProgress
-                                      className={classes.loadingReset}
-                                      size={14}
-                                    />
-                                  ),
-                                }
-                              : { classes: { input: classes.input } }
-                          }
-                          onChange={onChange}
-                          inputRef={register({
-                            required: true,
-                            pattern: /^[0-9]*$/i,
-                          })}
-                        />
-                        {errors &&
-                          errors.mother_phone &&
-                          errors.mother_phone.type === "required" && (
-                            <p style={{ color: "red", fontSize: "12px" }}>
-                              {errorMessage.empty}
-                            </p>
-                          )}
-                        {errors &&
-                          errors.mother_phone &&
-                          errors.mother_phone.type === "pattern" && (
-                            <p style={{ color: "red", fontSize: "12px" }}>
-                              {errorMessage.shouldNumber}
-                            </p>
-                          )}
+                        <InputMask
+                        mask="+62 999 999 999 99"
+                        value={mother_phone}
+                        maskChar=" "
+                        disabled={isDetailSession}
+                        onChange={onChange}
+                      >
+                        {() => (
+                          <TextField
+                            style={{
+                              width: "100%",
+                            }}
+                            variant="outlined"
+                            name="mother_phone"
+                            id="phone"
+                            disabled={isDetailSession}
+                            placeholder="Contoh: +628567XXXXXXX"
+                            InputProps={
+                              editing
+                                ? {
+                                    classes: { input: classes.input },
+                                    endAdornment: (
+                                      <CircularProgress
+                                        className={classes.loadingReset}
+                                        size={14}
+                                      />
+                                    ),
+                                  }
+                                : { classes: { input: classes.input } }
+                            }
+                            inputRef={register}
+                          />
+                        )}
+                      </InputMask>
+                    
+                      {error && Number(mother_phone[4]) === 0 && (
+                        <p style={{ color: "red", fontSize: "12px" }}>
+                          No Handphone tidak valid. Silahkan coba kembali
+                        </p>
+                      )}
+                      
                       </Box>
                     </GridItem>
                   </GridContainer>
@@ -925,12 +901,12 @@ const InputDataOrangTuaSection = ({ value, setValues }) => {
                               value={father_status}
                               placeholder="Status Ibu"
                               data={ParentStatus}
-                              name="status"
-                           
+                              name="mother_status"
+                          
                               label="Status Ibu"
                             />
                           }
-                          name="status"
+                          name="mother_status"
                           onChange={(value) => {
                             const e = {
                               target: {
@@ -968,7 +944,8 @@ const InputDataOrangTuaSection = ({ value, setValues }) => {
                             marginTop: "20px",
                             border: `2px solid ${green[500]}`,
                           }}
-                          isLoading={loading ? true : false}
+                          loading={loading}
+                          disabled={loading}
                           color="transparent"
                           onClick={(e) => setValues(value - 1)}
                         >
@@ -988,7 +965,7 @@ const InputDataOrangTuaSection = ({ value, setValues }) => {
                             marginRight: "22em",
                             marginTop: "20px",
                           }}
-                          isLoading={loading ? true : false}
+                          isLoading={loading}
                           color="primary"
                           type="submit"
                           disabled={isDetailSession}

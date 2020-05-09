@@ -1,5 +1,5 @@
 import React from "react";
-import formatPrice from "@/app/infrastructures/misc/Utils";
+import formatPrice, { separatorNumbers } from "@/app/infrastructures/misc/Utils";
 import GridItem from "@/app/container/commons/Grid/GridItem.tsx";
 import GridContainer from "@/app/container/commons/Grid/GridContainer.tsx";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
@@ -155,7 +155,7 @@ const DataTableReportPencapaianDivisi = ({
                 <p className={classes.subLabel}>{formatPrice(selisihRetail)}</p>
               </Box>
               <Box className={classes.tabBody}>
-                <p className={classes.subLabel}>{percentageRetail}%</p>
+                <p className={classes.subLabel}>{separatorNumbers(percentageRetail)}%</p>
               </Box>
             </>
           )}
@@ -192,7 +192,7 @@ const DataTableReportPencapaianDivisi = ({
                 </p>
               </Box>
               <Box className={classes.tabBody}>
-                <p className={classes.subLabel}>{percentageCorporate}%</p>
+                <p className={classes.subLabel}>{separatorNumbers(percentageCorporate)}%</p>
               </Box>
             </>
           )}
@@ -226,7 +226,7 @@ const DataTableReportPencapaianDivisi = ({
               </Box>
 
               <Box className={classes.tabBody}>
-                <p className={classes.subLabel}>{percentageUpz}%</p>
+                <p className={classes.subLabel}>{separatorNumbers(percentageUpz)}%</p>
               </Box>
             </>
           )}
@@ -265,7 +265,7 @@ const DataTableReportPencapaianDivisi = ({
                 </p>
               </Box>
               <Box className={cx(classes.tabBody, { width: "10%" })}>
-                <p className={classes.subLabelFooter}>{totalPercent}%</p>
+                <p className={classes.subLabelFooter}>{separatorNumbers(totalPercent)}%</p>
               </Box>
             </>
           )}

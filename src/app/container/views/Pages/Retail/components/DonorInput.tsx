@@ -1,11 +1,8 @@
 import React, { useState, useContext } from "react";
-import { Input, Textarea } from "@/app/container/components/index";
-import ModalWarning from "./ModalWarning";
 import { RetailContext } from "../Controller";
-import UnitSelect from "@/app/container/components/UnitSelect";
 import { useForm, Controller } from "react-hook-form";
 import { useHistory } from "react-router-dom";
-import { useToasts, ToastProvider } from "react-toast-notifications";
+import { useToasts } from "react-toast-notifications";
 import GridContainer from "@/app/container/commons/Grid/GridContainer";
 import GridItem from "@/app/container/commons/Grid/GridItem";
 import {
@@ -14,12 +11,10 @@ import {
   createStyles,
   makeStyles,
   TextareaAutosize,
-  Radio,
   TextField,
   Paper,
 } from "@material-ui/core";
 import Card from "@/app/container/commons/Card/Card";
-import InputMask from "@/app/container/components/InputMask";
 import CardHeader from "@/app/container/commons/Card/CardHeader";
 import CardBody from "@/app/container/commons/Card/CardBody";
 import Button from "@/app/container/commons/CustomButtons/Button.tsx";
@@ -32,6 +27,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
+import InputMask from "react-input-mask";
 
 const innerTheme = createMuiTheme({
   palette: {
@@ -64,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) =>
       color: "#323C47",
       fontSize: 12,
       fontWeight: 800,
-    },  
+    },
     modal: {
       marginTop: "5vh",
     },
@@ -72,19 +68,6 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const DonorInput = ({ index, setIndex }) => {
-  const [fields, setFields] = useState({
-    name: "",
-    email: "",
-    address: "",
-    phone: "",
-    npwp: "",
-    pos_code: "",
-    info: "",
-    search: "",
-    province: ["Jateng", "Jabar", "Jatim"],
-    regency: ["Semarang", "Bandung", "Surabaya"],
-  });
-
   const controller = useContext(RetailContext);
   const {
     register,
@@ -98,8 +81,8 @@ const DonorInput = ({ index, setIndex }) => {
   const classes = useStyles();
   const { addToast } = useToasts();
   const [statusModal, setStatusModal] = React.useState(false);
-  const [error, setError] = React.useState(false);
-   const [wrongEmail, setWrongEmail] = React.useState(false)
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const {
     handleInput,
@@ -110,7 +93,6 @@ const DonorInput = ({ index, setIndex }) => {
   } = controller;
 
   const {
-    company_name,
     address,
     npwp,
     info,
@@ -118,7 +100,6 @@ const DonorInput = ({ index, setIndex }) => {
     pos_code,
     regency_id,
     status,
-    position,
     phone,
     email,
     name,
@@ -154,27 +135,73 @@ const DonorInput = ({ index, setIndex }) => {
   };
 
   const handleSubmitInput = async (e) => {
+    setLoading(true);
     if (_.isEmpty(errors)) {
-     
       if (controller.selected) {
         history.push(
           `/dashboard/retail-input/${controller.DonationInfo.donor_id}`
         );
       } else {
-        const [status, response] = await controller.postData();
-        if (status === "error") {
-           setStatusModal(true);
+        if (Number(phone[4]) !== 0) {
+          setError(false);
+          const [status, response] = await controller.postData();
+          if (status === "error") {
+            setLoading(false);
+            if (response !== undefined) {
+              if (response.status === 400 || response.status === 402) {
+                if (
+                  response.data.message ===
+                  "Nama dan Nomor Handphone yang sama ditemukan dalam database"
+                ) {
+                  setStatusModal(true);
+                } else {
+                  addToast(response.data.message, {
+                    appearance: "error",
+                  });
+                }
+              } else {
+                addToast(response.data.message, {
+                  appearance: "error",
+                });
+              }
+            }
+          } else {
+            addToast("Data donatur telah tersimpan", {
+              appearance: "success",
+            });
+            setTimeout(() => {
+              history.push(`/dashboard/retail-input/${response.data.data.id}`);
+            }, 1000);
+          }
         } else {
-          history.push(`/dashboard/retail-input/${response.data.data.id}`);
+          setLoading(false);
+          setError(true);
         }
       }
     }
   };
 
   const handleUpdateInput = async () => {
-    const resp = await controller.postUpdateData();
-    if (resp) {
-      history.push(`/dashboard/retail-input/${resp.id}`);
+    const [status, response] = await controller.postUpdateData();
+    if (status === "success") {
+      addToast("Data donatur telah berhasil diperbarui", {
+        appearance: "success",
+      });
+      setTimeout(() => {
+        history.push(`/dashboard/retail-input/${response.data.data.id}`);
+      }, 1000);
+    } else {
+      if (response !== undefined) {
+        if (response.status === 400 || response.status === 402) {
+          addToast(response.data.message, {
+            appearance: "error",
+          });
+        } else {
+          addToast(response.data.message, {
+            appearance: "error",
+          });
+        }
+      }
     }
   };
 
@@ -224,7 +251,11 @@ const DonorInput = ({ index, setIndex }) => {
                         <CardBody>
                           <GridContainer>
                             <GridItem xs={12} sm={12} md={12}>
-                              <Box display="flex" flexDirection="row" marginLeft="20px">
+                              <Box
+                                display="flex"
+                                flexDirection="row"
+                                marginLeft="20px"
+                              >
                                 <FormGroup row>
                                   <FormControlLabel
                                     control={
@@ -558,20 +589,30 @@ const DonorInput = ({ index, setIndex }) => {
                                 <label className={classes.formControl}>
                                   No Handphone
                                 </label>
-                                <TextField
-                                  id="phone"
-                                  name="phone"
-                                  variant="outlined"
-                                  type="tel"
+                                <InputMask
+                                  mask="+62 999 999 999 99"
+                                  value={phone}
                                   disabled={controller.selected}
-                                  style={{ width: "100%" }}
-                                  placeholder="No Handphone"
+                                  maskChar=" "
                                   onChange={onChange}
-                                  inputRef={register({
-                                    required: true,
-                                    pattern: /^[0-9]*$/i,
-                                  })}
-                                />
+                                >
+                                  {() => (
+                                    <TextField
+                                      style={{
+                                        width: "100%",
+                                      }}
+                                      variant="outlined"
+                                      name="phone"
+                                      id="phone"
+                                      disabled={controller.selected}
+                                      placeholder="Contoh: +628567XXXXXXX"
+                                      size="small"
+                                      inputRef={register({
+                                        required: true,
+                                      })}
+                                    />
+                                  )}
+                                </InputMask>
                                 {errors &&
                                   errors.phone &&
                                   errors.phone.type === "required" && (
@@ -581,15 +622,12 @@ const DonorInput = ({ index, setIndex }) => {
                                       {errorMessage.phone}
                                     </p>
                                   )}
-                                {errors &&
-                                  errors.phone &&
-                                  errors.phone.type === "pattern" && (
-                                    <p
-                                      style={{ color: "red", fontSize: "12px" }}
-                                    >
-                                      Hanya Boleh diisi dengan angka
-                                    </p>
-                                  )}
+                                {error && Number(phone[4]) === 0 && (
+                                  <p style={{ color: "red", fontSize: "12px" }}>
+                                     No Handphone tidak valid. Silahkan coba kembali. Contoh: +62857xxxxxx
+                                  </p>
+                                )}
+                            
                               </GridItem>
                             </GridItem>
                           </GridContainer>
@@ -611,32 +649,8 @@ const DonorInput = ({ index, setIndex }) => {
                                     style={{ width: "100%" }}
                                     placeholder="Alamat Surel"
                                     onChange={onChange}
-                                    inputRef={register({ required: true, pattern: /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/i })}
+                                    inputRef={register}
                                   />
-                                  {errors &&
-                                    errors.email &&
-                                    errors.email.type === "required" && (
-                                      <p
-                                        style={{
-                                          color: "red",
-                                          fontSize: "12px",
-                                        }}
-                                      >
-                                        {errorMessage.email}
-                                      </p>
-                                    )}
-                                    {errors &&
-                                    errors.email &&
-                                    errors.email.type === "pattern" && (
-                                      <p
-                                        style={{
-                                          color: "red",
-                                          fontSize: "12px",
-                                        }}
-                                      >
-                                       Email tidak valid
-                                      </p>
-                                    )}
                                 </Box>
                               </GridItem>
                               <GridItem xs={12} sm={12} md={12}>
@@ -657,12 +671,23 @@ const DonorInput = ({ index, setIndex }) => {
                                     name="npwp"
                                     variant="outlined"
                                     type="text"
-                                    inputRef={register}
+                                    inputRef={register({
+                                      pattern: /^[0-9]*$/i,
+                                    })}
                                     style={{ width: "100%" }}
                                     placeholder="No NPWP"
                                     onChange={onChange}
                                   />
                                 </Box>
+                                {errors &&
+                                  errors.npwp &&
+                                  errors.npwp.type === "pattern" && (
+                                    <p
+                                      style={{ color: "red", fontSize: "12px" }}
+                                    >
+                                      Hanya Boleh diisi dengan angka
+                                    </p>
+                                  )}
                               </GridItem>
                               <GridItem xs={12} sm={12} md={12}>
                                 <label className={classes.formControl}>
@@ -745,6 +770,8 @@ const DonorInput = ({ index, setIndex }) => {
                           }}
                           type="submit"
                           color="primary"
+                          loading={loading}
+                          disabled={loading}
                           onClick={(e) => null}
                         >
                           Simpan & Lanjutkan

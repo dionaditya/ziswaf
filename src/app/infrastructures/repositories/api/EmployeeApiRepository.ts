@@ -73,7 +73,6 @@ export class EmployeeApiRepository implements EmployeeRepositoryInterface {
                 {},
                 payload
             )
-            console.log(...payload.toFormData())
             return response 
         } catch (e) {
             return e.response
@@ -81,15 +80,11 @@ export class EmployeeApiRepository implements EmployeeRepositoryInterface {
     }
 
     public async deleteEmployeeData(id: number): Promise<any> {
-        try {
             const response = await this.service.invoke(
                 "delete",
                 this.endpoints.deleteEmployeeData(id),
                 id
             )
             return response
-        } catch (error) {
-            return error
-        }
     }
 }

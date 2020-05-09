@@ -63,7 +63,7 @@ const ReportDonationController = ({ children }) => {
                     division_id: state['categorySourceSelected'].map(item => item['name']).join(','),
                     statement_category: filterCategorystatement.map(item => item['name']).join(','),
                     category_id: state['donationTypeSelected'].map(item => item['name']).join(','),
-                    donor_category: state['donaturSelected'].map(item => item['name']).join(','),
+                    donatur_category: state['donaturSelected'].map(item => item['name']).join(','),
                     category_type: state['fundSourceSelected'].map(item => item['name']).join(','),
                 },
             }

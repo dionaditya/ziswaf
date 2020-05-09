@@ -84,27 +84,25 @@ const ModalContentItems = () => {
           >
             <label htmlFor="">Asal Unit</label>
             {isAdmin ? (
-              <SelectWithSearch
-              async
-              isDisabled={false}
-              onChange={(e) => {
-                controller.setFilterStatus((prevState) => ({
-                  ...prevState,
-                  filter: {
-                    ...prevState.filter,
-                    school_id: e.value,
-                  },
-                }));
-              }}
-              value={controller.filterStatus.filter.school_id}
-              data={[
-                asyncDefaultValue,
-                ...controller.school
-              ]}
-              name="school_id"
-              label="UNIT MADRASAH"
-              placeholder="UNIT MADRASAH"
-            />
+               <SelectWithSearchWithDebounced
+               isDisabled={false}
+               loadOptions={controller.loadData}
+               onChange={(e) => {
+                 controller.setFilterStatus((prevState) => ({
+                   ...prevState,
+                   filter: {
+                     ...prevState.filter,
+                     school_id: e.value,
+                   },
+                 }));
+               }}
+               value={school_id}
+               data={[asyncDefaultValue, ...controller.school]}
+               name="school_id"
+               label="UNIT"
+               debounced={controller.debounce}
+               placeholder={controller.loading ? "loading..." : "SEMUA"}
+             />
             ) : (
               <SelectWithSearch
                 async

@@ -1,10 +1,10 @@
 import { getUserInfo } from '@/app/infrastructures/misc/Cookies';
 import moment from 'moment';
 
-const selected = moment(new Date()).startOf('year').subtract(1,'ms').add(1, 'day').format()
-const selectedEnd = moment(new Date()).endOf('year').toDate()
-const dayNow = moment(new Date()).startOf('month').subtract(1,'ms').add(1, 'day').format()
-const dayNextMonth = moment(new Date()).endOf('month').toDate()
+const selected = moment().utcOffset("+07:00").startOf('year').format()
+const selectedEnd = moment().utcOffset("+07:00").endOf('year').format()
+const dayNow = moment().utcOffset("+07:00").startOf('month').format()
+const dayNextMonth = moment().utcOffset("+07:00").endOf('month').format()
 
 const { school: school_name, role } = getUserInfo()
 const idSchool = school_name?.id;
@@ -158,6 +158,7 @@ const initialState = {
   setMessage: () => { },
   message: "",
   handleExportPdf: () => { },
+  generalOperatorPerDay: []
 };
 
 export default initialState

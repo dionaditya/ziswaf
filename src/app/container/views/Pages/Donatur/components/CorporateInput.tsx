@@ -17,6 +17,8 @@ import _ from "lodash";
 import { ToastProvider, useToasts } from "react-toast-notifications";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ModalWarningData from "../../Retail/components/ModalWarningData";
+import Alert from "@material-ui/lab/Alert";
+import InputMask from "react-input-mask";
 
 const errorMessage = {
   compField: "Nama perusahaan tidak boleh kosong",
@@ -87,6 +89,8 @@ const DataInput = () => {
   const classes = useStyles();
   const { addToast } = useToasts();
   const [statusModal, setStatusModal] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState(false);
 
   const {
     companyName,
@@ -104,12 +108,12 @@ const DataInput = () => {
     isDetailSession,
   } = controller;
 
-  console.log("value", watch(), controller);
-
   const title = {
     input: "Input Donatur Corporate",
     info: "Info Donatur Corporate",
   };
+
+  const infoWarning = `Catatan: Jika menemui info error nama dan email perusahaan yang sama walaupun nama kontaknya berbeda. Silahkan dapat memperbarui nama kontak person perusahaan di fitur edit donatur terlebih dahulu`;
 
   React.useEffect(() => {
     setValue([
@@ -129,46 +133,49 @@ const DataInput = () => {
   }, [controller]);
 
   const onSubmit = async (e: any) => {
+    setLoading(true);
     if (_.isEmpty(errors)) {
       const [status, response] = await controller._onStoreCorporate(e);
-      if (status === "error") {
-        console.log(response)
-        if (response !== undefined) {
-          if (response.status === 400 || response.status === 402) {
-            if(response.data.message === 'Nama dan Nomor Handphone yang sama ditemukan dalam database') {
-                setStatusModal(true)
+      if (Number(phone[4]) !== 0) {
+        setError(false);
+        if (status === "error") {
+          setLoading(false);
+          if (response !== undefined) {
+            if (response.status === 400 || response.status === 402) {
+              if (
+                response.data.message ===
+                "Nama dan Nomor Handphone yang sama ditemukan dalam database"
+              ) {
+                setStatusModal(true);
+              } else {
+                addToast(response.data.message, {
+                  appearance: "error",
+                });
+              }
             } else {
-                  addToast(response.data.message, {
-              appearance: "error",
-            });
+              addToast(response.data.message, {
+                appearance: "error",
+              });
             }
-          
-          } else {
-            addToast(response.data.message, {
-              appearance: "error",
-            });
           }
-        } 
-      } else {
-        addToast("Data donatur telah tersimpan", {
-          appearance: "success",
-        });
-        setTimeout(() => {
-          history.push(`/dashboard/donatur?all=true`);
-        }, 1000);
+        } else {
+          addToast("Data donatur telah tersimpan", {
+            appearance: "success",
+          });
+          setTimeout(() => {
+            history.push(`/dashboard/donatur?all=true`);
+          }, 1000);
+        }
       }
+    } else {
+      setLoading(false);
+      setError(true);
     }
   };
 
   const handleSubmitButton = () => {
     const { companyName, name, address, posCode, email } = controller;
-    if (
-      companyName !== "" &&
-      name !== "" &&
-      address !== "" &&
-      posCode !== 0 &&
-      email !== ""
-    ) {
+    if (companyName !== "" && name !== "" && address !== "" && posCode !== 0) {
       return false;
     }
     return true;
@@ -198,10 +205,27 @@ const DataInput = () => {
     );
   }
 
-   const handleUpdateInput = async () => {
-    const resp = await controller.postUpdateData();
-    if (resp) {
-      history.push(`/dashboard/donatur`);
+  const handleUpdateInput = async () => {
+    const [status, response] = await controller.postUpdateData();
+    if (status === "success") {
+      addToast("Data donatur telah berhasil diperbarui", {
+        appearance: "success",
+      });
+      setTimeout(() => {
+        history.push(`/dashboard/donatur`);
+      }, 1000);
+    } else {
+      if (response !== undefined) {
+        if (response.status === 400 || response.status === 402) {
+          addToast(response.data.message, {
+            appearance: "error",
+          });
+        } else {
+          addToast(response.data.message, {
+            appearance: "error",
+          });
+        }
+      }
     }
   };
 
@@ -238,6 +262,7 @@ const DataInput = () => {
                             data={listStatus}
                             name="status"
                             label="Status Perusahaan/Organisasi"
+                            placeholder="Status Perusahaan/Organisasi"
                           />
                         }
                         name="status"
@@ -488,35 +513,8 @@ const DataInput = () => {
                         placeholder="Surel Perusahaan"
                         size="small"
                         onChange={(e) => controller.setEmail(e.target.value)}
-                        inputRef={register({
-                          required: true,
-                          pattern: /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/i,
-                        })}
+                        inputRef={register}
                       />
-                      {errors &&
-                        errors.email &&
-                        errors.email.type === "required" && (
-                          <p
-                            style={{
-                              color: "red",
-                              fontSize: "12px",
-                            }}
-                          >
-                            {errorMessage.email}
-                          </p>
-                        )}
-                      {errors &&
-                        errors.email &&
-                        errors.email.type === "pattern" && (
-                          <p
-                            style={{
-                              color: "red",
-                              fontSize: "12px",
-                            }}
-                          >
-                            Email tidak valid
-                          </p>
-                        )}
                     </Box>
                   </GridItem>
                 </GridContainer>
@@ -593,22 +591,32 @@ const DataInput = () => {
                       No Handphone
                     </label>
                     <Box className={classes.formControl}>
-                      <TextField
-                        style={{
-                          width: "100%",
-                        }}
-                        variant="outlined"
-                        name="phone"
-                        id="phone"
+                      <InputMask
+                        mask="+62 999 999 999 99"
+                        value={phone}
                         disabled={isDetailSession}
-                        placeholder="No Handphone"
-                        size="small"
-                        onChange={(e) => controller.setPhone(e.target.value)}
-                        inputRef={register({
-                          required: true,
-                          pattern: /^[0-9]*$/i,
-                        })}
-                      />
+                        maskChar=" "
+                        onChange={(e) => {
+                          controller.setPhone(e.target.value);
+                        }}
+                      >
+                        {() => (
+                          <TextField
+                            style={{
+                              width: "100%",
+                            }}
+                            variant="outlined"
+                            name="phone"
+                            id="phone"
+                            disabled={isDetailSession}
+                            placeholder="Contoh: +628567XXXXXXX"
+                            size="small"
+                            inputRef={register({
+                              required: true,
+                            })}
+                          />
+                        )}
+                      </InputMask>
                       {errors &&
                         errors.phone &&
                         errors.phone.type === "required" && (
@@ -616,13 +624,11 @@ const DataInput = () => {
                             {errorMessage.phoneField}
                           </p>
                         )}
-                      {errors &&
-                        errors.phone &&
-                        errors.phone.type === "pattern" && (
-                          <p style={{ color: "red", fontSize: "12px" }}>
-                            NO HP hanya boleh diisi dengan angka
-                          </p>
-                        )}
+                      {error && Number(phone[4]) === 0 && (
+                        <p style={{ color: "red", fontSize: "12px" }}>
+                          No Handphone tidak valid. Silahkan coba kembali
+                        </p>
+                      )}
                     </Box>
                   </GridItem>
                 </GridContainer>
@@ -649,9 +655,16 @@ const DataInput = () => {
                         disabled={isDetailSession}
                         placeholder="No NPWP"
                         size="small"
-                        inputRef={register}
+                        inputRef={register({ pattern: /^[0-9]*$/i })}
                         onChange={(e) => controller.setNpwp(e.target.value)}
                       />
+                      {errors &&
+                        errors.npwp &&
+                        errors.npwp.type === "pattern" && (
+                          <p style={{ color: "red", fontSize: "12px" }}>
+                            Hanya Boleh diisi dengan angka saja
+                          </p>
+                        )}
                     </Box>
                   </GridItem>
                 </GridContainer>
@@ -687,6 +700,16 @@ const DataInput = () => {
                       />
                     </Box>
                   </GridItem>
+                  <GridItem
+                    xs={12}
+                    sm={12}
+                    md={12}
+                    style={{
+                      marginTop: "20px",
+                    }}
+                  >
+                    <Alert severity="info">{infoWarning}</Alert>
+                  </GridItem>
                 </GridContainer>
               </GridItem>
               <GridItem xs={12} sm={12} md={12}>
@@ -702,7 +725,9 @@ const DataInput = () => {
                         color="primary"
                         onClick={(e) => null}
                         type="submit"
-                        disabled={isDetailSession || handleSubmitButton()}
+                        isLoading
+                        disabled={isDetailSession || loading}
+                        loading={loading}
                       >
                         Simpan & Lanjutkan
                       </Button>
@@ -711,17 +736,17 @@ const DataInput = () => {
                 </Box>
               </GridItem>
             </GridContainer>
-              <ModalWarningData
-                  showModal={statusModal}
-                  setShowModal={() => setStatusModal(false)}
-                  donor={{
-                    name: `${name}`,
-                    phone: `${phone}`,
-                    address: `${address}`,
-                  }}
-                  errorMessage="Nama dan No HP. sama dalam database"
-                  handleClickCTA={() => handleUpdateInput()}
-                />
+            <ModalWarningData
+              showModal={statusModal}
+              setShowModal={() => setStatusModal(false)}
+              donor={{
+                name: `${name}`,
+                phone: `${phone}`,
+                address: `${address}`,
+              }}
+              errorMessage="Nama dan No HP. sama dalam database"
+              handleClickCTA={() => handleUpdateInput()}
+            />
           </form>
         </Paper>
       </Box>

@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import PieChart from "../PieChart/index";
 import DataDetailPosisiKeuangan from "@/app/container/components/ReportDataTables/DetailPosisiKeuangan";
 import "react-datepicker/dist/react-datepicker.css";
-import formatPrice from "@/app/infrastructures/misc/Utils";
+import formatPrice, { separatorNumbers } from "@/app/infrastructures/misc/Utils";
 import { ReportContext } from "../../Controller";
 import Card from "@/app/container/commons/Card/Card.js";
 import CardHeader from "@/app/container/commons/Card/CardHeader.js";
@@ -11,7 +11,6 @@ import CardBody from "@/app/container/commons/Card/CardBody.js";
 import GridContainer from "@/app/container/commons/Grid/GridContainer";
 import GridItem from "@/app/container/commons/Grid/GridItem";
 import { Box, makeStyles, Theme, createStyles } from "@material-ui/core";
-// import { PieChart } from '@/app/container/components/Chart';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -120,8 +119,8 @@ const LaporanKeuanganDanBarang = () => {
           {controller.role === 1
             ? formatPrice(controller.cashAndGoodsReport.totalGood || 0)
             : formatPrice(
-                controller.cashAndGoodsReportOperator.total_good || 0
-              )}
+              controller.cashAndGoodsReportOperator.total_good || 0
+            )}
         </span>
       </Box>
     );
@@ -166,8 +165,8 @@ const LaporanKeuanganDanBarang = () => {
           <Box className={classes.boxItem}>
             <span style={{ fontWeight: 800 }}>
               {controller.role === 1
-                ? controller.cashAndGoodsReport.totalGoodCollect || 0
-                : controller.cashAndGoodsReportOperator.total_good_collect || 0}
+                ? separatorNumbers(controller.cashAndGoodsReport.totalGoodCollect || 0)
+                : separatorNumbers(controller.cashAndGoodsReportOperator.total_good_collect || 0)}
             </span>{" "}
             <span className={classes.titleItem}>Barang Tercollect</span>
           </Box>
@@ -181,9 +180,8 @@ const LaporanKeuanganDanBarang = () => {
           <Box className={classes.boxItem}>
             <span style={{ fontWeight: 800 }}>
               {controller.role === 1
-                ? controller.cashAndGoodsReport.totalGoodNotMoveCount || 0
-                : controller.cashAndGoodsReportOperator.total_good_move_count ||
-                  0}
+                ? separatorNumbers(controller.cashAndGoodsReport.totalGoodNotMoveCount || 0)
+                : separatorNumbers(controller.cashAndGoodsReportOperator.total_good_move_count || 0)}
             </span>{" "}
             <span className={classes.titleItem}>Asset Tidak Bergerak</span>
           </Box>
@@ -197,9 +195,8 @@ const LaporanKeuanganDanBarang = () => {
           <Box className={classes.boxItem}>
             <span style={{ fontWeight: 800 }}>
               {controller.role === 1
-                ? controller.cashAndGoodsReport.totalGoodMoveCount || 0
-                : controller.cashAndGoodsReportOperator.total_good_move_count ||
-                  0}
+                ? separatorNumbers(controller.cashAndGoodsReport.totalGoodMoveCount || 0)
+                : separatorNumbers(controller.cashAndGoodsReportOperator.total_good_move_count || 0)}
             </span>{" "}
             <span className={classes.titleItem}>Asset Bergerak</span>
           </Box>
@@ -213,9 +210,8 @@ const LaporanKeuanganDanBarang = () => {
           <Box className={classes.boxItem}>
             <span style={{ fontWeight: 800 }}>
               {controller.role === 1
-                ? controller.cashAndGoodsReport.totalGoodFoodCount || 0
-                : controller.cashAndGoodsReportOperator.total_good_food_count ||
-                  0}
+                ? separatorNumbers(controller.cashAndGoodsReport.totalGoodFoodCount || 0)
+                : separatorNumbers(controller.cashAndGoodsReportOperator.total_good_food_count || 0) }
             </span>{" "}
             <span className={classes.titleItem}>Makanan/Minuman</span>
           </Box>
@@ -229,9 +225,8 @@ const LaporanKeuanganDanBarang = () => {
           <Box className={classes.boxItem}>
             <span style={{ fontWeight: 800 }}>
               {controller.role === 1
-                ? controller.cashAndGoodsReport.totalGoodOtherCount || 0
-                : controller.cashAndGoodsReportOperator
-                    .total_good_other_count || 0}
+                ? separatorNumbers(controller.cashAndGoodsReport.totalGoodOtherCount || 0)
+                : separatorNumbers(controller.cashAndGoodsReportOperator.total_good_other_count || 0)}
             </span>{" "}
             <span className={classes.titleItem}>Bentuk Lainnya</span>
           </Box>
@@ -536,7 +531,7 @@ const LaporanKeuanganDanBarang = () => {
               </GridItem>
               <GridItem xs={12} sm={12} md={8}>
                 <GridContainer>
-                  <GridItem xs={12} sm={12} md={12} style={{marginBottom: 20}}>
+                  <GridItem xs={12} sm={12} md={12} style={{ marginBottom: 20 }}>
                     <span style={{ fontSize: 18, color: "#323C47" }}>
                       Detail Posisi Keuangan
                     </span>

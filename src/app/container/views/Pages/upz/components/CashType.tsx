@@ -16,6 +16,7 @@ import CardHeader from "@/app/container/commons/Card/CardHeader.js";
 import CardBody from "@/app/container/commons/Card/CardBody.js";
 import InputMask from "@/app/container/components/InputMask";
 import SimpleSelectWithDisabled from "@/app/container/components/SelectWithDisabled";
+import _ from 'lodash'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -104,9 +105,9 @@ const JenisUang = ({ controller, onChange, error }) => {
                           label="Non Tunai"
                         />
                       )}
-                      {error && (
+                      {error && _.isNumber(category_id) === false && (
                         <p style={{ color: "red", fontSize: "12px" }}>
-                          "Belum memilih tipe pembayaran non tunai"
+                         Belum memilih tipe pembayaran
                         </p>
                       )}
                     </GridItem>
@@ -130,6 +131,11 @@ const JenisUang = ({ controller, onChange, error }) => {
                           onChange(e);
                         }}
                       />
+                        {error && value === 0 && (
+                        <p style={{ color: "red", fontSize: "12px" }}>
+                          Jumlah donasi harus lebih dari Rp. 0
+                        </p>
+                      )}
                     </GridItem>
                   </Box>
                   <Box className={classes.formContainer}>

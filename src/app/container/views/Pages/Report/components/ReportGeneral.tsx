@@ -329,6 +329,7 @@ const ReportGeneral = () => {
     return transformData;
   };
 
+
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
@@ -392,7 +393,7 @@ const ReportGeneral = () => {
                           type="line"
                           color={["#00923F"]}
                           dataTransaction={Object.values(
-                            controller.tableRetailOp
+                            controller.generalOperatorPerDay
                           )}
                           dataPerDayProp={Object.keys(controller.tableRetailOp)}
                         />

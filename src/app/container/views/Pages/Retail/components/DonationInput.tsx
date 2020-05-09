@@ -65,7 +65,8 @@ const DonationInput = ({ index, setIndex }) => {
   const { addToast } = useToasts();
   const [error, setError] = useState(false);
   const [errorDonation, setErrorDonation] = useState(false);
-  const [errorGoods, setErrorGoods] = useState(false)
+  const [errorGoods, setErrorGoods] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const onChange = (e) => {
     controller.handleInputDonation(e);
@@ -78,15 +79,17 @@ const DonationInput = ({ index, setIndex }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     if (
       controller.DonationInfo.category_id !== 0 &&
       controller.DonationInfo.statement_category_id !== 0
     ) {
       setErrorDonation(false);
-
-      if(controller.DonationInfo.donation_item === 1) {
-        if (_.isNumber(controller.DonationInfo.cash.category_id)) {
-          console.log('hai')
+      if (controller.DonationInfo.donation_item === 1) {
+        if (
+          _.isNumber(controller.DonationInfo.cash.category_id) &&
+          controller.DonationInfo.cash.value !== 0
+        ) {
           setError(false);
           const [status, response] = await controller.handlePostDonation(e);
           if (status === "success") {
@@ -95,6 +98,7 @@ const DonationInput = ({ index, setIndex }) => {
               history.push(`/dashboard/retail-tanda-terima/${response.id}`);
             }, 500);
           } else {
+            setLoading(false);
             if (
               response.response.status === 400 ||
               response.response.status === 402
@@ -105,11 +109,16 @@ const DonationInput = ({ index, setIndex }) => {
             }
           }
         } else {
+          setLoading(false);
           setError(true);
         }
       } else {
-        if (controller.DonationInfo.goods.category_id !== 0 && controller.DonationInfo.goods.status !== 0) {
-          console.log('yo')
+        if (
+          controller.DonationInfo.goods.category_id !== 0 &&
+          _.isNumber(controller.DonationInfo.goods.status) === true  &&
+          controller.DonationInfo.goods.quantity !== 0 &&
+          controller.DonationInfo.goods.value !== 0
+        ) {
           setErrorGoods(false);
           const [status, response] = await controller.handlePostDonation(e);
           if (status === "success") {
@@ -118,6 +127,7 @@ const DonationInput = ({ index, setIndex }) => {
               history.push(`/dashboard/retail-tanda-terima/${response.id}`);
             }, 500);
           } else {
+            setLoading(false);
             if (
               response.response.status === 400 ||
               response.response.status === 402
@@ -128,17 +138,15 @@ const DonationInput = ({ index, setIndex }) => {
             }
           }
         } else {
-          console.log('fish')
+          setLoading(false);
           setErrorGoods(true);
         }
       }
-    
     } else {
+      setLoading(false);
       setErrorDonation(true);
     }
   };
-
-  console.log(controller.DonationInfo)
 
   return (
     <React.Fragment>
@@ -197,6 +205,7 @@ const DonationInput = ({ index, setIndex }) => {
                         <Box className={classes.formContainer}>
                           <h3 className="black-text">Bentuk Donasi</h3>
                         </Box>
+
                         <FormControlLabel
                           control={
                             <Checkbox
@@ -276,7 +285,12 @@ const DonationInput = ({ index, setIndex }) => {
                   justifyContent="flex-end"
                 >
                   <div className="right mt-4 mr-4 mb-4 ml-4">
-                    <Button onClick={handleSubmit} color="primary">
+                    <Button
+                      onClick={handleSubmit}
+                      color="primary"
+                      loading={loading}
+                      disabled={loading}
+                    >
                       Simpan & Lanjutkan
                     </Button>
                   </div>

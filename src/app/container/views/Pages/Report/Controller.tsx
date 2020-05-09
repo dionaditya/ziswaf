@@ -75,6 +75,7 @@ export const ReportController = ({ children }) => {
   const [tableUpzOp, setTabelUpzOperatorPerDay] = useState<any>({})
   const [tableRetailOp, setTabelRetailOperatorPerDay] = useState<any>({})
   const [tableCoprOp, setTabelCorpOperatorPerDay] = useState<any>({})
+  const [generalOperatorPerDay, setGeneralOperatorPerDay] = useState<any>([])
 
   // PRESENTER
 
@@ -82,6 +83,7 @@ export const ReportController = ({ children }) => {
   const regencyPresenter: CityPresenter = container.resolve(CityPresenter)
   const schoolPresenter: SchoolPresenter = container.resolve(SchoolPresenter)
   const operatorPresenter: DashboardOperatorPresenter = container.resolve(DashboardOperatorPresenter)
+  
 
   //DESTRUCTURING 
   const dateNow = new Date()
@@ -122,7 +124,6 @@ export const ReportController = ({ children }) => {
     }
 
 
-    console.log("role", role)
     if (role === 1) {
       try {
         setLoading(true)
@@ -145,7 +146,7 @@ export const ReportController = ({ children }) => {
         setReportType('general')
       } catch (error) {
         setLoading(false)
-        setMessage(error)
+        setMessage(error.response.data.message)
       }
     }
     if (role === 2) {
@@ -153,6 +154,7 @@ export const ReportController = ({ children }) => {
         setLoading(true)
         const resOperator = await operatorPresenter.getAllData(filterParamOperator)
         setDataOperator(resOperator)
+        setGeneralOperatorPerDay(resOperator.data?.totalZiswafPerDay)
         setGeneralReportOperator(resOperator.data?.commonReport)
         setDivisionReportOperator(resOperator.data?.divisionReport)
         setCashAndGoodsReportOperator(resOperator.data?.nominalReport)
@@ -163,7 +165,7 @@ export const ReportController = ({ children }) => {
         setDivisionPercent(resOperator.data?.commonReport?.total_division_percentage)
         setLoading(false)
       } catch (error) {
-        setMessage(error)
+        setMessage(error.response.data.message)
       }
     }
   }
@@ -173,6 +175,7 @@ export const ReportController = ({ children }) => {
   const idSchool = school_name?.id;
   const nameSchool = school_name?.name;
 
+  console.log(operatorData.data)
   const getSchoolData = async (val) => {
     setState(prevState => ({
       ...prevState,
@@ -232,7 +235,6 @@ export const ReportController = ({ children }) => {
           unitDataLoading: false
         }
       }))
-      console.log("Error", error)
     }
   }
 
@@ -284,7 +286,6 @@ export const ReportController = ({ children }) => {
           cityDataLoading: false
         }
       }))
-      console.log("Error", error)
     }
   }
 
@@ -393,8 +394,8 @@ export const ReportController = ({ children }) => {
     const { school: school_name, role } = getUserInfo()
     const idSchool = school_name?.id;
     const nameSchool = school_name?.name;
-    const startDate = moment(state.filterData.dateSelected.start_date).toISOString()
-    const endDate = moment(state.filterData.dateSelected.end_date).toISOString()
+    const startDate = state.filterData.dateSelected.start_date
+    const endDate = state.filterData.dateSelected.end_date
 
     const regencySelected = role === 1 ? state.filterData.citySelected.map(item => item['name']).join(',') : '';
     const schoolSelected = role === 1 ? state.filterData.unitSelected.map(item => item['name']).join(',') : idSchool;
@@ -481,7 +482,8 @@ export const ReportController = ({ children }) => {
         setLabelSearch,
         message,
         setMessage,
-        handleExportPdf
+        handleExportPdf,
+        generalOperatorPerDay
       }}>
       {children}
     </ReportProvider>

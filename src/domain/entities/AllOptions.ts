@@ -68,6 +68,7 @@ export let DonorTableColumn: [string, string][] = [
   ["status", "Status"],
   ["company_name", "Nama Lengkap"],
   ["address", "Alamat"],
+  ["school_id", "Unit"],
   ["regency_id", "Kota"],
   ["province_id", "Provinsi"],
   ["pos_code", "Kode Pos"],
@@ -84,7 +85,8 @@ export const nonSortAbleDonorColumn = [
   'pos_code',
   'npwp',
   'phone',
-  'contact_number'
+  'contact_number',
+  'school_id'
 ]
 
 export let StudentListTableColumn: [string, string][] = [

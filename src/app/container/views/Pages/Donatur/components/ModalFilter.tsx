@@ -13,13 +13,14 @@ import GridItem from "@/app/container/commons/Grid/GridItem";
 import { Typography } from "@material-ui/core";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
-
 const asyncDefaultValue = {
-  name: 'SEMUA',
-  id: ""
-}
+  name: "SEMUA",
+  id: "",
+};
 
-const nonasyncDefaultValue = ["", "SEMUA"]
+
+
+const nonasyncDefaultValue = ["", "SEMUA"];
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,165 +42,153 @@ const ModalFilter = () => {
   } = controller.filterStatus.filter;
 
   const handleChange = (e) => {
-    controller.handleChangeFilter(e)
+    controller.handleChangeFilter(e);
   };
 
   const isAdmin = controller.userInfo.role === 1;
 
-
   return (
-      <GridContainer>
-        <GridItem xs={12} sm={12} md={12}>
-          <GridContainer>
-            <GridItem
-              xs={12}
-              sm={12}
-              md={6}
-              style={{
-                marginBottom: "20px",
-                marginTop: "20px",
-              }}
-            >
-              <label htmlFor="">UNIT</label>
-              {isAdmin ? (
-                <SelectWithSearch
-                  async
-                  isDisabled={false}
-                  loadOptions={controller.loadData}
-                  onChange={(e) => {
-                    controller.setFilterStatus((prevState) => ({
-                      ...prevState,
-                      filter: {
-                        ...prevState.filter,
-                        school_id: e.value,
-                      },
-                    }));
-                  }}
-                  value={school_id}
-                  data={[
-                    asyncDefaultValue,
-                    ...controller.school
-                    ]}
-                  name="school_id"
-                  label="UNIT"
-                  placeholder={controller.loading ? "loading..." : "SEMUA"}
-                />
-              ) : (
-                <SelectWithSearch
-                  async
-                  isDisabled
-                  onChange={handleChange}
-                  value={controller.userInfo.school.id}
-                  data={[
-                    {
-                      id: controller.userInfo.school.id,
-                      name: controller.userInfo.school.name,
-                    },
-                  ]}
-                  name="school_id"
-                  label="Unit"
-                  placeholder={controller.loading ? "loading..." : "SEMUA"}
-                />
-              )}
-            </GridItem>
-            <GridItem
-              xs={12}
-              sm={12}
-              md={6}
-              style={{
-                marginBottom: "20px",
-                marginTop: "20px",
-              }}
-            >
-              <label htmlFor="">KOTA</label>
-              <SelectWithSearch
-                async
+    <GridContainer>
+      <GridItem xs={12} sm={12} md={12}>
+        <GridContainer>
+          <GridItem
+            xs={12}
+            sm={12}
+            md={6}
+            style={{
+              marginBottom: "20px",
+              marginTop: "20px",
+            }}
+          >
+            <label htmlFor="">UNIT</label>
+
+            {isAdmin ? (
+              <SelectWithSearchWithDebounced
                 isDisabled={false}
+                loadOptions={controller.loadData}
                 onChange={(e) => {
                   controller.setFilterStatus((prevState) => ({
                     ...prevState,
                     filter: {
                       ...prevState.filter,
-                      regency: e.value,
+                      school_id: e.value,
                     },
                   }));
                 }}
-                value={regency}
-                data={[
-                  asyncDefaultValue,
-                  ...controller.regency
-                  ]}
-                name="regency"
-                label="Kota"
+                value={school_id}
+                data={[asyncDefaultValue, ...controller.school]}
+                name="school_id"
+                label="UNIT"
+                debounced={controller.debounce}
                 placeholder={controller.loading ? "loading..." : "SEMUA"}
               />
-            </GridItem>
-            <GridItem
-              xs={12}
-              sm={12}
-              md={6}
-              style={{
-                marginBottom: "20px",
-                marginTop: "20px",
-              }}
-            >
-              <label htmlFor="">KATEGORI DONATUR</label>
+            ) : (
               <SelectWithSearch
-                async={false}
-                isDisabled={false}
-                onChange={(e) => {
-                  controller.setFilterStatus((prevState) => ({
-                    ...prevState,
-                    filter: {
-                      ...prevState.filter,
-                      donor_category: e.value,
-                    },
-                  }));
-                }}
-                value={donor_category}
-                name="donor_category"
+                async
+                isDisabled
+                onChange={handleChange}
+                value={controller.userInfo.school.id}
                 data={[
-                  nonasyncDefaultValue,
-                  ...donatur_category
-                  ]}
-                label="Kategori Donatur"
-                placeholder="SEMUA"
+                  {
+                    id: controller.userInfo.school.id,
+                    name: controller.userInfo.school.name,
+                  },
+                ]}
+                name="school_id"
+                label="Unit"
+                placeholder={controller.loading ? "loading..." : "SEMUA"}
               />
-            </GridItem>
-            <GridItem
-              xs={12}
-              sm={12}
-              md={6}
-              style={{
-                marginBottom: "20px",
-                marginTop: "20px",
+            )}
+          </GridItem>
+          <GridItem
+            xs={12}
+            sm={12}
+            md={6}
+            style={{
+              marginBottom: "20px",
+              marginTop: "20px",
+            }}
+          >
+            <label htmlFor="">KOTA</label>
+            <SelectWithSearch
+              async
+              isDisabled={false}
+              onChange={(e) => {
+                controller.setFilterStatus((prevState) => ({
+                  ...prevState,
+                  filter: {
+                    ...prevState.filter,
+                    regency: e.value,
+                  },
+                }));
               }}
-            >
-              <label htmlFor="">STATUS</label>
-              <SelectWithSearch
-                async={false}
-                isDisabled={false}
-                onChange={(e) => {
-                  controller.setFilterStatus((prevState) => ({
-                    ...prevState,
-                    filter: {
-                      ...prevState.filter,
-                      status: e.value,
-                    },
-                  }));
-                }}
-                value={status}
-                name="status"
-                data={[
-                  nonasyncDefaultValue,
-                  ...CoorporateStatus
-                  ]}
-                placeholder="SEMUA"
-              />
-            </GridItem>
-          </GridContainer>
-        </GridItem>
-      </GridContainer>
+              value={regency}
+              data={[asyncDefaultValue, ...controller.regency]}
+              name="regency"
+              label="Kota"
+              placeholder={controller.loading ? "loading..." : "SEMUA"}
+            />
+          </GridItem>
+          <GridItem
+            xs={12}
+            sm={12}
+            md={6}
+            style={{
+              marginBottom: "20px",
+              marginTop: "20px",
+            }}
+          >
+            <label htmlFor="">KATEGORI DONATUR</label>
+            <SelectWithSearch
+              async={false}
+              isDisabled={false}
+              onChange={(e) => {
+                controller.setFilterStatus((prevState) => ({
+                  ...prevState,
+                  filter: {
+                    ...prevState.filter,
+                    donor_category: e.value,
+                  },
+                }));
+              }}
+              value={donor_category}
+              name="donor_category"
+              data={[nonasyncDefaultValue, ...donatur_category]}
+              label="Kategori Donatur"
+              placeholder="SEMUA"
+            />
+          </GridItem>
+          <GridItem
+            xs={12}
+            sm={12}
+            md={6}
+            style={{
+              marginBottom: "20px",
+              marginTop: "20px",
+            }}
+          >
+            <label htmlFor="">STATUS</label>
+            <SelectWithSearch
+              async={false}
+              isDisabled={false}
+              onChange={(e) => {
+                controller.setFilterStatus((prevState) => ({
+                  ...prevState,
+                  filter: {
+                    ...prevState.filter,
+                    status: e.value,
+                  },
+                }));
+              }}
+              value={status}
+              name="status"
+              data={[nonasyncDefaultValue, ...CoorporateStatus]}
+              placeholder="SEMUA"
+            />
+          </GridItem>
+        </GridContainer>
+      </GridItem>
+    </GridContainer>
   );
 };
 

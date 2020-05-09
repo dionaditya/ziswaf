@@ -26,6 +26,7 @@
     "classnames": "^2.2.6",
     "clsx": "^1.1.0",
     "create-react-class": "^15.6.3",
+    "date-fns": "^2.12.0",
     "eventbusjs": "^0.2.0",
     "history": "4.9.0",
     "js-cookie": "^2.2.1",
@@ -56,6 +57,7 @@
     "react-horizontal-stacked-bar-chart": "^8.15.2",
     "react-hot-loader": "^4.12.20",
     "react-inline-css": "^2.3.1",
+    "react-input-mask": "^2.0.4",
     "react-loader-spinner": "^3.1.8",
     "react-materialize": "^3.5.9",
     "react-router": "^5.1.2",
@@ -63,6 +65,7 @@
     "react-scripts": "^3.4.0",
     "react-search-box": "^2.0.2",
     "react-select": "^3.1.0",
+    "react-snap": "^1.23.0",
     "react-swipeable-views": "0.13.3",
     "react-switch": "^5.0.1",
     "react-text-mask": "^5.4.3",
@@ -84,11 +87,15 @@
     "build": "npm run && react-app-rewired build",
     "test": "npm run && react-app-rewired test --env=jsdom",
     "eject": "npm run && react-app-rewired eject",
+    "postbuild": "react-snap",
     "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start",
     "lint:check": "eslint . --ext=js,jsx;  exit 0",
     "lint:fix": "eslint . --ext=js,jsx --fix;  exit 0",
     "build-package-css": "cp src/assets/css/material-dashboard-react.css dist/material-dashboard-react.css",
     "build-package": "npm run build-package-css && babel src --out-dir dist"
+  },
+  "reactSnap": {
+    "skipThirdPartyRequests": true
   },
   "eslintConfig": {
     "extends": "react-app"

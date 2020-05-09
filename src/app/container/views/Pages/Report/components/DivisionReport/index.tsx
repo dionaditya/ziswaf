@@ -13,6 +13,7 @@ import Card from "@/app/container/commons/Card/Card.js";
 import CardHeader from "@/app/container/commons/Card/CardHeader.js";
 import CardBody from "@/app/container/commons/Card/CardBody.js";
 import TableViewPerDonation from "../TableViewPerDonation";
+import { separatorNumbers } from '@/app/infrastructures/misc/Utils';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -46,7 +47,7 @@ const stackprogress = (color, percent) => {
     <Box style={{ marginBottom: 20 }}>
       <span style={{ color: "#6A7088", fontSize: 16 }}>
         Pencapaian Prognosis:{" "}
-        <span style={{ fontWeight: 800 }}>{percent} %</span>
+        <span style={{ fontWeight: 800 }}>{separatorNumbers(percent)} %</span>
       </span>
       <div
         style={{

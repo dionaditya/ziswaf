@@ -27,7 +27,7 @@ export class StudentPresenter  {
       return this.repository.updateStudentdData(payload, id)
     }
 
-    public deleteStudentData(id: number): Promise<Boolean> {
+    public deleteStudentData(id: number): Promise<any> {
       return this.repository.deleteStudentData(id)
     }
 }

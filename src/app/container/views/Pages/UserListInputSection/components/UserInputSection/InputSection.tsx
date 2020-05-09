@@ -295,7 +295,6 @@ const SectionInput = () => {
                         name="password"
                         type="password"
                         variant="outlined"
-                        value={controller.inputUserData.password}
                         inputRef={register({ required: true, pattern: /^[a-z0-9_-]{8,16}$/i })}
                         className={errors && errors.password ? "invalid" : "validate"}
                         placeholder="Password User"
@@ -335,7 +334,6 @@ const SectionInput = () => {
                         name="confirm_password"
                         type="password"
                         variant="outlined"
-                        value={controller.inputUserData.confirm_password}
                         inputRef={register({ required: true, pattern: /^[a-z0-9_-]{8,16}$/i, 
                           validate: value =>
                           value === watch('password')

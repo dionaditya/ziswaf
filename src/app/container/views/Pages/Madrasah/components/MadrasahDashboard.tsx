@@ -24,6 +24,9 @@ import Box from "@material-ui/core/Box";
 import CustomInput from "@/app/container/commons/CustomInput/CustomInput.tsx";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import InputSearch from "@/app/container/commons/InputSearch";
+import ModalWarningSchool from './ModalWarningSchool';
+import {useToasts} from 'react-toast-notifications'
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     cardTitle: {
@@ -49,9 +52,14 @@ function Alert(props: AlertProps) {
 const MadrasahDashboardPage = () => {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [alertSucess, setSuccess] = React.useState(false);
+  const [modal, setModal] = React.useState(false)
+  
+
   const controller = React.useContext(MadrasahContext);
   const classes = useStyles();
+  const { name, donationRecord, personelRecord, studentRecord } = controller.recordData
 
+  const {addToast} = useToasts()
   const handleSearchFunc = (e) => {
     controller.handleSearch(controller)(controller.dispatch)(
       ActionType.setData
@@ -66,11 +74,19 @@ const MadrasahDashboardPage = () => {
     history.push(`info-madrasah/${id}`);
   };
 
-  const handleDeleteData = (e) => {
-    const isSuccess = controller.handleDelete(e);
-    if (isSuccess) {
+  const handleDeleteData = async (e) => {
+    const [status ,response] = await controller.handleDelete(e);
+    if (status === 'success') {
       setSuccess(true);
-      setDialogOpen(false);
+      setModal(false);
+    } else {
+      if(response.status < 500) {
+        addToast(`Gagal menghapus ma'had ${name}`, { appearance: "success" });
+        setSuccess(false)
+      } else {
+        addToast(`Gagal menghapus ma'had ${name} karena gangguan internal server. Silahkan coba kembali`, { appearance: "success" });
+      }
+      
     }
   };
 
@@ -81,6 +97,15 @@ const MadrasahDashboardPage = () => {
 
     setSuccess(false);
   };
+
+  const handleModalRecord = async () => {
+    const [status, response] = await controller.handleRecordModal()
+    if(status === 'success') {
+        setModal(true)
+    } else {
+        addToast('Tidak dapat menghapus YAK Pusat', {appearance: "error"})
+    }
+  }
 
   return (
     <>
@@ -105,7 +130,7 @@ const MadrasahDashboardPage = () => {
             />
           </Box>
         </GridItem>
-        <GridItem xs={12} sm={12} md={12} style={{ marginBottom: 30, marginTop: 20}}>
+        <GridItem xs={12} sm={12} md={12} style={{ marginBottom: 30, marginTop: 20 }}>
           <span className={classes.cardTitle}>Daftar Ma'had</span>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} style={{ marginBottom: 20 }}>
@@ -158,10 +183,10 @@ const MadrasahDashboardPage = () => {
             loading={controller.loading}
             data={controller.data}
             column={controller.displayColumns}
-            // page={controller.filterStatus.paging.page}
-            // count={controller.filterStatus.paging.limit}
-            // handleSort={controller.handleSort}
-            // handleChangesRowsPerPage={controller.handleChangesRowsPerPage}
+          // page={controller.filterStatus.paging.page}
+          // count={controller.filterStatus.paging.limit}
+          // handleSort={controller.handleSort}
+          // handleChangesRowsPerPage={controller.handleChangesRowsPerPage}
           >
             <CustomizedMenus>
               <Link
@@ -195,7 +220,7 @@ const MadrasahDashboardPage = () => {
               </Link>
               <Box
                 className={classes.wrapper_menu}
-                onClick={(e) => setDialogOpen(true)}
+                onClick={() => handleModalRecord()}
               >
                 <ListItemIcon>
                   <DeleteIcon fontSize="small" />
@@ -204,11 +229,11 @@ const MadrasahDashboardPage = () => {
               </Box>
             </CustomizedMenus>
           </TableDataMadrasah>
-          <DialogDelete
+          {/* <DialogDelete
             open={dialogOpen}
             handleDelete={handleDeleteData}
             handleClose={(e) => setDialogOpen(false)}
-          />
+          /> */}
           <Snackbar
             open={alertSucess}
             autoHideDuration={4000}
@@ -219,6 +244,19 @@ const MadrasahDashboardPage = () => {
             </Alert>
           </Snackbar>
         </GridItem>
+        <ModalWarningSchool
+          showModal={modal}
+          setShowModal={() => setModal(false)}
+          loading={controller.loadingRecord}
+          record={{
+            name: `${name}`,
+            donationRecord: `${donationRecord}`,
+            personelRecord: `${personelRecord}`,
+            studentRecord: `${studentRecord}`
+          }}
+          errorMessage="Nama dan No HP. sama dalam database"
+          handleClickCTA={(e) => handleDeleteData(e)}
+        />
       </GridContainer>
     </>
   );

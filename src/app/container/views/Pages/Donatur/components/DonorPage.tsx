@@ -33,10 +33,26 @@ import MenuItem from "@material-ui/core/MenuItem";
 import { Details } from "@material-ui/icons";
 import Icon from "@material-ui/core/Icon";
 import InputSearch from "@/app/container/commons/InputSearch";
-import ButtonMenuNav from './ButtonMenu';
+import ButtonMenuNav from "./ButtonMenu";
 import TabNav from "@/app/container/components/TabNav";
-import {useLocation} from 'react-router-dom'
-import qs from 'qs'
+import { useLocation } from "react-router-dom";
+import qs from "qs";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
+import { green } from "@material-ui/core/colors";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import {useToasts} from 'react-toast-notifications'
+
+const innerTheme = createMuiTheme({
+  palette: {
+    primary: {
+      main: green[500],
+    },
+    secondary: {
+      main: green[500],
+    },
+  },
+});
 
 const listColumnOptions = DonorTableColumn.map((val) => {
   return {
@@ -94,13 +110,14 @@ const DonorPage = () => {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [alertSucess, setSuccess] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
-  const [value, setValue] = React.useState(0)
+  const [value, setValue] = React.useState(0);
 
   const xsmall = useMediaQuery("(min-width: 300px)" && "(max-width: 700px");
   const medium = useMediaQuery("(min-width: 701px)");
   const classes = useStyles();
   const controller = React.useContext(DonorContext);
   const location = useLocation();
+  const {addToast} = useToasts()
 
   function useQuery() {
     return qs.parse(location.search);
@@ -109,14 +126,18 @@ const DonorPage = () => {
   let query = useQuery();
 
   const handleSearchFunc = (e) => {
-    controller.handleSearch(e)
+    controller.handleSearch(e);
   };
 
-  const handleDeleteData = (e) => {
-    const isSuccess = controller.handleDelete(e);
-    if (isSuccess) {
+  const handleDeleteData = async (e) => {
+    const [status, response]= await controller.handleDelete(e);
+    if (status === 'success') {
       setSuccess(true);
       setDialogOpen(false);
+    } else {
+      addToast(`Gagal menghapus data donatur`, {
+        appearance: "error",
+      });
     }
   };
 
@@ -132,102 +153,11 @@ const DonorPage = () => {
   };
 
   React.useEffect(() => {
-    if(query['?all'] === 'true') {
-      setValue(1)
-    } else {
-      setValue(0)
-    }
-  }, [location.search])
-
-
-  const ModalComponent = () => {
-    return (
-      <ModalFilters
-        onShow={controller.statusModal}
-        handleClose={(e) =>
-          controller.handleCloseModal(e)
-        }
-        titleModal="Filter"
-      >
-        <ModalBody>
-          <ModalFilter />
-        </ModalBody>
-        <ModalFooter>
-          {isLoading ? (
-            <ButtonFilter
-              disabled
-              style={{
-                backgroundColor: "transparent !important",
-                color: "#00923F",
-                marginLeft: '70px'
-              }}
-              color="transparent"
-              className=" btn-flat gray-text"
-              onClick={(e) =>
-                controller.handleResetFilter(e)
-              }
-            >
-              {<CircularProgress size={16} className={classes.loadingReset} />}
-              Reset
-            </ButtonFilter>
-          ) : (
-            <ButtonFilter
-              style={{
-                color: "#00923F",
-                marginLeft: '70px'
-              }}
-              color="transparent"
-              onClick={async (e) => {
-                setLoading(true);
-                controller.handleResetFilter(e)
-                setTimeout(() => {
-                  setLoading(false);
-                }, 300)
-              }}
-            >
-              Reset
-            </ButtonFilter>
-          )}
-
-          {isLoading ? (
-            <ButtonFilter
-              disabled
-              color="primary"
-              style={{
-                color: "#fff",
-              }}
-              onClick={(e) =>
-                controller.handleCTA(e)
-              }
-            >
-              {<CircularProgress size={16} className={classes.root} />}
-              Terapkan Filter
-            </ButtonFilter>
-          ) : (
-            <ButtonFilter
-              color="primary"
-              style={{
-                color: "#fff",
-              }}
-              onClick={async (e) => {
-                setLoading(true);
-                controller.handleCTA(e)
-                setTimeout(() => {
-                  setLoading(false);
-                }, 300)
-                
-              }}
-            >
-              Terapkan Filter
-            </ButtonFilter>
-          )}
-        </ModalFooter>
-      </ModalFilters>
-    );
-  };
+    console.log("component");
+  }, []);
 
   return (
-    <>
+    <ThemeProvider theme={innerTheme}>
       <Box className={classes.container}>
         <DialogDelete
           open={dialogOpen}
@@ -243,7 +173,6 @@ const DonorPage = () => {
             Sukses menghapus data donatur
           </Alert>
         </Snackbar>
-        <ModalComponent />
         <GridItem mr={4} ml={4} mt={4} mb={4}>
           <GridContainer>
             <GridItem xs={12} sm={12} md={12}>
@@ -257,9 +186,7 @@ const DonorPage = () => {
                           color: "#3A3B3F",
                         }}
                         color="white"
-                        onClick={(e) =>
-                          controller.handleModal(e)
-                        }
+                        onClick={(e) => controller.handleModal(e)}
                         icon={<FilterListIcon />}
                       >
                         <span>Filter</span>
@@ -273,9 +200,7 @@ const DonorPage = () => {
                         color: "#3A3B3F",
                       }}
                       color="white"
-                      onClick={(e) =>
-                        controller.handleModal(e)
-                      }
+                      onClick={(e) => controller.handleModal(e)}
                       icon={<FilterListIcon />}
                     >
                       <span>Filter</span>
@@ -286,9 +211,7 @@ const DonorPage = () => {
                   <Box style={{ width: "100%" }}>
                     <InputSearch
                       value={controller.filterStatus.search}
-                      onChange={(e) =>
-                        controller.handleSearchDonorQuery(e)
-                      }
+                      onChange={(e) => controller.handleSearchDonorQuery(e)}
                       onKeyPress={(event) => {
                         if (event.key === "Enter") {
                           handleSearchFunc(event);
@@ -304,11 +227,7 @@ const DonorPage = () => {
           <GridContainer mt={4}>
             <GridItem xs={12} sm={12} md={12} mt={2}>
               <Box mt={2}>
-                <Typography
-                  variant="h5"
-                  className={classes.title}
-                  gutterBottom
-                >
+                <Typography variant="h5" className={classes.title} gutterBottom>
                   Daftar Donatur
                 </Typography>
               </Box>
@@ -316,90 +235,187 @@ const DonorPage = () => {
           </GridContainer>
           <GridContainer alignItems="center">
             <GridItem xs={12} sm={12} md={6}>
-              <Box display="flex" flexDirection="row" alignItems="center">
-                <Typography className={classes.columns}>
-                  Columns to Display
-                </Typography>
-                <MySelect
-                  label={`${controller.displayColumns.length} of ${listColumnOptions.length} Selected`}
-                  options={listColumnOptions}
-                  handleChange={(e) =>
-                    controller.handleSelectedColumn(e)
-                    
-                  }
-                  checked={controller.displayColumns}
-                />
-              </Box>
+              <GridContainer>
+                <GridItem xs={12} sm={12} md={6}>
+                  <Box display="flex" flexDirection="row" alignItems="center">
+                    <Typography className={classes.columns}>
+                      Columns to Display
+                    </Typography>
+                    <MySelect
+                      label={`${controller.displayColumns.length} of ${listColumnOptions.length} Selected`}
+                      options={listColumnOptions}
+                      handleChange={(e) => controller.handleSelectedColumn(e)}
+                      checked={controller.displayColumns}
+                    />
+                  </Box>
+                </GridItem>
+                <GridItem xs={12} sm={12} md={6}>
+                  {controller.userInfo.role === 2 && (
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={controller.toogleSwitch}
+                          onChange={(e) =>
+                            controller.setToogleSwitch(e.target.checked)
+                          }
+                          name="checkedB"
+                          color="primary"
+                        />
+                      }
+                      label="Donatur yang sudah melakukan donasi"
+                    />
+                  )}
+                </GridItem>
+              </GridContainer>
             </GridItem>
             <ButtonMenuNav />
           </GridContainer>
           <GridContainer>
             <GridItem xs={12} sm={12} md={12}>
-              <TabNav  
-                value={value}
-                handleChange={handleChange}
-                tabs={tabs}
-                link
-                render={(render) => (
-                  <DonorData
-                  options={controller.optionsTable}
-                  loading={controller.loading}
-                  data={controller.data}
-                  column={controller.displayColumns}
-                  // page={controller.filterStatus.paging.page}
-                  // count={controller.filterStatus.paging.limit}
-                  // handleSort={controller.handleSort}
-                  // handleChangesRowsPerPage={controller.handleChangesRowsPerPage}
-                >
-                  <CustomizedMenus>
+              <DonorData
+                options={controller.optionsTable}
+                loading={controller.loading}
+                data={controller.data}
+                column={controller.displayColumns}
+                // page={controller.filterStatus.paging.page}
+                // count={controller.filterStatus.paging.limit}
+                // handleSort={controller.handleSort}
+                // handleChangesRowsPerPage={controller.handleChangesRowsPerPage}
+              >
+                <CustomizedMenus>
                   <Link
-                      to={`/dashboard/donatur-${controller.isCompany.toLowerCase()}/${controller.tableIndex}?is_detail=true`}
-                      className="black-text"
-                      style={{
-                        textDecoration: 'none',
-                        color: '#000'
-                      }}
-                    >
-                      <Box className={classes.wrapper_menu}>
-                        <ListItemIcon>
-                          <Details fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText primary="Detail" />
-                      </Box>
-                    </Link>
-                    <Link
-                      to={`/dashboard/donatur-${controller.isCompany.toLowerCase()}/${controller.tableIndex}`}
-                      className="black-text"
-                      style={{
-                        textDecoration: 'none',
-                        color: '#000'
-                      }}
-                    >
-                      <Box className={classes.wrapper_menu}>
-                        <ListItemIcon>
-                          <EditIcon fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText primary="Edit" />
-                      </Box>
-                    </Link>
-                    <Box className={classes.wrapper_menu} onClick={(e) => setDialogOpen(true)}>
-                          <ListItemIcon>
-                            <DeleteIcon fontSize="small" />
-                          </ListItemIcon>
-                          <ListItemText primary="Delete" />
+                    to={`/dashboard/donatur-${controller.isCompany.toLowerCase()}/${
+                      controller.tableIndex
+                    }?is_detail=true`}
+                    className="black-text"
+                    style={{
+                      textDecoration: "none",
+                      color: "#000",
+                    }}
+                  >
+                    <Box className={classes.wrapper_menu}>
+                      <ListItemIcon>
+                        <Details fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary="Detail" />
                     </Box>
-                  </CustomizedMenus>
-                </DonorData>
-                )} />
-              
+                  </Link>
+                  <Link
+                    to={`/dashboard/donatur-${controller.isCompany.toLowerCase()}/${
+                      controller.tableIndex
+                    }`}
+                    className="black-text"
+                    style={{
+                      textDecoration: "none",
+                      color: "#000",
+                    }}
+                  >
+                    <Box className={classes.wrapper_menu}>
+                      <ListItemIcon>
+                        <EditIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary="Edit" />
+                    </Box>
+                  </Link>
+                  <Box
+                    className={classes.wrapper_menu}
+                    onClick={(e) => setDialogOpen(true)}
+                  >
+                    <ListItemIcon>
+                      <DeleteIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText primary="Delete" />
+                  </Box>
+                </CustomizedMenus>
+              </DonorData>
             </GridItem>
           </GridContainer>
         </GridItem>
       </Box>
-    </>
-  );
+      <ModalFilters
+        onShow={controller.statusModal}
+        handleClose={(e) => controller.handleCloseModal(e)}
+        titleModal="Filter"
+      >
+        <ModalBody>
+          <ModalFilter />
+        </ModalBody>
+        <ModalFooter>
+          <Box
+            display="flex"
+            flexDirection="row"
+          >
+            {isLoading ? (
+              <ButtonFilter
+                disabled
+                style={{
+                  backgroundColor: "transparent !important",
+                  color: "#00923F",
+                }}
+                color="transparent"
+                className=" btn-flat gray-text"
+                onClick={(e) => controller.handleResetFilter(e)}
+              >
+                {
+                  <CircularProgress
+                    size={16}
+                    className={classes.loadingReset}
+                  />
+                }
+                Reset
+              </ButtonFilter>
+            ) : (
+              <ButtonFilter
+                style={{
+                  color: "#00923F",
+                }}
+                color="transparent"
+                onClick={async (e) => {
+                  setLoading(true);
+                  controller.handleResetFilter(e);
+                  setTimeout(() => {
+                    setLoading(false);
+                  }, 300);
+                }}
+              >
+                Reset
+              </ButtonFilter>
+            )}
 
-  
+            {isLoading ? (
+              <ButtonFilter
+                disabled
+                color="primary"
+                style={{
+                  color: "#fff",
+                }}
+                onClick={(e) => controller.handleCTA(e)}
+              >
+                {<CircularProgress size={16} className={classes.root} />}
+                Terapkan Filter
+              </ButtonFilter>
+            ) : (
+              <ButtonFilter
+                color="primary"
+                style={{
+                  color: "#fff",
+                }}
+                onClick={async (e) => {
+                  setLoading(true);
+                  controller.handleCTA(e);
+                  setTimeout(() => {
+                    setLoading(false);
+                  }, 300);
+                }}
+              >
+                Terapkan Filter
+              </ButtonFilter>
+            )}
+          </Box>
+        </ModalFooter>
+      </ModalFilters>
+    </ThemeProvider>
+  );
 };
 
 export default DonorPage;

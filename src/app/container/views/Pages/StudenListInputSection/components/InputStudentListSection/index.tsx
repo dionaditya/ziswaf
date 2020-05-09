@@ -25,7 +25,9 @@ import GridItem from "@/app/container/commons/Grid/GridItem";
 import { Image } from "@material-ui/icons";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Button from "@/app/container/commons/CustomButtons/Button.tsx";
-import SelectWithSearch from "@/app/container/components/SelectWithSearch";
+import SelectWithSearch, {
+  SelectWithSearchWithDebounced,
+} from "@/app/container/components/SelectWithSearch";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 import { green } from "@material-ui/core/colors";
@@ -33,13 +35,14 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/date-fns";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import idLocale from "date-fns/locale/id";
 
 const innerTheme = createMuiTheme({
   palette: {
     primary: {
       main: green[500],
     },
-  }
+  },
 });
 
 const errorMessage = {
@@ -101,9 +104,9 @@ const useStyles = makeStyles((theme: Theme) =>
       color: "#00923F",
     },
     label: {
-      color: '#323C47',
-      fontWeight: 'bold'
-    }
+      color: "#323C47",
+      fontWeight: "bold",
+    },
   })
 );
 
@@ -241,7 +244,7 @@ const InputDataSiswaSection = ({ value, setValues }) => {
     );
   }
   return (
-    <MuiPickersUtilsProvider utils={MomentUtils}>
+    <MuiPickersUtilsProvider utils={MomentUtils} locale={idLocale}>
       <ThemeProvider theme={innerTheme}>
         <Box>
           <Paper
@@ -268,6 +271,7 @@ const InputDataSiswaSection = ({ value, setValues }) => {
                         display: "none",
                       }}
                       id="icon-button-file"
+                      disabled={isDetailSession}
                       type="file"
                       name="file-upload"
                       onChange={handleFIle}
@@ -299,38 +303,39 @@ const InputDataSiswaSection = ({ value, setValues }) => {
                       )}
                     </label>
 
-                 
-
-                      <Button
-                        style={{
-                          color: "#00923F",
-                          marginLeft: "-12px",
-                        }}
-                        color="transparent"
-                        component="label"
-                        raised
-                        id="icon-button-file"
-                        onClick={(e) => null}
-                      >
-                        Tambahkan Foto
-                        <input
-                      accept="image/*"
+                    <Button
                       style={{
-                        display: "none",
+                        color: "#00923F",
+                        marginLeft: "-12px",
                       }}
+                      color="transparent"
+                      component="label"
+                      disabled={isDetailSession}
+                      raised
                       id="icon-button-file"
-                      type="file"
-                      name="file-upload"
-                      onChange={handleFIle}
-                    />
-                      </Button>
+                      onClick={(e) => null}
+                    >
+                      Tambahkan Foto
+                      <input
+                        accept="image/*"
+                        style={{
+                          display: "none",
+                        }}
+                        id="icon-button-file"
+                        type="file"
+                        name="file-upload"
+                        onChange={handleFIle}
+                      />
+                    </Button>
                   </Box>
                 </GridItem>
                 <GridItem xs={12} sm={12} md={5}>
                   <GridContainer>
                     <GridItem xs={12} sm={12} md={12}>
                       <Box className={classes.marginBottom}>
-                        <label className={classes.label}>Nomor Induk Siswa</label>
+                        <label className={classes.label}>
+                          Nomor Induk Siswa
+                        </label>
                         <TextField
                           label=""
                           style={{
@@ -658,15 +663,15 @@ const InputDataSiswaSection = ({ value, setValues }) => {
                           })}
                         />
                         {errors &&
-                          errors.age &&
-                          errors.age.type === "required" && (
+                          errors.child_row &&
+                          errors.child_row.type === "required" && (
                             <p style={{ color: "red", fontSize: "12px" }}>
                               {errorMessage.emptyField}
                             </p>
                           )}
                         {errors &&
-                          errors.age &&
-                          errors.age.type === "pattern" && (
+                          errors.child_row &&
+                          errors.child_row.type === "pattern" && (
                             <p style={{ color: "red", fontSize: "12px" }}>
                               {errorMessage.onlyNumber}
                             </p>
@@ -675,7 +680,9 @@ const InputDataSiswaSection = ({ value, setValues }) => {
                     </GridItem>
                     <GridItem xs={12} sm={12} md={6}>
                       <Box className={classes.marginBottom}>
-                        <label className={classes.label}>Jumlah Bersaudara</label>
+                        <label className={classes.label}>
+                          Jumlah Bersaudara
+                        </label>
                         <TextField
                           label=""
                           style={{
@@ -713,15 +720,15 @@ const InputDataSiswaSection = ({ value, setValues }) => {
                           })}
                         />
                         {errors &&
-                          errors.age &&
-                          errors.age.type === "required" && (
+                          errors.total_sibling &&
+                          errors.total_sibling.type === "required" && (
                             <p style={{ color: "red", fontSize: "12px" }}>
                               {errorMessage.emptyField}
                             </p>
                           )}
                         {errors &&
-                          errors.age &&
-                          errors.age.type === "pattern" && (
+                          errors.total_sibling &&
+                          errors.total_sibling.type === "pattern" && (
                             <p style={{ color: "red", fontSize: "12px" }}>
                               {errorMessage.onlyNumber}
                             </p>
@@ -787,13 +794,14 @@ const InputDataSiswaSection = ({ value, setValues }) => {
                     <GridItem xs={12} sm={12} md={12}>
                       <Box className={classes.marginBottom}>
                         <label className={classes.label}>Asal Unit</label>
+
                         {controller.userInfo.role === 1 ? (
                           <>
                             <Controller
                               as={
-                                <SelectWithSearch
-                                  async
-                                  isDisabled={isDetailSession}
+                                <SelectWithSearchWithDebounced
+                                  disabled={isDetailSession}
+                                  loadOptions={controller.loadData}
                                   onChange={(value) => {
                                     const e = {
                                       target: {
@@ -806,12 +814,11 @@ const InputDataSiswaSection = ({ value, setValues }) => {
                                   value={school_id}
                                   data={controller.school}
                                   name="school_id"
-                                  placeholder={
-                                    controller.isUpdateSession
-                                      ? school_id
-                                      : "Asal Unit"
-                                  }
                                   label="Asal Unit"
+                                  debounced={controller.debounce}
+                                  placeholder={
+                                    school_id !== "" ? school_id : "Asal Unit"
+                                  }
                                 />
                               }
                               name="school_id"
@@ -842,7 +849,7 @@ const InputDataSiswaSection = ({ value, setValues }) => {
                             async
                             isDisabled
                             onChange={onChange}
-                            value={controller.userInfo.school_id}
+                            value={controller.userInfo.school.id}
                             data={[
                               {
                                 id: controller.userInfo.school.id,
@@ -1040,7 +1047,9 @@ const InputDataSiswaSection = ({ value, setValues }) => {
                   <GridContainer>
                     <GridItem xs={12} sm={12} md={8}>
                       <Box className={classes.marginBottom}>
-                        <label className={classes.label}>Kelurahan / Desa</label>
+                        <label className={classes.label}>
+                          Kelurahan / Desa
+                        </label>
                         <Controller
                           as={
                             <SelectWithSearch
@@ -1125,15 +1134,15 @@ const InputDataSiswaSection = ({ value, setValues }) => {
                           })}
                         />
                         {errors &&
-                          errors.age &&
-                          errors.age.type === "required" && (
+                          errors.pos_code &&
+                          errors.pos_code.type === "required" && (
                             <p style={{ color: "red", fontSize: "12px" }}>
                               {errorMessage.emptyField}
                             </p>
                           )}
                         {errors &&
-                          errors.age &&
-                          errors.age.type === "pattern" && (
+                          errors.pos_code &&
+                          errors.pos_code.type === "pattern" && (
                             <p style={{ color: "red", fontSize: "12px" }}>
                               {errorMessage.onlyNumber}
                             </p>

@@ -1,6 +1,6 @@
 import { injectable } from 'tsyringe';
 import { DonationRepositoryInterface } from '@/data/persistences/contracts/DonationRepositoryInterface';
-import { Donation, DonationDetail, DonationTransactionDetail } from '@/domain/entities/Donation';
+import { Donation, DonationDetail, DonationTransactionDetail, DonationDetailForEdit } from '@/domain/entities/Donation';
 import { CreateDonationApiRequest } from '@/data/payload/api/DonationApiRequest';
 
 @injectable()
@@ -27,7 +27,19 @@ export class DonationPresenter {
         return this.repository.store(payload);
     }
 
-    public storeManual(payload: CreateDonationApiRequest): Promise<DonationDetail> {
+    public storeManual(payload): Promise<DonationDetail> {
         return this.repository.storeManual(payload);
+    }
+
+    public delete(id: number): Promise<any | null> {
+        return this.repository.delete(id);
+    }
+
+    public getForEdit(id: number): Promise<DonationDetailForEdit> {
+        return this.repository.getForEdit(id)
+    }
+
+    public updateDonation(payload, id: number): Promise<any> {
+        return this.repository.updateDonation(payload, id)
     }
 }

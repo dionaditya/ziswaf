@@ -16,6 +16,7 @@ import Card from "@/app/container/commons/Card/Card.js";
 import CardHeader from "@/app/container/commons/Card/CardHeader.js";
 import CardBody from "@/app/container/commons/Card/CardBody.js";
 import InputMask from "@/app/container/components/InputMask";
+import _ from 'lodash'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -91,6 +92,11 @@ const JenisBarang = ({ controller, onChange, error }) => {
                           value={quantity}
                           onChange={onChange}
                         />
+                          {error && quantity === 0 && (
+                        <p style={{ color: "red", fontSize: "12px" }}>
+                          Jumlah barang donasi harus lebih dari 0
+                        </p>
+                      )}
                       </Box>
                       <label className={classes.label}>
                         Estimasi Nilai Barang
@@ -110,6 +116,11 @@ const JenisBarang = ({ controller, onChange, error }) => {
                             onChange(e);
                           }}
                         />
+                          {error && value === 0 && (
+                        <p style={{ color: "red", fontSize: "12px" }}>
+                          Jumlah estimasi nilai brang harus lebih dari Rp. 0
+                        </p>
+                      )}
           
                       </Box>
                       <label className={classes.label}>Status Barang</label>
@@ -122,7 +133,7 @@ const JenisBarang = ({ controller, onChange, error }) => {
                         label="Status Barang"
                       />
                     </Box>
-                    {error && status === 0 && (
+                    {error && _.isNumber(status) === false && (
                       <p style={{ color: "red", fontSize: "12px" }}>
                         Belum memilih status barang
                       </p>

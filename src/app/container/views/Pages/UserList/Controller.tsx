@@ -7,7 +7,7 @@ import { SchoolPresenter } from '@/app/infrastructures/Presenter/School/Presente
 import { UpdateUserPasswordApiRequest, UpdateUserStatusApiRequest, UpdateUserApiRequest } from '@/data/payload/api/UserApiRequest'
 import _ from 'lodash'
 import { getUserInfo } from '@/app/infrastructures/misc/Cookies'
-import { createContainer } from 'react-tracked' 
+import { createContainer } from 'react-tracked'
 
 export enum ActionType {
     handleModalChangePassword = 'HANDLEMODALCHANGEPASSWORD',
@@ -122,7 +122,7 @@ const initialState: IState = {
     isAdmin: 1,
     selectedUser: {},
     schoolId: 1,
-    handleDeactivated: () => {}
+    handleDeactivated: () => { }
 }
 
 
@@ -182,8 +182,8 @@ export const { Provider: UserListProvider } = UserListContext;
 const useValue = ({ reducer, initialState }) => useReducer(reducer, initialState);
 
 const {
-  Provider,
-  useTracked,
+    Provider,
+    useTracked,
 } = createContainer(() => useReducer(reducer, initialState));
 
 
@@ -255,7 +255,7 @@ export const UserListController = ({ children }) => {
         download: false,
         textLabels: {
             body: {
-              noMatch: state.loading ? 'loading...' : "Maaf tidak ada data",
+                noMatch: state.loading ? 'loading...' : "Maaf tidak ada data",
             },
         },
         viewColumns: false,
@@ -310,7 +310,7 @@ export const UserListController = ({ children }) => {
                     const userSortByColumn = await userPresenter.loadData({
                         ...filterStatus,
                         paging: {
-                            page: tableState.page+1,
+                            page: tableState.page + 1,
                             limit: tableState.rowsPerPage
                         },
                     })
@@ -327,7 +327,7 @@ export const UserListController = ({ children }) => {
                     const userSortedByRows = await userPresenter.loadData({
                         ...filterStatus,
                         paging: {
-                            page: tableState.page+1,
+                            page: tableState.page + 1,
                             limit: tableState.rowsPerPage
                         },
                     })
@@ -374,7 +374,7 @@ export const UserListController = ({ children }) => {
         }
     }
 
-    const handleInput = (e) => dispatch =>{
+    const handleInput = (e) => dispatch => {
         return actiontype => {
             // e.persist()
             setFilterStatus(prevState => ({
@@ -402,7 +402,7 @@ export const UserListController = ({ children }) => {
             const listUser = await userPresenter.loadData({ ...filterStatus })
             setPagintion({
                 total: listUser.data.pagination.total,
-                page: listUser.data.data !== null ? listUser.data.pagination.current_page-1 : listUser.data.pagination.current_page,
+                page: listUser.data.data !== null ? listUser.data.pagination.current_page - 1 : listUser.data.pagination.current_page,
                 rowsPerPage: listUser.data.pagination.page_size
             })
             dispatch({ type: ActionType.setData, payload: listUser.data.data })
@@ -416,13 +416,13 @@ export const UserListController = ({ children }) => {
                 ...filterStatus
             })
             dispatch({ type: ActionType.setData, payload: listUser.data.data })
-            
-              setPagintion({
+
+            setPagintion({
                 total: listUser.data.pagination.total,
-                page: listUser.data.data !== null ? listUser.data.pagination.current_page-1 : listUser.data.pagination.current_page,
+                page: listUser.data.data !== null ? listUser.data.pagination.current_page - 1 : listUser.data.pagination.current_page,
                 rowsPerPage: listUser.data.pagination.page_size
             })
-            
+
 
             dispatch({ type: ActionType.setLoading, payload: false })
             dispatch({ type: ActionType.handleModalFilters })
@@ -453,7 +453,7 @@ export const UserListController = ({ children }) => {
                     type
                 )
                 if (updateUser.status === 200) {
-                    dispatch({type: ActionType.handleModalChangePassword, payload: false});
+                    dispatch({ type: ActionType.handleModalChangePassword, payload: false });
                     const listUser = await userPresenter.loadData()
                     dispatch({ type: ActionType.setData, payload: listUser.data.data })
                     dispatch({ type: ActionType.setLoading, payload: false })
@@ -478,24 +478,41 @@ export const UserListController = ({ children }) => {
                     payload: true
                 })
                 const listUser = await userPresenter.loadData({ filter: state.filterStatus })
-                  setPagintion({
-                total: listUser.data.pagination.total,
-                page: listUser.data.pagination.current_page-1,
-                rowsPerPage: listUser.data.pagination.page_size
-            })
-                dispatch({
-                    type: ActionType.setData,
-                    payload: listUser.data.data
-                })
+                if (listUser.data.data !== null) {
+                    setPagintion({
+                        total: listUser.data.pagination.total,
+                        page: listUser.data.pagination.current_page - 1,
+                        rowsPerPage: listUser.data.pagination.page_size
+                    })
+                    dispatch({
+                        type: ActionType.setData,
+                        payload: listUser.data.data
+                    })
 
-                dispatch({
-                    type: ActionType.setLoading,
-                    payload: false
-                })
-                return true
+                    dispatch({
+                        type: ActionType.setLoading,
+                        payload: false
+                    })
+                } else {
+                    setPagintion({
+                        total: listUser.data.pagination.total,
+                        page: listUser.data.pagination.current_page,
+                        rowsPerPage: listUser.data.pagination.page_size
+                    })
+                    dispatch({
+                        type: ActionType.setData,
+                        payload: []
+                    })
+                    dispatch({
+                        type: ActionType.setLoading,
+                        payload: false
+                    })
+                }
+
+                return ['success', deleteUser]
             }
-        } catch {
-            return false
+        } catch(e) {
+            return ['error', e.response]
         }
     }
 
@@ -508,7 +525,7 @@ export const UserListController = ({ children }) => {
                 ),
                 tableIndex
             )
-            if(updateUser.status === 200) {
+            if (updateUser.status === 200) {
                 const listUser = await userPresenter.loadData()
                 dispatch({ type: ActionType.setData, payload: listUser.data.data })
                 dispatch({ type: ActionType.setLoading, payload: false })
@@ -517,7 +534,7 @@ export const UserListController = ({ children }) => {
                 dispatch({ type: ActionType.setLoading, payload: false })
                 return updateUser
             }
-        } catch(error) {
+        } catch (error) {
             dispatch({ type: ActionType.setLoading, payload: false })
             return error.response
         }
@@ -560,12 +577,12 @@ export const UserListController = ({ children }) => {
 }
 
 
-export const AppProvider = ({children}) => {
-    return(
-      <Provider>
-         <UserListController>
-             {children}
-         </UserListController>
-      </Provider>
-      )
+export const AppProvider = ({ children }) => {
+    return (
+        <Provider>
+            <UserListController>
+                {children}
+            </UserListController>
+        </Provider>
+    )
 }

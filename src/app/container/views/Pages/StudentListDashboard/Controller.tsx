@@ -8,7 +8,6 @@ import { CityPresenter } from "@/app/infrastructures/Presenter/City/Presenter";
 import { getUserInfo } from "@/app/infrastructures/misc/Cookies";
 import {
   nonSortAbleStudentDataTable,
-  StudentListTableColumn,
   StudentInfo,
   EducationInfo,
   ParentInfo,
@@ -22,6 +21,7 @@ import GridContainer from "@/app/container/commons/Grid/GridContainer";
 import GridItem from "@/app/container/commons/Grid/GridItem";
 import Avatar from "@material-ui/core/Avatar";
 import { createContainer } from "react-tracked";
+import { useDebounce } from "use-lodash-debounce";
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -112,6 +112,9 @@ export interface IState {
   handleDelete: Function;
   userInfo: any;
   setFilterStatus: Function;
+  debounce: Function;
+  loadData: Function;
+
 }
 
 const initialState: IState = {
@@ -191,6 +194,8 @@ const initialState: IState = {
   tableIndex: 0,
   handleDelete: () => {},
   setFilterStatus: () => {},
+  debounce: () => {},
+  loadData: () => {}
 };
 
 const reducer: React.Reducer<IState, IAction> = (state, action) => {
@@ -252,8 +257,7 @@ const reducer: React.Reducer<IState, IAction> = (state, action) => {
     case ActionType.setSchool:
       return {
         ...state,
-        province: action.payload.province,
-        school: action.payload.school,
+        school: action.payload,
       };
 
     case ActionType.setCity:
@@ -299,6 +303,9 @@ const reducer: React.Reducer<IState, IAction> = (state, action) => {
           },
         },
       };
+
+    case ActionType.setProvince:
+      return { ...state, province: action.payload };
 
     default:
       return state;
@@ -356,8 +363,10 @@ export const StudentListController = ({ children }) => {
   let cityPresenter: CityPresenter = container.resolve(CityPresenter);
 
   let userAccess = getUserInfo();
+  const [querySchool, setQuerySchool] = React.useState("");
 
-  const classes = useStyles();
+  const debouncedSchool = useDebounce(querySchool, 40);
+
 
   useEffect(() => {
     const getData = async () => {
@@ -435,6 +444,34 @@ export const StudentListController = ({ children }) => {
     };
     getData();
   }, []);
+
+  React.useEffect(() => {
+    if(debouncedSchool !== "") {
+      (async () => {
+        const school: any = await schoolPresenter.loadData({
+          search: debouncedSchool,
+        });
+        dispatch({
+          type: ActionType.setSchool,
+          payload: school.data.data,
+        });
+      })();
+    } else {
+      (async () => {
+        const school: any = await schoolPresenter.loadData({
+         paging: {
+           page: 1,
+           limit: 10
+         }
+        });
+        dispatch({
+          type: ActionType.setSchool,
+          payload: school.data.data,
+        });
+      })();
+    }
+   
+  }, [debouncedSchool]);
 
   const optionsTable = {
     filterType: "dropdown",
@@ -907,18 +944,15 @@ export const StudentListController = ({ children }) => {
 
       if (state.province !== [] && state.regency !== []) {
         dispatch({ type: ActionType.setLoading, payload: true });
-        let listSchool = await schoolPresenter.loadData();
+     
         let listProvince = await provincePresenter.loadData(
           new Map<string, string>()
         );
         let cityList = await cityPresenter.loadData();
         dispatch({ type: ActionType.setCity, payload: cityList });
         dispatch({
-          type: ActionType.setSchool,
-          payload: {
-            province: listProvince,
-            school: listSchool.data.data,
-          },
+          type: ActionType.setProvince,
+          payload: listProvince
         });
         dispatch({ type: ActionType.setLoading, payload: false });
       }
@@ -1073,7 +1107,7 @@ export const StudentListController = ({ children }) => {
       const deleteStudent = await studentPresenter.deleteStudentData(
         tableIndex
       );
-      if (deleteStudent === true) {
+      if (deleteStudent !== null) {
         dispatch({
           type: ActionType.setLoading,
           payload: true,
@@ -1081,23 +1115,56 @@ export const StudentListController = ({ children }) => {
         const listStudent = await studentPresenter.loadData({
           ...filterStatus,
         });
-        setPagintion({
-          pagination: listStudent.data.pagination,
-        });
-        dispatch({
-          type: ActionType.setData,
-          payload: listStudent.data.data,
-        });
-        dispatch({
-          type: ActionType.setLoading,
-          payload: false,
-        });
-        return true;
+        if(listStudent.data.data !== null){
+          setPagintion({
+            pagination: listStudent.data.pagination,
+          });
+          dispatch({
+            type: ActionType.setData,
+            payload: listStudent.data.data,
+          });
+          dispatch({
+            type: ActionType.setLoading,
+            payload: false,
+          });
+        }else{
+          setPagintion({
+            pagination: listStudent.data.pagination,
+          });
+          dispatch({
+            type: ActionType.setData,
+            payload: [],
+          });
+          dispatch({
+            type: ActionType.setLoading,
+            payload: false,
+          });
+        }
+        return ['success', deleteStudent];
       }
-    } catch {
-      return false;
+    } catch(e) {
+      return ['error', e.response];
     }
   };
+
+  const loadData = (newValue, callback) => {
+    const transformData = state.school.map((val) => {
+      return {
+        value: val.id,
+        label: val.name,
+      };
+    });
+    const witHDefaultValue = [{
+      value: "",
+      label: "SEMUA"
+    }, ...transformData]
+    return callback(witHDefaultValue);
+  };
+
+  const debounce = async (inputValue) => {
+    setQuerySchool(inputValue);
+  };
+
 
   return (
     <StudentListProvider
@@ -1117,6 +1184,8 @@ export const StudentListController = ({ children }) => {
         handleDelete: handleDelete,
         userInfo: userAccess,
         setFilterStatus: setFilterStatus,
+        debounce,
+        loadData
       }}
     >
       {children}

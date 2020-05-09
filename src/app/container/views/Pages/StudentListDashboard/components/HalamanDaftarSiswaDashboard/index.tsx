@@ -32,6 +32,8 @@ import SearchInput from "@/app/container/commons/SearchInput";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
+import {useToasts} from 'react-toast-notifications'
+
 
 
 const listColumnOptions = StudentListTableColumn.map(val => {
@@ -82,14 +84,28 @@ const StudentListDashboardPage = () => {
     const classes = useStyles();
     const xsmall = useMediaQuery("(min-width: 300px)" && "(max-width: 700px");
     const medium = useMediaQuery("(min-width: 701px)");
+    const {addToast} = useToasts()
+
   
     const controller = React.useContext(StudentListDashboardContext);
   
     const handleDeleteData =  async (e) => {
-      const isSuccess = await controller.handleDelete(e);
-      if (isSuccess) {
+      setLoading(true);
+      const [status, response] = await controller.handleDelete(e);
+      setLoading(false);
+      if (status === 'success') {
         setSuccess(true);
         setDialogOpen(false);
+      }else {
+        if(response.status <  500) {
+          addToast(response.data.message, {
+            appearance: "error",
+          })
+        } else {
+          addToast(`Gagal menghapus data siswa. SIlahkan coba kembali`, {
+            appearance: "error",
+          })
+        }
       }
     };
   
@@ -107,84 +123,7 @@ const StudentListDashboardPage = () => {
       );
     };
   
-    const ModalComponent = () => {
-      return (
-        <ModalFilters
-          onShow={controller.statusModal}
-          handleClose={(e) =>
-            controller.handleModal(e)(controller.dispatch)(ActionType.handleModal)
-          }
-          titleModal="Filter"
-        >
-          <ModalBody>
-            <ModalContentItems />
-          </ModalBody>
-          <ModalFooter>
-            {isLoading ? (
-              <Button
-                disabled
-                style={{
-                  backgroundColor: "transparent !important",
-                  color: "#00923F",
-                }}
-                color="transparent"
-                onClick={(e) =>
-                  controller.handleResetFilter(e)
-                }
-              >
-                {<CircularProgress size={16} className={classes.loadingReset} />}
-                Reset
-              </Button>
-            ) : (
-              <Button
-                style={{
-                  color: "#00923F",
-                }}
-                color="transparent"
-                onClick={async (e) => {
-                  setLoading(true);
-                  await controller.handleResetFilter(controller.dispatch)
-                  setLoading(false);
-                }}
-              >
-                Reset
-              </Button>
-            )}
-  
-            {isLoading ? (
-              <Button
-                disabled
-                color="primary"
-                style={{
-                  color: "#fff",
-                }}
-                onClick={(e) =>
-                  controller.handleCTA()
-                }
-              >
-                {<CircularProgress size={16} className={classes.root} />}
-                Terapkan Filter
-              </Button>
-            ) : (
-              <Button
-                color="primary"
-                style={{
-                  color: "#fff",
-                }}
-                onClick={async (e) => {
-                  setLoading(true);
-                  await controller.handleCTA()
-                  setLoading(false);
-                }}
-              >
-                Terapkan Filter
-              </Button>
-            )}
-          </ModalFooter>
-        </ModalFilters>
-      );
-    };
-
+    
     return (
         <Box className={classes.container}>
         <GridItem mr={4} ml={4} mt={4} mb={4}>
@@ -370,7 +309,79 @@ const StudentListDashboardPage = () => {
               Sukses menghapus data siswa {controller.userInfo.school.name}
             </Alert>
           </Snackbar>
-          <ModalComponent />
+          <ModalFilters
+          onShow={controller.statusModal}
+          handleClose={(e) =>
+            controller.handleModal(e)(controller.dispatch)(ActionType.handleModal)
+          }
+          titleModal="Filter"
+        >
+          <ModalBody>
+            <ModalContentItems />
+          </ModalBody>
+          <ModalFooter>
+            {isLoading ? (
+              <Button
+                disabled
+                style={{
+                  backgroundColor: "transparent !important",
+                  color: "#00923F",
+                }}
+                color="transparent"
+                onClick={(e) =>
+                  controller.handleResetFilter(e)
+                }
+              >
+                {<CircularProgress size={16} className={classes.loadingReset} />}
+                Reset
+              </Button>
+            ) : (
+              <Button
+                style={{
+                  color: "#00923F",
+                }}
+                color="transparent"
+                onClick={async (e) => {
+                  setLoading(true);
+                  await controller.handleResetFilter(controller.dispatch)
+                  setLoading(false);
+                }}
+              >
+                Reset
+              </Button>
+            )}
+  
+            {isLoading ? (
+              <Button
+                disabled
+                color="primary"
+                style={{
+                  color: "#fff",
+                }}
+                onClick={(e) =>
+                  controller.handleCTA()
+                }
+              >
+                {<CircularProgress size={16} className={classes.root} />}
+                Terapkan Filter
+              </Button>
+            ) : (
+              <Button
+                color="primary"
+                style={{
+                  color: "#fff",
+                }}
+                onClick={async (e) => {
+                  setLoading(true);
+                  await controller.handleCTA()
+                  setLoading(false);
+                }}
+              >
+                Terapkan Filter
+              </Button>
+            )}
+          </ModalFooter>
+        </ModalFilters>
         </GridItem>
       </Box>
 

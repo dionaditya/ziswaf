@@ -77,6 +77,7 @@ function Alert(props: AlertProps) {
 const HalamanDaftarUserDashboard = () => {
   const classes = useStyles();
   const controller = useContext(UserListContext);
+  const [isLoading, setLoading] = React.useState(false);
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [alertSucess, setSuccess] = React.useState(false);
   const [modalChangeStatus, setModalChangeStatus] = React.useState("change"); // change = Change Password, reset = Reset Password
@@ -119,11 +120,17 @@ const HalamanDaftarUserDashboard = () => {
     );
   };
 
-  const handleDeleteData = (e) => {
-    const isSuccess = controller.handleDelete(e);
-    if (isSuccess) {
+  const handleDeleteData = async (e) => {
+    setLoading(true);
+    const [status, response] = await controller.handleDelete(e);
+    setLoading(false);
+    if (status === 'success') {
       setSuccess(true);
       setDialogOpen(false);
+    } else {
+      addToast(`Gagal menghapus data user`, {
+        appearance: "error",
+      })
     }
   };
 

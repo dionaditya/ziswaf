@@ -8,6 +8,10 @@ import { ReportContext } from "../../Controller";
 import Button from "@/app/container/commons/CustomButtons/Button.tsx";
 import LaunchIcon from '@material-ui/icons/Launch';
 import moment from 'moment';
+import SelectWithSearch from '@/app/container/components/SelectWithSearch';
+import MySelect from '@/app/container/components/MultipleColumnSelect';
+import qs from 'qs';
+import { useLocation } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -58,6 +62,11 @@ const TopNavigation = () => {
   const controller = useContext(ReportContext);
   const classes = useStyles();
   const dateSelected = controller.filterData['dateSelected'];
+  const location = useLocation();
+  const queryString: number = qs.parse(location.search, { delimiter: ';' });
+
+
+
 
   const formatDate = (date) => {
     return date ? (controller.role === 1 ? moment(date).format('MMM YYYY') : moment(date).format('DD/MM/YY')) : 0;
@@ -93,7 +102,7 @@ const TopNavigation = () => {
             style={{ display: "flex", justifyContent: "flex-end" }}
           >
             <GridContainer>
-              <GridItem xs={12} sm={6} md={6} style={{display: "flex", alignItems: 'center', justifyContent: "flex-end"}}>
+              <GridItem xs={12} sm={6} md={6} style={{ display: "flex", alignItems: 'center', justifyContent: "flex-end" }}>
                 <Box
                   display="flex"
                   justifyContent="flex-start"
@@ -122,6 +131,36 @@ const TopNavigation = () => {
               </GridItem>
             </GridContainer>
           </GridItem>
+          {queryString['?city'] === undefined ?
+            <div /> :
+            <GridItem xs={12} sm={12} md={12}>
+              <Box display="flex" flexDirection="row" justifyContent="flex-end" style={{ marginTop: '20px' }}>
+                <Box style={{ marginTop: '10px' }}>
+                  <span style={{ fontSize: '14px', color: '#757575', fontWeight: 'bold', marginRight: '30px' }}>Unit Ma'had</span>
+                </Box>
+                <Box>
+                  <MySelect
+                    label={queryString['unit'] !== "Semua" ? queryString['unit'] : "Semua Unit Ma'had"}
+                    disabled={true}
+                    options={[]}
+                    handleChange={(e) => { }}
+                    checked={["1"]}
+                  />
+                </Box>
+                <Box style={{ marginTop: '10px' }}>
+                  <span style={{ fontSize: '14px', color: '#757575', fontWeight: 'bold', marginRight: '30px', marginLeft: '30px' }}>Kota</span>
+                </Box>
+                <Box>
+                  <MySelect
+                    label={queryString['?city'] !== "Semua" ? queryString['?city'] : "Semua Kota"}
+                    options={[]}
+                    disabled={true}
+                    handleChange={(e) => { }}
+                    checked={["1"]}
+                  />
+                </Box>
+              </Box>
+            </GridItem>}
         </GridContainer>
       </GridItem>
     </GridContainer>

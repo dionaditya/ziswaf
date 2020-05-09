@@ -114,7 +114,7 @@ const Receipt = ({ index, setIndex }) => {
                       >
                         TANGGAL & WAKTU
                   </span>
-                      <p className="black-text">{moment(created_at).format('dddd, MMM YYYY')}</p>
+                      <p className="black-text">{created_at}</p>
                     </div>
                     <div className="row mb-4">
                       <span

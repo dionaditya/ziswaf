@@ -31,6 +31,7 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/date-fns";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import moment from "moment";
+import idLocale from "date-fns/locale/id";
 
 const innerTheme = createMuiTheme({
   palette: {
@@ -183,7 +184,7 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
   }
 
   return (
-    <MuiPickersUtilsProvider utils={MomentUtils}>
+    <MuiPickersUtilsProvider utils={MomentUtils} locale={idLocale}>
       <ThemeProvider theme={innerTheme}>
         <Box>
           <Paper
@@ -330,64 +331,7 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                         <label htmlFor="finished_at" className={classes.label}>
                           Tanggal Keluar
                         </label>
-                        {finished_at !== "" &&
-                        _.toNumber(moment(finished_at).toDate()) <
-                          _.toNumber(moment(registered_at).toDate()) ? (
-                          <Controller
-                            as={
-                              <KeyboardDatePicker
-                                autoOk
-                                variant="inline"
-                                inputVariant="outlined"
-                                style={{
-                                  width: "100%",
-                                }}
-                                disabled={isDetailSession || education_status === 1}
-                                className={classes.datepicker}
-                                format="dd/MM/yyyy"
-                                placeholder={
-                                  finished_at === null || isNullFinishedAt
-                                    ? "Masuk Tanggal"
-                                    : moment(finished_at).toString()
-                                }
-                                value={registered_at}
-                                onChange={(date: any) => {
-                                  const data = {
-                                    target: {
-                                      name: "finished_at",
-                                      value: moment(date).toISOString(),
-                                    },
-                                  };
-                                  onChange(data);
-                                }}
-                                name="finished_at"
-                                inputRef={register}
-                                InputProps={{
-                                  classes: { input: classes.input },
-                                }}
-                              />
-                            }
-                            name="finished_at"
-                            control={control}
-                            onChange={(date: any) => {
-                              const data = {
-                                target: {
-                                  name: "finished_at",
-                                  value: moment(date[0]).toISOString(),
-                                },
-                              };
-                              onChange(data);
-                              return moment(date[0]).toString();
-                            }}
-                            defaultValue={
-                              finished_at === null || isNullFinishedAt
-                                ? null
-                                : moment(finished_at).toDate()
-                            }
-                          />
-                        ) : (
-                          <>
-                            <Controller
+                        <Controller
                               as={
                                 <KeyboardDatePicker
                                   autoOk
@@ -427,6 +371,7 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                               }
                               name="finished_at"
                               control={control}
+                              minDate={registered_at}
                               onChange={(date: any) => {
                                 const data = {
                                   target: {
@@ -443,8 +388,6 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                                   : moment(finished_at).toDate()
                               }
                             />
-                          </>
-                        )}
                       </Box>
                     </GridItem>
                   </GridContainer>
@@ -503,7 +446,6 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                     <GridItem xs={12} sm={12} md={6}>
                       <Box className={classes.marginBottom}>
                         <label className={classes.label}>Mulai Tanggal</label>
-
                         <Controller
                           as={
                             <KeyboardDatePicker
@@ -516,12 +458,12 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                               }}
                               className={classes.datepicker}
                               placeholder={
-                                finished_at === null || isNullPunishmentStart
+                                punishment_start === null || isNullPunishmentStart
                                   ? "Mulai Tanggal"
                                   : moment(punishment_start).toString()
                               }
                               value={
-                                finished_at === null || isNullPunishmentStart
+                                punishment_start === null || isNullPunishmentStart
                                   ? null
                                   : moment(punishment_start).toDate()
                               }
@@ -565,59 +507,7 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                     <GridItem xs={12} sm={12} md={6}>
                       <Box className={classes.marginBottom}>
                         <label className={classes.label}>Hingga Tanggal</label>
-                        {punishment_end !== "" &&
-                        _.toNumber(moment(punishment_end).toDate()) <
-                          moment(punishment_start).toDate() ? (
-                          <Controller
-                            as={
-                              <KeyboardDatePicker
-                                autoOk
-                                variant="inline"
-                                disabled={isDetailSession}
-                                inputVariant="outlined"
-                                style={{
-                                  width: "100%",
-                                }}
-                                className={classes.datepicker}
-                                placeholder={punishment_start}
-                                value={punishment_start}
-                                onChange={(date: any) => {
-                                  const data = {
-                                    target: {
-                                      name: "punishment_end",
-                                      value: moment(date).toISOString(),
-                                    },
-                                  };
-                                  onChange(data);
-                                }}
-                                name="punishment_end"
-                                format="dd/MM/yyyy"
-                                inputRef={register}
-                                InputProps={{
-                                  classes: { input: classes.input },
-                                }}
-                              />
-                            }
-                            name="punishment_end"
-                            control={control}
-                            onChange={(date: any) => {
-                              const data = {
-                                target: {
-                                  name: "punishment_end",
-                                  value: moment(date[0]).toISOString(),
-                                },
-                              };
-                              onChange(data);
-                              return moment(date[0]).toString();
-                            }}
-                            defaultValue={
-                              punishment_end === null
-                                ? null
-                                : moment(punishment_end).toDate()
-                            }
-                          />
-                        ) : (
-                          <Controller
+                        <Controller
                             as={
                               <KeyboardDatePicker
                                 autoOk
@@ -629,12 +519,12 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                                 }}
                                 className={classes.datepicker}
                                 placeholder={
-                                  finished_at === null || isNullPunishmentEnd
+                                  punishment_end === null || isNullPunishmentEnd
                                     ? "Hingga Tanggal"
                                     : moment(punishment_end).toString()
                                 }
                                 value={
-                                  finished_at === null || isNullPunishmentEnd
+                                  punishment_end === null || isNullPunishmentEnd
                                     ? null
                                     : moment(punishment_end).toDate()
                                 }
@@ -649,6 +539,7 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                                 }}
                                 name="punishment_end"
                                 format="dd/MM/yyyy"
+                                minDate={punishment_start}
                                 inputRef={register}
                                 InputProps={{
                                   classes: { input: classes.input },
@@ -673,7 +564,6 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                                 : moment(punishment_end).toDate()
                             }
                           />
-                        )}
                       </Box>
                     </GridItem>
                   </GridContainer>

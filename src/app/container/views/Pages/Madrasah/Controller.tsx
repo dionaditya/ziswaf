@@ -8,6 +8,7 @@ import { ProvincePresenter } from "@/app/infrastructures/Presenter/Province/Pres
 import { CityPresenter } from "@/app/infrastructures/Presenter/City/Presenter";
 import { SchoolDataColumnsTable } from "@/domain/entities/AllOptions";
 import { createContainer } from "react-tracked";
+import { RecordPresenter } from '@/app/infrastructures/Presenter/Record/Presenter';
 
 export enum ActionType {
   handleModal = "HANDLEMODAL",
@@ -29,6 +30,7 @@ export enum ActionType {
   handleCityChecked = "HANDLECITYCHECKED",
   setInitialData = "setInitialData",
   setAfterChangePage = "setAfterChangePage",
+  handleModalRecord = "HANDLEMODALRECORD",
 }
 
 interface DisplayColumn {
@@ -87,6 +89,11 @@ export interface IState {
   fetchData: Function;
   provinceData: any;
   regencyData: any;
+  handleModalRecord: Function;
+  recordModal: boolean;
+  handleRecordModal: Function;
+  recordData: any;
+  loadingRecord: boolean;
 }
 
 const DataTableColumns = SchoolDataColumnsTable.map((val) => {
@@ -161,29 +168,37 @@ const initialState: IState = {
       label: "SEMUA KOTA",
     },
   ],
-  handleCTA: () => {},
-  handleChangeFilter: () => {},
-  handleModal: () => {},
-  handleSearch: () => {},
-  handleSearchMadrasahQuery: () => {},
-  handleSelectedColumn: () => {},
-  dispatch: () => {},
-  handleSort: () => {},
-  handleChangesRowsPerPage: () => {},
-  handleResetFilter: () => {},
+  handleCTA: () => { },
+  handleChangeFilter: () => { },
+  handleModal: () => { },
+  handleSearch: () => { },
+  handleSearchMadrasahQuery: () => { },
+  handleSelectedColumn: () => { },
+  dispatch: () => { },
+  handleSort: () => { },
+  handleChangesRowsPerPage: () => { },
+  handleResetFilter: () => { },
   optionsTable: {},
-  handleDelete: () => {},
+  handleDelete: () => { },
   tableIndex: 0,
   intialData: [],
-  fetchData: () => {},
+  fetchData: () => { },
   regencyData: [],
   provinceData: [],
+  handleModalRecord: () => { },
+  recordModal: false,
+  handleRecordModal: () => { },
+  recordData: {},
+  loadingRecord: false
 };
 
 const reducer: React.Reducer<IState, IAction> = (state, action) => {
   switch (action.type) {
     case ActionType.handleModal:
       return { ...state, statusModal: !state.statusModal };
+
+    case ActionType.handleModalRecord:
+      return { ...state, recordModal: !state.recordModal };
 
     case ActionType.handleSearchMadrasah:
       return {
@@ -488,9 +503,12 @@ export const MadrasahController = ({ children }) => {
     ProvincePresenter
   );
   let cityPresenter: CityPresenter = container.resolve(CityPresenter);
+  let recordPresenter: RecordPresenter = container.resolve(RecordPresenter);
   const [data, setData] = React.useState([]);
   const [tableIndex, setTableIndex] = React.useState(0);
   const [isFilter, setFilter] = React.useState(false);
+  const [loadingRecord, setLoading] = React.useState(false);
+  const [recordData, setRecordData] = React.useState<any>({})
   const [filterStatus, setFilterStatus] = React.useState<any>({
     paging: {
       page: 1,
@@ -808,7 +826,7 @@ export const MadrasahController = ({ children }) => {
   const handleSearchMadrasahQuery = (e: { target: { value: any } }) => (
     dispatch: (arg0: { type: any; payload: any }) => any
   ) => (actiontype: any) =>
-    dispatch({ type: actiontype, payload: e.target.value });
+      dispatch({ type: actiontype, payload: e.target.value });
 
   const handleSelectedColumn = (e) => (dispatch) => async (action) => {
     setFilter(true);
@@ -1447,16 +1465,16 @@ export const MadrasahController = ({ children }) => {
   };
 
   const handleDelete = async (e) => {
-    try {
-      const deleteSchool = await schoolPresenter.deleteSchoolData(tableIndex);
-      if (deleteSchool === true) {
-        dispatch({
-          type: ActionType.setLoading,
-          payload: true,
-        });
-        const school = await schoolPresenter.loadData({
-          ...filterStatus,
-        });
+    const [status, response] = await schoolPresenter.deleteSchoolData(tableIndex);
+    if (status === 'success') {
+      dispatch({
+        type: ActionType.setLoading,
+        payload: true,
+      });
+      const school = await schoolPresenter.loadData({
+        ...filterStatus,
+      });
+      if (school.data.data !== null) {
         setPagintion({
           total: school.data.pagination.total,
           page: school.data.pagination.current_page - 1,
@@ -1470,10 +1488,24 @@ export const MadrasahController = ({ children }) => {
           type: ActionType.setLoading,
           payload: false,
         });
-        return true;
+      } else {
+        setPagintion({
+          total: school.data.pagination.total,
+          page: school.data.pagination.current_page,
+          rowsPerPage: school.data.pagination.page_size,
+        });
+        dispatch({
+          type: ActionType.setData,
+          payload: [],
+        });
+        dispatch({
+          type: ActionType.setLoading,
+          payload: false,
+        });
       }
-    } catch {
-      return false;
+      return [status, response];
+    } else {
+      return [status, response]
     }
   };
 
@@ -1485,6 +1517,21 @@ export const MadrasahController = ({ children }) => {
       alert(error);
     }
   };
+
+  const handleRecordModal = async () => {
+    try {
+      setLoading(true)
+      const recordSchool = await recordPresenter.getRecord(tableIndex)
+      setRecordData(recordSchool)
+      setLoading(false)
+      return ['success', recordSchool]
+    } catch (e) {
+      setLoading(false)
+      return ['error', e.response]
+    }
+
+
+  }
 
   return (
     <MadrasahProvider
@@ -1502,6 +1549,9 @@ export const MadrasahController = ({ children }) => {
         tableIndex: tableIndex,
         handleDelete: handleDelete,
         fetchData: fetchData,
+        handleRecordModal: handleRecordModal,
+        recordData: recordData,
+        loadingRecord: loadingRecord
       }}
     >
       {children}

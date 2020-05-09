@@ -1,6 +1,6 @@
 import React from "react";
 import { ChartCategories } from "../Chart";
-import formatPrice, { formatNumbers } from "@/app/infrastructures/misc/Utils";
+import formatPrice, { formatNumbers, separatorNumbers } from "@/app/infrastructures/misc/Utils";
 import GridItem from "@/app/container/commons/Grid/GridItem.tsx";
 import GridContainer from "@/app/container/commons/Grid/GridContainer.tsx";
 
@@ -58,7 +58,7 @@ const CardPrognosis = ({ value }) => {
           Pencapaian Prognosis:
           <span style={{ fontWeight: "bold" }}>
             {" "}
-            {totalPercentage ? totalPercentage : 0}%{" "}
+            {totalPercentage ? separatorNumbers(totalPercentage) : 0}%{" "}
           </span>
         </span>
         <div

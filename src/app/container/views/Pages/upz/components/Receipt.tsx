@@ -2,9 +2,6 @@
 import React from "react";
 import ModalDetail from "./ModalDetail";
 import { CorporateContext } from "../Controller";
-import moment from "moment";
-import "moment/locale/id";
-import Pdf from "react-to-pdf";
 import GridContainer from "@/app/container/commons/Grid/GridContainer";
 import GridItem from "@/app/container/commons/Grid/GridItem";
 import Card from "@/app/container/commons/Card/Card.js";
@@ -138,7 +135,7 @@ const Receipts = ({ index, setIndex }) => {
                           TANGGAL & WAKTU
                         </span>
                         <p className="black-text">
-                          {moment(created_at).format("dddd, DD MMM YYYY")}
+                          {created_at}
                         </p>
                       </div>
                       <div className="row mb-4">

@@ -46,7 +46,7 @@ export class DonorMapper {
       data.address,
       data.phone,
       data.status,
-      data.npwp,
+      data.npwp === 0 ? null : data.npwp,
       data.pos_code,
       data.info,
       data.province_name,
@@ -95,12 +95,13 @@ export class DonorMapper {
             item.province_name,
             item.pos_code,
             item.email,
-            item.phone,
+            `+62${item.phone}`,
             item.npwp, 
             item.name,
             item.position,
             item.info,
-            item.is_company ? item.phone : ''
+            item.is_company ? item.phone : '',
+            item.school_name
           );
           resp.push(donor);
         } else {
@@ -114,12 +115,13 @@ export class DonorMapper {
             item.province_name,
             item.pos_code,
             item.email,
-            item.phone,
-            item.npwp,
+            `+62${item.phone}` ,
+            item.npwp === 0 ? '-' : item.mpwp,
             item.is_company ? item.name : '-',
             item.position,
             item.info,
-            item.is_company ? item.phone : ''
+            item.is_company ? item.phone : '',
+            item.school_name
           );
           resp.push(donor);
         }

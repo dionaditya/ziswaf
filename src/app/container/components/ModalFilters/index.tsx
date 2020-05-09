@@ -11,14 +11,13 @@ export const ModalFooter = ({ children }) => {
       <div
       className="modal-footer"
       style={{
-        flex: 0.5,
-        border: "4px solid transparent",
-        borderRadius: "20px",
-        padding: "10px 20px",
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        justifyContent: "flex-end",
-        gridGap: "10px",
+        bottom: 10,
+        right: 0,
+        left: 0,
+        position: 'absolute',
+        width: '100%',
+        display: 'grid',
+        placeItems: 'center center'
       }}
     >
       {children}
@@ -28,16 +27,13 @@ export const ModalFooter = ({ children }) => {
     return(
       <div
           style={{
-            flex: 0.5,
-            border: "4px solid transparent",
-            borderRadius: "20px",
-            padding: "10px 20px",
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            justifyContent: "flex-end",
-            gridGap: "10px",
+            bottom: 10,
+            right: 0,
+            left: 0,
+            width: '100%',
+            display: 'grid',
+            placeItems: 'center center',
             position: 'absolute',
-            bottom: 3
           }}
         >
           {children}
@@ -59,7 +55,7 @@ const ModalFilters = ({ onShow, handleClose, children, titleModal }) => {
         onClose={handleClose}
         style={{
           display: 'grid',
-          placeItems: 'center center'
+          placeItems: 'center center',
         }}
         // style={{
         //   top: "0",
@@ -82,7 +78,7 @@ const ModalFilters = ({ onShow, handleClose, children, titleModal }) => {
               background: "white",
               width: "100%",
               maxHeight: "100%",
-              minHeight: '380px',
+              minHeight: '250px',
               height: '100%',
               padding: '10px 30px 0px 30px',
               maxWidth: "100%",
@@ -126,7 +122,6 @@ const ModalFilters = ({ onShow, handleClose, children, titleModal }) => {
                 background: "white",
                 width: "100%",
                 maxHeight: "100%",
-                minHeight: '380px',
                 height: '100%',
                 padding: '10px 30px 0px 30px',
                 maxWidth: "35%",

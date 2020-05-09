@@ -23,13 +23,11 @@ interface IState {
   userInfo: any;
   regency: any;
   school: any;
-  handleFetchSchool: Function;
-  handleFetchRegency: Function;
   loadSchool: Function;
-  loadRegency: Function;
   divisionId: string;
-  fetchSchool: Function;
   fetchRegency: Function;
+  debouncedSchool: Function;
+  handleDelete: Function;
 }
 
 interface FilterParams {
@@ -78,11 +76,11 @@ const initialState = {
       created_at: "DESC",
     },
   },
-  setFilterParam: () => {},
-  fetchData: () => {},
+  setFilterParam: () => { },
+  fetchData: () => { },
   didUpdate: false,
-  clearData: () => {},
-  eventSubmit: () => {},
+  clearData: () => { },
+  eventSubmit: () => { },
   optionsTable: {},
   displayColumns: [
     { key: "id", label: "ID Transaksi", options: { filter: true, sort: true } },
@@ -113,18 +111,20 @@ const initialState = {
       options: { filter: true, sort: true },
     },
   ],
-  handleSelectedColumn: () => {},
+  handleSelectedColumn: () => { },
   tableIndex: 0,
   userInfo: {},
   regency: [],
   school: [],
-  handleFetchSchool: () => {},
-  handleFetchRegency: () => {},
-  loadSchool: () => {},
-  loadRegency: () => {},
+  handleFetchSchool: () => { },
+  handleFetchRegency: () => { },
+  loadSchool: () => { },
+  loadRegency: () => { },
   divisionId: "",
-  fetchRegency: () => {},
-  fetchSchool: () => {},
+  fetchRegency: () => { },
+  fetchSchool: () => { },
+  debouncedSchool: () => { },
+  handleDelete: () => { }
 };
 
 export const DonationContext = React.createContext<IState>(initialState);
@@ -144,7 +144,7 @@ export const DonationController = ({ children }) => {
   );
   const [searchSchool, setSearchSchool] = useState("");
   const [searchRegency, setSearchRegency] = useState("");
-  const debouncedQueySchoolValue = useDebounce(searchSchool, 200);
+  const debouncedQueySchoolValue = useDebounce(searchSchool, 40);
   const debouncedQueyRegencyValue = useDebounce(searchRegency, 200);
   const [tableIndex, setTableIndex] = useState(0);
   const [divisionId, setDivisonId] = useState("");
@@ -163,7 +163,7 @@ export const DonationController = ({ children }) => {
       {
         name: "regency",
         label: "Kota",
-        options: { filter: true, sort: true },
+        options: { filter: false, sort: false },
       },
       {
         name: "division_id",
@@ -219,6 +219,9 @@ export const DonationController = ({ children }) => {
     "status",
     "total",
     "kwitansi",
+    "id",
+    "created_at",
+    "updated_at"
   ];
 
   const optionsTable = {
@@ -250,7 +253,7 @@ export const DonationController = ({ children }) => {
     setCellHeaderProps: () => ({ align: "center" }),
     selectableRowsOnClick: true,
     setCellProps: () => ({ align: "center" }),
-    onTableChange: async function(action, tableState) {
+    onTableChange: async function (action, tableState) {
       switch (action) {
         case "sort":
           if (
@@ -427,19 +430,29 @@ export const DonationController = ({ children }) => {
         });
         setSchool(school.data.data);
       })();
+    } else {
+      (async () => {
+        const school: any = await schoolPresenter.loadData({
+          paging: {
+            page: 1,
+            limit: 10
+          }
+        });
+        setSchool(school.data.data);
+      })();
     }
   }, [debouncedQueySchoolValue]);
 
-  React.useEffect(() => {
-    if (debouncedQueyRegencyValue !== "") {
-      (async () => {
-        const regency: any = await cityPresenter.loadData({
-          search: debouncedQueyRegencyValue,
-        });
-        setRegency(regency);
-      })();
-    }
-  }, [debouncedQueyRegencyValue]);
+  // React.useEffect(() => {
+  //   if (debouncedQueyRegencyValue !== "") {
+  //     (async () => {
+  //       const regency: any = await cityPresenter.loadData({
+  //         search: debouncedQueyRegencyValue,
+  //       });
+  //       setRegency(regency);
+  //     })();
+  //   }
+  // }, [debouncedQueyRegencyValue]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -528,10 +541,6 @@ export const DonationController = ({ children }) => {
     }
   };
 
-  const fetchSchool = async () => {
-    const school = await schoolPresenter.loadData();
-    setSchool(school.data.data);
-  };
 
   const fetchRegency = async () => {
     const regency = await cityPresenter.loadData();
@@ -554,16 +563,30 @@ export const DonationController = ({ children }) => {
         });
       } else {
         if (sortable.includes(e.target.value)) {
-          setDisplayColumns({
-            data: [
-              ...displayColumns.data,
-              {
-                name: e.target.value,
-                label: e.target.name,
-                options: { sort: true, filter: true },
-              },
-            ],
-          });
+          if (e.target.value === 'id') {
+            setDisplayColumns({
+              data: [
+                {
+                  name: e.target.value,
+                  label: e.target.name,
+                  options: { sort: true, filter: true },
+                },
+                ...displayColumns.data,
+              ],
+            });
+          } else {
+            setDisplayColumns({
+              data: [
+                ...displayColumns.data,
+                {
+                  name: e.target.value,
+                  label: e.target.name,
+                  options: { sort: true, filter: true },
+                },
+              ],
+            });
+          }
+
         } else {
           setDisplayColumns({
             data: [
@@ -580,39 +603,57 @@ export const DonationController = ({ children }) => {
     }
   };
 
-  const handleFetchRegency = async (inputValue) => {
-    const inputValues = inputValue.replace(/\W/g, "");
-    setSearchRegency(inputValues);
+
+
+
+  const loadSchool = async (newValue, callback) => {
+    const transformData = school.map((val) => {
+      return {
+        value: val.id,
+        label: val.name,
+      };
+    });
+    const witHDefaultValue = [{
+      value: "",
+      label: "SEMUA"
+    }, ...transformData]
+
+    return callback(witHDefaultValue);
   };
 
-  const handleFetchSchool = async (inputValue) => {
-    const inputValues = inputValue.replace(/\W/g, "");
-    setSearchSchool(inputValues);
-  };
-
-  const loadRegency = async () => {
-    if (regency !== [] || regency.length > 0) {
-      const transformData = regency.map((val) => {
-        return {
-          value: val.id,
-          label: val.name,
-        };
-      });
-      return transformData;
+  const handleDelete = async () => {
+    try {
+      setLoading(true)
+      let deleteTransaction = await donationPresenter.delete(tableIndex)
+      if (deleteTransaction !== null) {
+        let res = await donationPresenter.getAllWithPagination({ ...filterParam });
+        if (res.data.data !== null) {
+          setPagintion({
+            total: res.data.pagination.total,
+            page: res.data.pagination.current_page - 1,
+            rowsPerPage: res.data.pagination.page_size,
+          });
+          setData(res.data.data);
+          setLoading(false);
+        } else {
+          setLoading(false);
+          setPagintion({
+            total: res.data.pagination.total,
+            page: res.data.pagination.current_page,
+            rowsPerPage: res.data.pagination.page_size,
+          });
+          setData([]);
+        }
+        return ['success', deleteTransaction]
+      }
+    } catch (error) {
+      return ['error', error.response]
     }
-  };
+  }
 
-  const loadSchool = async () => {
-    if (school !== [] || school.length > 0) {
-      const transformData = school.map((val) => {
-        return {
-          value: val.id,
-          label: val.name,
-        };
-      });
-      return transformData;
-    }
-  };
+  const debouncedSchool = (value) => {
+    setSearchSchool(value)
+  }
 
   return (
     <DonationProvider
@@ -632,13 +673,11 @@ export const DonationController = ({ children }) => {
         userInfo: userAccess,
         regency,
         school,
-        handleFetchSchool,
-        handleFetchRegency,
-        loadRegency,
         loadSchool,
         divisionId,
-        fetchSchool,
         fetchRegency,
+        debouncedSchool,
+        handleDelete
       }}
     >
       {children}

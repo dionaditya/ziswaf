@@ -34,6 +34,19 @@ const roleAbilityAdmin: { id: number; name: string }[] = [
   { id: 32, name: "/retail-tanda-terima/:transaction_id" },
   { id: 33, name: "/corporate-tanda-terima" },
   { id: 34, name: "/retail-tanda-terima" },
+  { id: 35, name: "/retail-input/:id" },
+  { id: 36, name: "/retail-tanda-terima/:transaction_id" },
+  { id: 37, name: "/corporate-transaction/:donor_id" },
+  { id: 38, name: "/corporate-tanda-terima/:transaction_id" },
+  { id: 39, name: "/upz/donor" },
+  { id: 40, name: "/upz-transaction/:donor_id" },
+  { id: 41, name: "/upz-tanda-terima/:transaction_id" },
+  { id: 42, name: "/corporate/donor" },
+  { id: 43, name: "/retail" },
+  { id: 44, name: "/upz" },
+  { id: 45, name: "/corporate-transaction" },
+  { id: 46, name: "/retail-input" },
+  { id: 47, name: "/upz-transaction" },
 ];
 
 const roleAbilityOperator: { id: number; name: string }[] = [
@@ -69,6 +82,9 @@ const roleAbilityOperator: { id: number; name: string }[] = [
   { id: 29, name: "/corporate/donor" },
   { id: 30, name: "/info-personel" },
   { id: 31, name: "/info-personel/:id" },
+  { id: 32, name: "/corporate-transaction" },
+  { id: 33, name: "/retail-input" },
+  { id: 34, name: "/upz-transaction" },
 ];
 
 export { roleAbilityAdmin, roleAbilityOperator };

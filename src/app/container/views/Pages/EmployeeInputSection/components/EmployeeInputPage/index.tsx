@@ -22,7 +22,9 @@ import { Image } from "@material-ui/icons";
 import GridItem from "@/app/container/commons/Grid/GridItem";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Button from "@/app/container/commons/CustomButtons/Button.tsx";
-import SelectWithSearch from "@/app/container/components/SelectWithSearch";
+import SelectWithSearch, {
+  SelectWithSearchWithDebounced,
+} from "@/app/container/components/SelectWithSearch";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
 import TextareaAutosize from "@material-ui/core/TextareaAutosize";
@@ -32,6 +34,8 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/date-fns";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import qs from "qs";
+import idLocale from "date-fns/locale/id";
+import InputMask from "react-input-mask";
 
 const innerTheme = createMuiTheme({
   palette: {
@@ -112,14 +116,9 @@ const EmployeeInputSection = () => {
   const location = useLocation();
   const [isSubmit, setSubmit] = React.useState(false);
   const [processing, setProccessing] = React.useState(false);
-  const queryString: number = qs.parse(location.search);
+  const queryString: any = qs.parse(location.search);
 
-  const [error, setError] = useState({
-    province: false,
-    school: false,
-    regency: false,
-    status: false,
-  });
+  const [error, setError] = useState(false);
 
   const {
     register,
@@ -155,44 +154,48 @@ const EmployeeInputSection = () => {
     setLoading(true);
     setSubmit(true);
     if (_.isEmpty(errors)) {
-      const res = await controller.handleSubmit(data)(controller.dispatch);
-      if (res !== undefined) {
-        if (res.status === 201 || res.status === 200) {
-          addToast("Data personel ma`had telah tersimpan", {
-            appearance: "success",
-          });
-          setLoading(false);
-          setTimeout(() => {
-            history.push("/dashboard/personel");
-          }, 2000);
-        } else if (res.status === 422) {
-          setLoading(false);
-          addToast(res.data.message, { appearance: "error" });
-        } else if (res.status === 400) {
-          addToast(res.data.message, { appearance: "error" });
-        } else if (res.status === 500) {
+      if (Number(controller.employeeInput.phone[4]) !== 0) {
+        setError(false);
+        const res = await controller.handleSubmit(data)(controller.dispatch);
+        if (res !== undefined) {
+          if (res.status === 201 || res.status === 200) {
+            addToast("Data personel ma`had telah tersimpan", {
+              appearance: "success",
+            });
+            setLoading(false);
+            setTimeout(() => {
+              history.push("/dashboard/personel");
+            }, 2000);
+          } else if (res.status === 422) {
+            setLoading(false);
+            addToast(res.data.message, { appearance: "error" });
+          } else if (res.status === 400) {
+            addToast(res.data.message, { appearance: "error" });
+          } else if (res.status === 500) {
+            setLoading(false);
+            addToast(
+              "Tidak dapat menyimpan data personel ma`had karena gangguan server",
+              { appearance: "error" }
+            );
+          } else {
+            setLoading(false);
+            addToast("Tidak dapat menyimpan data personel ma`had ke sever", {
+              appearance: "error",
+            });
+          }
+        } else {
           setLoading(false);
           addToast(
             "Tidak dapat menyimpan data personel ma`had karena gangguan server",
             { appearance: "error" }
           );
-        } else {
-          setLoading(false);
-          addToast("Tidak dapat menyimpan data personel ma`had ke sever", {
-            appearance: "error",
-          });
         }
       } else {
+        setError(true);
         setLoading(false);
-        addToast(
-          "Tidak dapat menyimpan data personel ma`had karena gangguan server",
-          { appearance: "error" }
-        );
       }
     }
   };
-
-  const watchAllFields = watch();
 
   const {
     school_id,
@@ -233,10 +236,8 @@ const EmployeeInputSection = () => {
     setProccessing(false);
   }, [controller.employeeInput, location.search]);
 
-
-
   return (
-    <MuiPickersUtilsProvider utils={MomentUtils}>
+    <MuiPickersUtilsProvider utils={MomentUtils} locale={idLocale}>
       <ThemeProvider theme={innerTheme}>
         <Box>
           <Paper
@@ -331,7 +332,7 @@ const EmployeeInputSection = () => {
                       </Box>
                     </GridItem>
                     <GridItem xs={12} sm={12} md={6}>
-                      {controller.loading && "Loading ..."  }
+                      {controller.loading && "Loading ..."}
                       <GridContainer className={classes.marginBottom}>
                         <GridItem xs={12} sm={12} md={12} mb={4}>
                           <Box className={classes.marginBottom}>
@@ -845,7 +846,10 @@ const EmployeeInputSection = () => {
                                     ? "filled-error-helper-text"
                                     : "name"
                                 }
-                                inputRef={register({ required: true })}
+                                inputRef={register({
+                                  required: true,
+                                  pattern: /^[0-9]*$/i,
+                                })}
                               />
                             )}
                             {errors &&
@@ -853,6 +857,13 @@ const EmployeeInputSection = () => {
                               errors.pos_code.type === "required" && (
                                 <p style={{ color: "red", fontSize: "12px" }}>
                                   {errorMessage.pos_code}
+                                </p>
+                              )}
+                            {errors &&
+                              errors.pos_code &&
+                              errors.pos_code.type === "pattern" && (
+                                <p style={{ color: "red", fontSize: "12px" }}>
+                                  Kode pos hanya boleh diisi dengan angka
                                 </p>
                               )}
                           </Box>
@@ -914,35 +925,15 @@ const EmployeeInputSection = () => {
                             >
                               Asal Unit
                             </label>
-                            {queryString["?detail"] !== undefined ? (
-                              <SelectWithSearch
-                                async
-                                isDisabled={true}
-                                onChange={(value) => {
-                                  const e = {
-                                    target: {
-                                      name: "school_id",
-                                      value: value.value,
-                                    },
-                                  };
-                                  onChange(e);
-                                }}
-                                value={school_id}
-                                data={controller.school}
-                                name="school_id"
-                                placeholder={
-                                  school_id ||
-                                  "Asal Unit"
-                                }
-                                label="Asal Unit"
-                              />
-                            ) : controller.userInfo.role === 1 ? (
-                              <> 
+                            {controller.userInfo.role === 1 ? (
+                              <>
                                 <Controller
                                   as={
-                                    <SelectWithSearch
-                                      async
-                                      isDisabled={false}
+                                    <SelectWithSearchWithDebounced
+                                      disabled={
+                                        queryString["?detail"] !== undefined
+                                      }
+                                      loadOptions={controller.loadData}
                                       onChange={(value) => {
                                         const e = {
                                           target: {
@@ -955,10 +946,13 @@ const EmployeeInputSection = () => {
                                       value={school_id}
                                       data={controller.school}
                                       name="school_id"
+                                      label="UNIT"
+                                      debounced={controller.debounce}
                                       placeholder={
-                                       school_id !== '' ? school_id : "Asal Unit"
+                                        school_id !== ""
+                                          ? school_id
+                                          : "Asal Unit"
                                       }
-                                      label="Asal Unit"
                                     />
                                   }
                                   name="school_id"
@@ -986,21 +980,22 @@ const EmployeeInputSection = () => {
                                     </p>
                                   )}
                               </>
-                            ) : <SelectWithSearch
-                            async
-                            isDisabled
-                            onChange={onChange}
-                            value={controller.userInfo.school.id}
-                            data={[
-                              {
-                                id: controller.userInfo.school.id,
-                                name: controller.userInfo.school.name,
-                              },
-                            ]}
-                            name="school_id"
-                            label="Asal Unit"
-                          />
-                            }
+                            ) : (
+                              <SelectWithSearch
+                                async
+                                isDisabled
+                                onChange={onChange}
+                                value={controller.userInfo.school.id}
+                                data={[
+                                  {
+                                    id: controller.userInfo.school.id,
+                                    name: controller.userInfo.school.name,
+                                  },
+                                ]}
+                                name="school_id"
+                                label="Asal Unit"
+                              />
+                            )}
                           </Box>
                         </GridItem>
                       </GridContainer>
@@ -1228,56 +1223,33 @@ const EmployeeInputSection = () => {
                             >
                               No Telepon/HP
                             </label>
-                            {queryString["?detail"] !== undefined ? (
-                              <TextField
-                                style={{
-                                  width: "100%",
-                                }}
-                                disabled={true}
-                                variant="outlined"
-                                name="phone"
-                                onChange={onChange}
-                                InputProps={{
-                                  classes: { input: classes.input },
-                                }}
-                                placeholder="Nomor Telepon/HP"
-                                id={
-                                  errors &&
-                                  errors.phone &&
-                                  errors.phone.type === "required"
-                                    ? "filled-error-helper-text"
-                                    : "name"
-                                }
-                                inputRef={register({
-                                  required: true,
-                                  pattern: /^[0-9]*$/i,
-                                })}
-                              />
-                            ) : (
-                              <TextField
-                                style={{
-                                  width: "100%",
-                                }}
-                                variant="outlined"
-                                name="phone"
-                                onChange={onChange}
-                                InputProps={{
-                                  classes: { input: classes.input },
-                                }}
-                                placeholder="Nomor Telepon/HP"
-                                id={
-                                  errors &&
-                                  errors.phone &&
-                                  errors.phone.type === "required"
-                                    ? "filled-error-helper-text"
-                                    : "name"
-                                }
-                                inputRef={register({
-                                  required: true,
-                                  pattern: /^[0-9]*$/i,
-                                })}
-                              />
-                            )}
+                            <InputMask
+                              mask="+62 999 999 999 99"
+                              value={phone}
+                              disabled={queryString["?detail"] !== undefined}
+                              maskChar=" "
+                              onChange={onChange}
+                            >
+                              {() => (
+                                <TextField
+                                  style={{
+                                    width: "100%",
+                                  }}
+                                  variant="outlined"
+                                  name="phone"
+                                  id="phone"
+                                  disabled={queryString["?detail"] !== undefined}
+                                  placeholder="Contoh: +628567XXXXXXX"
+                               
+                                  InputProps={{
+                                    classes: { input: classes.input },
+                                  }}
+                                  inputRef={register({
+                                    required: true,
+                                  })}
+                                />
+                              )}
+                            </InputMask>
                             {errors &&
                               errors.phone &&
                               errors.phone.type === "required" && (
@@ -1285,13 +1257,11 @@ const EmployeeInputSection = () => {
                                   {errorMessage.phone}
                                 </p>
                               )}
-                            {errors &&
-                              errors.phone &&
-                              errors.phone.type === "pattern" && (
-                                <p style={{ color: "red", fontSize: "12px" }}>
-                                  NO HP hanya boleh diisi dengan angka
-                                </p>
-                              )}
+                            {error && Number(phone[4]) === 0 && (
+                              <p style={{ color: "red", fontSize: "12px" }}>
+                                No Handphone tidak valid. Silahkan coba kembali
+                              </p>
+                            )}
                           </Box>
                         </GridItem>
                       </GridContainer>
@@ -1331,7 +1301,7 @@ const EmployeeInputSection = () => {
                                 name="email"
                                 type="email"
                                 id="email"
-                                inputRef={register({ required: true })}
+                                inputRef={register}
                                 onChange={onChange}
                                 InputProps={{
                                   classes: { input: classes.input },
@@ -1364,7 +1334,8 @@ const EmployeeInputSection = () => {
                                   marginRight: "22em",
                                   marginTop: "20px",
                                 }}
-                                isLoading={loading ? true : false}
+                                loading={loading}
+                                disabled={loading}
                                 color="primary"
                                 type="submit"
                                 onClick={(e) => null}

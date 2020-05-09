@@ -67,9 +67,16 @@ const TabNavDisable = ({ handleChange, tabs, value, render, link }) => {
                 aria-label="simple tabs example">
                 {
                     tabs.map((tab, i) => {
-                        return (
-                            <Tab key={i} label={tab.name} {...a11yProps(i)} />
-                        )
+                        if(value === i) {
+                            return (
+                                <Tab key={i} label={tab.name} {...a11yProps(i)} />
+                            )
+                        } else {
+                            return (
+                                <Tab key={i} label={tab.name} {...a11yProps(i)} disabled/>
+                            )
+                        }
+                      
                     })
                 }
             </Tabs>
