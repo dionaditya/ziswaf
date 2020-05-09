@@ -128,8 +128,14 @@ const Content = () => {
   const showColor = controller.selectedSeries.map((val) => val.color);
   const showColorOPerator = controller.operatorData.map((val) => val.color);
 
-
-  console.log(controller.selectedSeries)
+  const generateNumber = () => {
+    const temp:any = []
+    const dataOp: any = controller.categoriesPerDay
+    for (var num:any = 1; num <= dataOp.length; num++) {
+      temp.push(num)
+    }
+    return temp.map(val => val)
+  }
 
   return (
     <div>
@@ -324,7 +330,7 @@ const Content = () => {
                   role={controller.role}
                   series={controller.role !== 2 ? controller.selectedSeries : controller.operatorData}
                   categories={controller.categories}
-                  categoriesPerday={controller.categoriesPerDay}
+                  categoriesPerday={generateNumber()}
                   colors={controller.role !== 2 ? showColor : showColorOPerator}
                 />
               </div>

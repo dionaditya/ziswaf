@@ -50,6 +50,16 @@ const ReportGeneral = () => {
   const controller = useContext(ReportContext);
   const ref = React.createRef<HTMLDivElement>();
 
+
+  const generateNumber = () => {
+    const temp:any = []
+    const dataOp: any = Object.values(controller.tableRetailOp).map((val: any, i) => i)
+    for (var num:any = 1; num <= dataOp.length; num++) {
+      temp.push(num)
+    }
+    return temp.map(val => val)
+  }
+
   const cardInfoZiswaf = (
     color,
     title,
@@ -395,7 +405,7 @@ const ReportGeneral = () => {
                           dataTransaction={Object.values(
                             controller.generalOperatorPerDay
                           )}
-                          dataPerDayProp={Object.keys(controller.tableRetailOp)}
+                          dataPerDayProp={generateNumber()}
                         />
                       )}
                   </CardBody>
@@ -504,15 +514,15 @@ const ReportGeneral = () => {
                     height={10}
                     data={[
                       {
-                        value: controller.divPercent.percentRetail || 0 ,
+                        value: controller.divPercent.percentRetail || 0,
                         color: "#F7685B",
                       },
                       {
-                        value: controller.divPercent.percentCorporate || 0 ,
+                        value: controller.divPercent.percentCorporate || 0,
                         color: "#2ED47A",
                       },
                       {
-                        value: controller.divPercent.percentUpz || 0 ,
+                        value: controller.divPercent.percentUpz || 0,
                         color: "#FFB946",
                       },
                     ]}

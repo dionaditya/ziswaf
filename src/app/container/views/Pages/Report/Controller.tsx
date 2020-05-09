@@ -394,8 +394,8 @@ export const ReportController = ({ children }) => {
     const { school: school_name, role } = getUserInfo()
     const idSchool = school_name?.id;
     const nameSchool = school_name?.name;
-    const startDate = state.filterData.dateSelected.start_date
-    const endDate = state.filterData.dateSelected.end_date
+    const startDate = moment(state.filterData.dateSelected.start_date).format()
+    const endDate = moment(state.filterData.dateSelected.end_date).format()
 
     const regencySelected = role === 1 ? state.filterData.citySelected.map(item => item['name']).join(',') : '';
     const schoolSelected = role === 1 ? state.filterData.unitSelected.map(item => item['name']).join(',') : idSchool;

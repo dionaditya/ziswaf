@@ -65,7 +65,6 @@
     "react-scripts": "^3.4.0",
     "react-search-box": "^2.0.2",
     "react-select": "^3.1.0",
-    "react-snap": "^1.23.0",
     "react-swipeable-views": "0.13.3",
     "react-switch": "^5.0.1",
     "react-text-mask": "^5.4.3",
@@ -87,15 +86,11 @@
     "build": "npm run && react-app-rewired build",
     "test": "npm run && react-app-rewired test --env=jsdom",
     "eject": "npm run && react-app-rewired eject",
-    "postbuild": "react-snap",
     "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start",
     "lint:check": "eslint . --ext=js,jsx;  exit 0",
     "lint:fix": "eslint . --ext=js,jsx --fix;  exit 0",
     "build-package-css": "cp src/assets/css/material-dashboard-react.css dist/material-dashboard-react.css",
     "build-package": "npm run build-package-css && babel src --out-dir dist"
-  },
-  "reactSnap": {
-    "skipThirdPartyRequests": true
   },
   "eslintConfig": {
     "extends": "react-app"

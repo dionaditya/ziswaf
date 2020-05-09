@@ -5,10 +5,13 @@ import { SchoolPresenter } from "@/app/infrastructures/Presenter/School/Presente
 import { ProvincePresenter } from "@/app/infrastructures/Presenter/Province/Presenter";
 import { CityPresenter } from "@/app/infrastructures/Presenter/City/Presenter";
 import { EmployeePresenter } from "@/app/infrastructures/Presenter/Employee/Presenter";
-import { EmployeeStatus, nonSoratAbleEmployeeDataTable } from "@/domain/entities/AllOptions";
+import {
+  EmployeeStatus,
+  nonSoratAbleEmployeeDataTable,
+} from "@/domain/entities/AllOptions";
 import { getUserInfo } from "@/app/infrastructures/misc/Cookies";
 import { useDebounce } from "use-lodash-debounce";
-import { createContainer } from 'react-tracked'    
+import { createContainer } from "react-tracked";
 
 export enum ActionType {
   handleModal = "HANDLEMODAL",
@@ -265,12 +268,12 @@ const reducer: React.Reducer<IState, IAction> = (state, action) => {
   }
 };
 
-const useValue = ({ reducer, initialState }) => useReducer(reducer, initialState);
+const useValue = ({ reducer, initialState }) =>
+  useReducer(reducer, initialState);
 
-const {
-  Provider,
-  useTracked,
-} = createContainer(() => useReducer(reducer, initialState));
+const { Provider, useTracked } = createContainer(() =>
+  useReducer(reducer, initialState)
+);
 
 export const StudentListDashboardContext = React.createContext<IState>(
   initialState
@@ -278,7 +281,7 @@ export const StudentListDashboardContext = React.createContext<IState>(
 const { Provider: StudentListProvider } = StudentListDashboardContext;
 
 export const StudentListController = ({ children }) => {
-   const [state, dispatch] = useTracked();
+  const [state, dispatch] = useTracked();
 
   let schoolPresenter: SchoolPresenter = container.resolve(SchoolPresenter);
   let provincePresenter: ProvincePresenter = container.resolve(
@@ -328,11 +331,15 @@ export const StudentListController = ({ children }) => {
         const listEmployee = await employeePresenter.loadData({
           ...filterStatus,
         });
-      
-        dispatch({ type: ActionType.setData, payload: listEmployee.data.data !== null ? listEmployee.data.data : [] });
+
+        dispatch({
+          type: ActionType.setData,
+          payload:
+            listEmployee.data.data !== null ? listEmployee.data.data : [],
+        });
         setPagintion({
           total: listEmployee.data.pagination.total,
-          page: listEmployee.data.pagination.current_page-1,
+          page: listEmployee.data.pagination.current_page - 1,
           rowsPerPage: listEmployee.data.pagination.page_size,
         });
 
@@ -357,10 +364,14 @@ export const StudentListController = ({ children }) => {
         });
         setPagintion({
           total: listEmployee.data.pagination.total,
-          page: listEmployee.data.pagination.current_page-1,
+          page: listEmployee.data.pagination.current_page - 1,
           rowsPerPage: listEmployee.data.pagination.page_size,
         });
-        dispatch({ type: ActionType.setData, payload: listEmployee.data.data !== null ? listEmployee.data.data : [] });
+        dispatch({
+          type: ActionType.setData,
+          payload:
+            listEmployee.data.data !== null ? listEmployee.data.data : [],
+        });
         dispatch({ type: ActionType.setLoading, payload: false });
       }
     };
@@ -368,7 +379,7 @@ export const StudentListController = ({ children }) => {
   }, []);
 
   React.useEffect(() => {
-    if(debouncedSchool !== "") {
+    if (debouncedSchool !== "") {
       (async () => {
         const school: any = await schoolPresenter.loadData({
           search: debouncedSchool,
@@ -381,10 +392,10 @@ export const StudentListController = ({ children }) => {
     } else {
       (async () => {
         const school: any = await schoolPresenter.loadData({
-         paging: {
-           page: 1,
-           limit: 10
-         }
+          paging: {
+            page: 1,
+            limit: 10,
+          },
         });
         dispatch({
           type: ActionType.setSchool,
@@ -411,7 +422,7 @@ export const StudentListController = ({ children }) => {
     viewColumns: false,
     textLabels: {
       body: {
-        noMatch: state.loading ? 'loading...' : "Maaf tidak ada data",
+        noMatch: state.loading ? "loading..." : "Maaf tidak ada data",
       },
     },
     selectableRowsOnClick: true,
@@ -490,7 +501,7 @@ export const StudentListController = ({ children }) => {
             ...filterStatus,
             paging: {
               ...filterStatus.paging,
-              page: tableState.page+1,
+              page: tableState.page + 1,
             },
           });
           if (employeeSorted !== null) {
@@ -542,14 +553,16 @@ export const StudentListController = ({ children }) => {
 
   const handleModal = (e: any) => {
     return (dispatch: any) => async (actiontype: any) => {
-      dispatch({type: ActionType.handleModal})
+      dispatch({ type: ActionType.handleModal });
       if (state.statusModal === false) {
         const province = await provincePresenter.loadData();
         const city = await cityPresenter.loadData();
-        const school = await schoolPresenter.loadData({paging: {
-          page: 1,
-          limit: 10
-        }});
+        const school = await schoolPresenter.loadData({
+          paging: {
+            page: 1,
+            limit: 10,
+          },
+        });
         dispatch({ type: ActionType.setProvince, payload: province });
         dispatch({ type: ActionType.setCity, payload: city });
         dispatch({ type: ActionType.setSchool, payload: school.data.data });
@@ -571,7 +584,11 @@ export const StudentListController = ({ children }) => {
       payload: { name: any; label: any; option: any };
     }) => any
   ) => (actiontype: any) => {
-    if(e.target.value === 'phone' || e.target.value === "email" || e.target.value === "pos_code") {
+    if (
+      e.target.value === "phone" ||
+      e.target.value === "email" ||
+      e.target.value === "pos_code"
+    ) {
       dispatch({
         type: actiontype,
         payload: {
@@ -580,7 +597,7 @@ export const StudentListController = ({ children }) => {
           option: { filter: false, sort: false },
         },
       });
-    } else  {
+    } else {
       dispatch({
         type: actiontype,
         payload: {
@@ -590,7 +607,6 @@ export const StudentListController = ({ children }) => {
         },
       });
     }
-   
   };
 
   const handleChangeFilter = (e: any) => {
@@ -609,11 +625,9 @@ export const StudentListController = ({ children }) => {
     return (dispatch: any) => async (actiontype: any) => {
       dispatch({ type: ActionType.setLoading, payload: true });
 
-      const listFilteredEmployee = await employeePresenter.loadData(
-        {
-          ...filterStatus,
-        }
-      );
+      const listFilteredEmployee = await employeePresenter.loadData({
+        ...filterStatus,
+      });
       if (listFilteredEmployee.data.data === null) {
         setFilter(true);
         dispatch({ type: ActionType.handleModal });
@@ -645,8 +659,8 @@ export const StudentListController = ({ children }) => {
         search: filterStatus.search,
         filter: filterStatus.filter,
         sort: {
-          id: 'DESC'
-        }
+          id: "DESC",
+        },
       });
       if (listSearchEmployee.data.data === null) {
         dispatch({ type: actiontype, payload: [] });
@@ -705,24 +719,10 @@ export const StudentListController = ({ children }) => {
         const listEmployee = await employeePresenter.loadData({
           ...filterStatus,
         });
-        if(listEmployee.data.data !== null){
+        if (listEmployee.data.data !== null) {
           setPagintion({
             total: listEmployee.data.pagination.total,
             page: listEmployee.data.pagination.current_page - 1,
-            rowsPerPage: listEmployee.data.pagination.page_size,
-          });
-          dispatch({
-            type: ActionType.setData,
-            payload: [],
-          });
-          dispatch({
-            type: ActionType.setLoading,
-            payload: false,
-          });
-        }else {
-          setPagintion({
-            total: listEmployee.data.pagination.total,
-            page: listEmployee.data.pagination.current_page,
             rowsPerPage: listEmployee.data.pagination.page_size,
           });
           dispatch({
@@ -733,11 +733,25 @@ export const StudentListController = ({ children }) => {
             type: ActionType.setLoading,
             payload: false,
           });
+        } else {
+          setPagintion({
+            total: listEmployee.data.pagination.total,
+            page: listEmployee.data.pagination.current_page,
+            rowsPerPage: listEmployee.data.pagination.page_size,
+          });
+          dispatch({
+            type: ActionType.setData,
+            payload: [],
+          });
+          dispatch({
+            type: ActionType.setLoading,
+            payload: false,
+          });
         }
-        return ['success', deletedEmployee];
+        return ["success", deletedEmployee];
       }
-    } catch(error) {
-      return ['error', error.response];
+    } catch (error) {
+      return ["error", error.response];
     }
   };
 
@@ -762,7 +776,6 @@ export const StudentListController = ({ children }) => {
       });
     }
   };
-  
 
   const loadData = (newValue, callback) => {
     const transformData = state.school.map((val) => {
@@ -771,11 +784,14 @@ export const StudentListController = ({ children }) => {
         label: val.name,
       };
     });
-    console.log(transformData)
-    const witHDefaultValue = [{
-      value: "",
-      label: "SEMUA"
-    }, ...transformData]
+    console.log(transformData);
+    const witHDefaultValue = [
+      {
+        value: "",
+        label: "SEMUA",
+      },
+      ...transformData,
+    ];
 
     return callback(witHDefaultValue);
   };
@@ -784,9 +800,6 @@ export const StudentListController = ({ children }) => {
     setQuerySchool(inputValue);
   };
 
-
-
- 
   return (
     <StudentListProvider
       value={{
@@ -808,7 +821,7 @@ export const StudentListController = ({ children }) => {
         tableIndex: tableIndex,
         setFilterStatus,
         debounce,
-        loadData
+        loadData,
       }}
     >
       {children}
@@ -816,13 +829,10 @@ export const StudentListController = ({ children }) => {
   );
 };
 
-
-export const AppProvider = ({children}) => {
-    return(
-      <Provider>
-         <StudentListController>
-             {children}
-         </StudentListController>
-      </Provider>
-      )
-}
+export const AppProvider = ({ children }) => {
+  return (
+    <Provider>
+      <StudentListController>{children}</StudentListController>
+    </Provider>
+  );
+};
