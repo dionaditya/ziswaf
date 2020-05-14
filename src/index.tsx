@@ -10,6 +10,7 @@ if(process.env.NODE_ENV === 'production') {
     console.log = () => {}
 }
 
+console.log('hai')
 
 const App = React.lazy(() => import('./App'))
 
