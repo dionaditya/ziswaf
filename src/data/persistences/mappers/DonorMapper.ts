@@ -20,9 +20,9 @@ export class DonorMapper {
           item.position,
           item.email,
           item.address,
-          item.phone,
+          `+62${item.phone}`,
           item.status,
-          item.npwp,
+          item.npwp === 0 ? null : item.npwp,
           item.pos_code,
           item.info,
           item.province_name,
@@ -44,7 +44,7 @@ export class DonorMapper {
       data.position,
       data.email,
       data.address,
-      data.phone,
+      `+62${data.phone}`,
       data.status,
       data.npwp === 0 ? null : data.npwp,
       data.pos_code,
@@ -100,7 +100,7 @@ export class DonorMapper {
             item.name,
             item.position,
             item.info,
-            item.is_company ? item.phone : '',
+            item.is_company ? `+62${item.phone}` : '-',
             item.school_name
           );
           resp.push(donor);
@@ -120,7 +120,7 @@ export class DonorMapper {
             item.is_company ? item.name : '-',
             item.position,
             item.info,
-            item.is_company ? item.phone : '',
+            item.is_company ? `+62${item.phone}`: '-',
             item.school_name
           );
           resp.push(donor);

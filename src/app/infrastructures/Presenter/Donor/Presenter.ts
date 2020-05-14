@@ -15,12 +15,10 @@ export class DonorPresenter {
   }
 
   public getAll(params?: any): Promise<Donor[] | null> {
-    console.log(params)
     return this.repository.getAll(params);
   }
 
   public getAllWithPagination(params: object): Promise<any | null> {
-    console.log(params)
     return this.repository.getAllWithPagination(params);
   }
 
@@ -40,7 +38,6 @@ export class DonorPresenter {
     payload: UpdateDonorApiRequest,
     id: number
   ): Promise<DonorDetails> {
-    console.log(payload)
     return this.repository.update(payload, id);
   }
 

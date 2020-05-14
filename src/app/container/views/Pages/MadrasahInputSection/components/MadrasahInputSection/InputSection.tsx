@@ -56,6 +56,11 @@ const useStyles = makeStyles((theme: Theme) =>
     loadingReset: {
       color: "#00923F",
     },
+    labelOpsional: {
+      color: "#BCBCBC",
+      fontSize: "14px",
+      fontWeight: "bold",
+    },
   })
 );
 
@@ -92,11 +97,33 @@ const SectionInput = () => {
 
   const { addToast } = useToasts();
 
+  const {
+    name,
+    phone,
+    email,
+    address,
+    pos_code,
+    province_id,
+    regency_id,
+    description,
+    user_id,
+    opened_at,
+    id,
+  } = controller.inputSchoolData;
+
+  const isValid = (phoneNumber) => {
+    if (phoneNumber[0] === "+") {
+      return Number(phoneNumber[3]) !== 0 ? true : false;
+    } else {
+      return Number(phoneNumber[0]) !== 0 ? true : false;
+    }
+  };
+
   const onSubmit = async (e) => {
     setLoadingSubmit(true);
     setSubmit(true);
     if (_.isEmpty(errors)) {
-      if (Number(phone[4]) !== 0) {
+      if (isValid(phone)) {
         setError(false);
         const [status, response] = await controller.handleSubmit(e)(
           controller.dispatch
@@ -139,20 +166,6 @@ const SectionInput = () => {
     }
   };
 
-  const {
-    name,
-    phone,
-    email,
-    address,
-    pos_code,
-    province_id,
-    regency_id,
-    description,
-    user_id,
-    opened_at,
-    id,
-  } = controller.inputSchoolData;
-
   React.useEffect(() => {
     setProccessing(true);
     if (opened_at == "") {
@@ -186,6 +199,27 @@ const SectionInput = () => {
     }
     setProccessing(false);
   }, [controller.inputSchoolData]);
+
+  if (controller.loading) {
+    return (
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyItems="center"
+        alignItems="center"
+      >
+        <div
+          style={{
+            height: "100vh",
+          }}
+        >
+          <CircularProgress size={16} className={classes.loadingReset} />
+          loading
+        </div>
+      </Box>
+    );
+  }
+
 
   return (
     <MuiPickersUtilsProvider utils={MomentUtils} locale={idLocale}>
@@ -226,6 +260,7 @@ const SectionInput = () => {
                       />
                     </GridItem>
                   )}
+
                   <GridItem
                     xs={12}
                     sm={12}
@@ -244,6 +279,7 @@ const SectionInput = () => {
                       label=""
                       style={{
                         width: "100%",
+                        background: "white",
                       }}
                       id={
                         errors && errors.name && errors.name.type === "required"
@@ -301,6 +337,7 @@ const SectionInput = () => {
                       onChange={handleChange}
                       style={{
                         width: "100%",
+                        background: "white",
                       }}
                       type="text"
                       name="address"
@@ -478,6 +515,7 @@ const SectionInput = () => {
                         onChange={handleChange}
                         style={{
                           width: "100%",
+                          background: "white",
                         }}
                         id="pos_code"
                         variant="outlined"
@@ -531,6 +569,7 @@ const SectionInput = () => {
                             inputVariant="outlined"
                             style={{
                               height: "5px !important",
+                              background: "white",
                             }}
                             placeholder={
                               controller.inputSchoolData.opened_at === ""
@@ -619,30 +658,34 @@ const SectionInput = () => {
                       >
                         No Telp / HP
                       </label>
-                      <InputMask
-                        mask="+62 999 999 999 99"
-                        value={phone}
-                        maskChar=" "
-                        onChange={handleChange}
-                      >
-                        {() => (
-                          <TextField
-                            style={{
-                              width: "100%",
-                            }}
-                            variant="outlined"
-                            name="phone"
-                            id="phone"
-                            placeholder="Contoh: +628567XXXXXXX"
-                            InputProps={{
-                              classes: { input: classes.input },
-                            }}
-                            inputRef={register({
-                              required: true,
-                            })}
-                          />
-                        )}
-                      </InputMask>
+                      <Controller
+                        as={
+                          <InputMask mask="+6299 999 999 999" maskChar=" ">
+                            {() => (
+                              <TextField
+                                style={{
+                                  width: "100%",
+                                  background: "white",
+                                }}
+                                variant="outlined"
+                                name="phone"
+                                id="phone"
+                                placeholder="Contoh: +628567XXXXXXX"
+                                size="small"
+                              />
+                            )}
+                          </InputMask>
+                        }
+                        control={control}
+                        name="phone"
+                        onChange={(e) => {
+                          handleChange(e[0]);
+                          return e[0].target.value;
+                        }}
+                        rules={{ required: true }}
+                        defaultValue={phone}
+                      />
+
                       {errors &&
                         errors.phone &&
                         errors.phone.type === "required" && (
@@ -650,7 +693,7 @@ const SectionInput = () => {
                             {errorMessage.phone}
                           </p>
                         )}
-                      {error && Number(phone[4]) === 0 && (
+                      {error && isValid(phone) === false && (
                         <p style={{ color: "red", fontSize: "12px" }}>
                           No Handphone tidak valid. Silahkan coba kembali
                         </p>
@@ -676,6 +719,7 @@ const SectionInput = () => {
                         placeholder="Alamat surel"
                         style={{
                           width: "100%",
+                          background: "white",
                         }}
                         id="email"
                         variant="outlined"
@@ -699,22 +743,34 @@ const SectionInput = () => {
                       md={12}
                       style={{ marginTop: "5vh" }}
                     >
-                      <label
-                        htmlFor="description"
-                        className={
-                          errors && errors.description
-                            ? "red-text"
-                            : "black-text"
-                        }
-                        style={{ fontSize: "12px", fontWeight: "bold" }}
+                      <Box
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
                       >
-                        Info lain
-                      </label>
+                        <label
+                          htmlFor="description"
+                          className={
+                            errors && errors.description
+                              ? "red-text"
+                              : "black-text"
+                          }
+                          style={{ fontSize: "12px", fontWeight: "bold" }}
+                        >
+                          Info lain
+                        </label>
+                        <label className={classes.labelOpsional}>
+                          Opsional
+                        </label>
+                      </Box>
+
                       <TextField
                         // value={controller.inputSchoolData.description || ''}
                         onChange={handleChange}
                         style={{
                           width: "100%",
+                          background: "white",
                         }}
                         id="description"
                         variant="outlined"
@@ -723,13 +779,6 @@ const SectionInput = () => {
                         placeholder="Info Lain"
                         inputRef={register}
                       />
-                      {errors &&
-                        errors.info &&
-                        errors.info.type === "required" && (
-                          <p style={{ color: "red", fontSize: "12px" }}>
-                            Info tidak boleh kosong
-                          </p>
-                        )}
                     </GridItem>
                   </Box>
                 </GridItem>

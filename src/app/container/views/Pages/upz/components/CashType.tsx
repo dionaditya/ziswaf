@@ -131,7 +131,7 @@ const JenisUang = ({ controller, onChange, error }) => {
                           onChange(e);
                         }}
                       />
-                        {error && value === 0 && (
+                        {error && Number(value) === 0 && (
                         <p style={{ color: "red", fontSize: "12px" }}>
                           Jumlah donasi harus lebih dari Rp. 0
                         </p>

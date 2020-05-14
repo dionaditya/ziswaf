@@ -25,23 +25,23 @@ const Corporate: React.FC<{}> = () => {
 
   const location = useLocation();
   const { id, transaction_id, donor_id } = useParams();
-  const donor = useRouteMatch("/dashboard/corporate-transaction/:donor_id");
+  const donor = useRouteMatch("/dashboard/donation/corporate/transaction/:donor_id");
   const transaction = useRouteMatch(
-    "/dashboard/corporate-tanda-terima/:transaction_id"
+    "/dashboard/donation/corporate/tanda-terima/:transaction_id"
   );
 
   const tabs = [
     {
       name: "Data Donatur",
-      link: "/dashboard/corporate/donor",
+      link: "/dashboard/donation/corporate",
     },
     {
       name: "Data Donasi",
-      link: `/dashboard/corporate-transaction/${donor_id}`,
+      link: `/dashboard/donation/corporate/transaction/${donor_id}`,
     },
     {
       name: "Tanda Terima",
-      link: `/dashboard/corporate-tanda-terima/${transaction_id}`,
+      link: `/dashboard/donation/corporate/tanda-terima/${transaction_id}`,
     },
   ];
   const handleChange = (e, i) => {

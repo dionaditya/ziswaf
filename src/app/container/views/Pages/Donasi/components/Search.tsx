@@ -194,13 +194,13 @@ export const SearchDonation: React.FC<{}> = () => {
                 open={Boolean(anchorEl)}
                 onClose={handleCloseAnchor}
               >
-                <Link to="/dashboard/retail" style={{ textDecoration: 'none', color: 'black' }}>
+                <Link to="/dashboard/donation/retail" style={{ textDecoration: 'none', color: 'black' }}>
                   <MenuItem onClick={handleClose}>Input Retail</MenuItem>
                 </Link>
-                <Link to="/dashboard/corporate/donor" style={{ textDecoration: 'none', color: 'black' }}>
+                <Link to="/dashboard/donation/corporate" style={{ textDecoration: 'none', color: 'black' }}>
                   <MenuItem onClick={handleClose}>Input Corporate</MenuItem>
                 </Link>
-                <Link to="/dashboard/upz" style={{ textDecoration: 'none', color: 'black' }}>
+                <Link to="/dashboard/donation/upz" style={{ textDecoration: 'none', color: 'black' }}>
                   <MenuItem onClick={handleClose}>Input UPZ</MenuItem>
                 </Link>
               </Menu>

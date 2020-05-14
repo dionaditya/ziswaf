@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Menu, { MenuProps } from "@material-ui/core/Menu";
 import { withStyles } from "@material-ui/core/styles";
-import { Button } from "@material-ui/core";
+import { Button, TextField } from "@material-ui/core";
 import { KeyboardArrowDown } from "@material-ui/icons";
 import _ from "lodash";
 import Checkbox, { CheckboxProps } from "@material-ui/core/Checkbox";
@@ -40,7 +40,18 @@ const StyledMenu = withStyles({
   />
 ));
 
-const MySelect = ({ options, handleChange, checked, label, ...props }) => {
+const MySelect = (props) => {
+  const {
+    options,
+    handleChange,
+    checked,
+    label,
+    placeholderInput,
+    withSearch,
+    debounce,
+    debounceSchool,
+    ...rest
+  } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [transformOption, setTransformOption] = React.useState([
     {
@@ -48,6 +59,17 @@ const MySelect = ({ options, handleChange, checked, label, ...props }) => {
       label: "",
     },
   ]);
+  const [value, setValue] = React.useState("");
+
+  const transfromValueSearch = () => {
+    if (value === "" || debounce) {
+      return transformOption;
+    } else {
+      return transformOption.filter((val) =>
+        val.label.toLowerCase().includes(value.toLowerCase())
+      );
+    }
+  };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -61,76 +83,184 @@ const MySelect = ({ options, handleChange, checked, label, ...props }) => {
     setTransformOption(options);
   }, [checked, options]);
 
-  return (
-    <div>
-      <Button
-        aria-controls="simple-menu"
-        aria-haspopup="true"
-        style={{
-          background: "#F2F2F2",
-          color: "#4B4B4B",
-          height: 42,
-          fontSize: 12,
-          width: "100%"
-        }}
-        onClick={handleClick}
-        {...props}
-      >
-        <span className="col">{label}</span>
-        <KeyboardArrowDown style={{ color: "#878787" }} />
-      </Button>
-      <StyledMenu
-        id="simple-menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        {transformOption.map((option, i) => {
-          const isChecked = checked.filter((item) => {
-            return item.name === option.name;
-          });
-          if (isChecked.length <= 0) {
-            return (
-              <Box key={i}>
-                <FormControlLabel
-                  control={
-                    <GreenCheckbox
-                      onChange={!props.checkboxDisabled ? handleChange : {} }
-                      name={option.label}
-                      checked={false}
-                      value={option.name}
-                       disabled={props.checkboxDisabled}
-                      {...props}
+  const onChange = (event) => {
+    if (debounce) {
+      const valueInput = event.target.value;
+
+      debounceSchool(valueInput);
+      setValue(valueInput);
+    } else {
+      const valueInput = event.target.value;
+
+      setValue(valueInput);
+    }
+  };
+
+  if (withSearch) {
+    return (
+      <div>
+        <Button
+          aria-controls="simple-menu"
+          aria-haspopup="true"
+          style={{
+            background: "#F2F2F2",
+            color: "#4B4B4B",
+            height: 42,
+            fontSize: 12,
+            width: "100%",
+          }}
+          onClick={handleClick}
+          {...rest}
+        >
+          <span className="col">{label}</span>
+          <KeyboardArrowDown style={{ color: "#878787" }} />
+        </Button>
+        <StyledMenu
+          id="simple-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          <TextField
+            value={value}
+            onChange={onChange}
+            name="search"
+            style={{
+              width: "100%",
+            }}
+            placeholder={placeholderInput}
+            onKeyPress={e => {
+              if(e.keyCode === 13) {
+                onChange(e)
+              }
+            }}
+          />
+          <Box
+            style={{
+              overflowX: "hidden",
+              overflowY: "auto",
+              maxHeight: "350px",
+            }}
+          >
+            {transfromValueSearch().map((option, i) => {
+              const isChecked = checked.filter((item) => {
+                return item.name === option.name;
+              });
+              if (isChecked.length <= 0) {
+                return (
+                  <Box key={i}>
+                    <FormControlLabel
+                      control={
+                        <GreenCheckbox
+                          onChange={!props.checkboxDisabled ? handleChange : {}}
+                          name={option.label}
+                          checked={false}
+                          value={option.name}
+                          disabled={props.checkboxDisabled}
+                          {...rest}
+                        />
+                      }
+                      label={option.label}
                     />
-                  }
-                  label={option.label}
-                />
-              </Box>
-            );
-          } else {
-            return (
-              <Box key={i}>
-                <FormControlLabel
-                  control={
-                    <GreenCheckbox
-                      onChange={!props.checkboxDisabled ? handleChange : {} }
-                      name={option.label}
-                      checked={true}
-                      value={option.name}
-                      disabled={props.checkboxDisabled}
-                      {...props}
+                  </Box>
+                );
+              } else {
+                return (
+                  <Box key={i}>
+                    <FormControlLabel
+                      control={
+                        <GreenCheckbox
+                          onChange={!props.checkboxDisabled ? handleChange : {}}
+                          name={option.label}
+                          checked={true}
+                          value={option.name}
+                          disabled={props.checkboxDisabled}
+                          {...rest}
+                        />
+                      }
+                      label={option.label}
                     />
-                  }
-                  label={option.label}
-                />
-              </Box>
-            );
-          }
-        })}
-      </StyledMenu>
-    </div>
-  );
+                  </Box>
+                );
+              }
+            })}
+          </Box>
+        </StyledMenu>
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <Button
+          aria-controls="simple-menu"
+          aria-haspopup="true"
+          style={{
+            background: "#F2F2F2",
+            color: "#4B4B4B",
+            height: 42,
+            fontSize: 12,
+            width: "100%",
+          }}
+          onClick={handleClick}
+          {...rest}
+        >
+          <span className="col">{label}</span>
+          <KeyboardArrowDown style={{ color: "#878787" }} />
+        </Button>
+        <StyledMenu
+          id="simple-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          {transformOption.map((option, i) => {
+            const isChecked = checked.filter((item) => {
+              return item.name === option.name;
+            });
+            if (isChecked.length <= 0) {
+              return (
+                <Box key={i}>
+                  <FormControlLabel
+                    control={
+                      <GreenCheckbox
+                        onChange={!props.checkboxDisabled ? handleChange : {}}
+                        name={option.label}
+                        checked={false}
+                        value={option.name}
+                        disabled={props.checkboxDisabled}
+                        {...rest}
+                      />
+                    }
+                    label={option.label}
+                  />
+                </Box>
+              );
+            } else {
+              return (
+                <Box key={i}>
+                  <FormControlLabel
+                    control={
+                      <GreenCheckbox
+                        onChange={!props.checkboxDisabled ? handleChange : {}}
+                        name={option.label}
+                        checked={true}
+                        value={option.name}
+                        disabled={props.checkboxDisabled}
+                        {...rest}
+                      />
+                    }
+                    label={option.label}
+                  />
+                </Box>
+              );
+            }
+          })}
+        </StyledMenu>
+      </div>
+    );
+  }
 };
 
 export default MySelect;

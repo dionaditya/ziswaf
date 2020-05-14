@@ -83,25 +83,28 @@ const Receipts = ({ index, setIndex }) => {
                       className="card-title white-text"
                       style={{ fontWeight: "bold", color: "white" }}
                     >
-                      TANDA TERIMA
+                      {controller.loading ? (
+                        <span>Loading.....</span>
+                      ) : (
+                        <span>TANDA TERIMA</span>
+                      )}
                     </h4>
                   </GridItem>
                   <GridItem xs={12} sm={6} md={6}>
                     <Box display="flex" justifyContent="flex-end">
-                      {
-                        query['?employee_id']!== undefined &&  <Button
-                        small
-                        node="button"
-                        style={{
-                          color: "#ffffff",
-                          background: "#6DB400",
-                        }}
-                        onClick={handleOpen}
-                      >
-                        Lihat Detail
-                      </Button>
-                      }
-                     
+                      {query["?employee_id"] !== undefined && (
+                        <Button
+                          small
+                          node="button"
+                          style={{
+                            color: "#ffffff",
+                            background: "#6DB400",
+                          }}
+                          onClick={handleOpen}
+                        >
+                          Lihat Detail
+                        </Button>
+                      )}
                     </Box>
                   </GridItem>
                 </Box>
@@ -120,9 +123,7 @@ const Receipts = ({ index, setIndex }) => {
                         >
                           KATEGORI ZISWAF
                         </span>
-                        <p className="black-text">
-                          {division_name || "KATEGORI"}
-                        </p>
+                        <p className="black-text">{division_name || "-"}</p>
                       </div>
                       <div className="row mb-4">
                         <span
@@ -134,9 +135,7 @@ const Receipts = ({ index, setIndex }) => {
                         >
                           TANGGAL & WAKTU
                         </span>
-                        <p className="black-text">
-                          {created_at}
-                        </p>
+                        <p className="black-text">{created_at}</p>
                       </div>
                       <div className="row mb-4">
                         <span
@@ -148,9 +147,7 @@ const Receipts = ({ index, setIndex }) => {
                         >
                           NOMOR KWITANSI
                         </span>
-                        <p className="black-text">
-                          {kwitansi || "NOMOR KWITANSI"}
-                        </p>
+                        <p className="black-text">{kwitansi || "-"}</p>
                       </div>
                     </div>
                   </GridItem>
@@ -166,9 +163,7 @@ const Receipts = ({ index, setIndex }) => {
                         >
                           NAMA DONATUR
                         </span>
-                        <p className="black-text">
-                          {donor_name || "NAMA DONATUR"}
-                        </p>
+                        <p className="black-text">{donor_name || "-"}</p>
                       </div>
                       <div className="row mb-4">
                         <span
@@ -180,9 +175,7 @@ const Receipts = ({ index, setIndex }) => {
                         >
                           ALAMAT DONATUR
                         </span>
-                        <p className="black-text">
-                          {donor_address || "Alamat Donatur"}
-                        </p>
+                        <p className="black-text">{donor_address || "-"}</p>
                       </div>
                       <div className="row mb-4">
                         <span
@@ -194,9 +187,7 @@ const Receipts = ({ index, setIndex }) => {
                         >
                           JENIS DONASI
                         </span>
-                        <p className="black-text">
-                          {category || "JENIS DONASI"}
-                        </p>
+                        <p className="black-text">{category || "-"}</p>
                       </div>
                       <div className="row mb-4">
                         <span
@@ -209,7 +200,7 @@ const Receipts = ({ index, setIndex }) => {
                           KETERANGAN DONASI
                         </span>
                         <p className="black-text">
-                          {statement_category || "KETERANGAN DONASI"}
+                          {statement_category || "-"}
                         </p>
                       </div>
                     </div>
@@ -226,9 +217,7 @@ const Receipts = ({ index, setIndex }) => {
                         >
                           BENTUK DONASI
                         </span>
-                        <p className="black-text">
-                          {item_type || "BENTUK DONASI"}
-                        </p>
+                        <p className="black-text">{item_type || "-"}</p>
                       </div>
                       {item_type === "Uang" ? (
                         <div>
@@ -266,9 +255,7 @@ const Receipts = ({ index, setIndex }) => {
                             >
                               NO REF
                             </span>
-                            <p className="black-text">
-                              {ref_number || "NOMOR REFERENSI"}
-                            </p>
+                            <p className="black-text">{ref_number || "-"}</p>
                           </div>
                         </div>
                       ) : (
@@ -333,7 +320,7 @@ const Receipts = ({ index, setIndex }) => {
                 marginLeft: "4px",
               }}
             >
-              {query['?employee_id'] === undefined ? "Lihat detail" : "Cetaik" }
+              {query["?employee_id"] === undefined ? "Lihat detail" : "Cetaik"}
             </Button>
           </Box>
         </GridItem>

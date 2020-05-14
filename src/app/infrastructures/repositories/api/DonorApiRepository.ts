@@ -111,6 +111,7 @@ export class DonorApiRepository implements DonorRepositoryInterface {
     id: number
   ): Promise<any> {
     try {
+      console.log(payload.toJson())
       const resp = await this.service.invoke(
         "put",
         this.endpoints.managerDonor(id),

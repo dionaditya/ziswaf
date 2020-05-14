@@ -73,6 +73,11 @@ const useStyles = makeStyles((theme: Theme) =>
     loadingReset: {
       color: "#00923F",
     },
+    labelOpsional: {
+      color: '#BCBCBC',
+      fontSize: '14px',
+      fontWeight: 'bold',
+    },
   })
 );
 
@@ -101,12 +106,20 @@ const DataInput = () => {
     status,
   } = controller;
 
+  const isValid = (phoneNumber) => {
+    if(phoneNumber[0] === '+') {
+      return Number(phoneNumber[3]) !== 0 ? true : false
+    } else {
+      return Number(phoneNumber[0]) !== 0 ? true : false
+    }
+  }
+
 
   const onSubmit = async (e: any) => {
     setLoading(true);
     if (_.isEmpty(errors)) {
-      if(Number(phone[4]) !== 0 ) {
-        setError(false)
+      if (isValid(phone)) {
+        setError(false);
         const [status, response] = await controller._onStoreRetail(e);
         if (status === "error") {
           setLoading(false);
@@ -138,7 +151,7 @@ const DataInput = () => {
         }
       } else {
         setLoading(false);
-        setError(true)
+        setError(true);
       }
     }
   };
@@ -211,7 +224,6 @@ const DataInput = () => {
       </Box>
     );
   }
-
 
   return (
     <React.Fragment>
@@ -372,11 +384,9 @@ const DataInput = () => {
                           rules={{ required: true }}
                           control={control}
                           onChange={(e) => {
-                            controller.setAddress(e[0].target.value)
-                            return e[0].target.value
-                           }
-                         
-                          }
+                            controller.setAddress(e[0].target.value);
+                            return e[0].target.value;
+                          }}
                           defaultValue={address}
                         />
                         {errors &&
@@ -551,33 +561,37 @@ const DataInput = () => {
                         No Handphone
                       </label>
                       <Box className={classes.formControl}>
-                        <InputMask
-                          mask="+62 999 999 999 99"
-                          value={phone}
-                          disabled={isDetailSession}
-                          maskChar=" "
-                          onChange={(e) => {
-                            controller.setPhone(e.target.value);
-                          }}
-                        >
-                          {() => (
-                            <TextField
-                              style={{
-                                width: "100%",
-                              }}
-                              variant="outlined"
-                              name="phone"
-                              id="phone"
+                        <Controller
+                          as={
+                            <InputMask
+                              mask="+6299 999 999 999"
                               disabled={isDetailSession}
-                              placeholder="Contoh: +628567XXXXXXX"
-                              size="small"
-                              inputRef={register({
-                                required: true,
-                          
-                              })}
-                            />
-                          )}
-                        </InputMask>
+                              maskChar=" "
+                            >
+                              {() => (
+                                <TextField
+                                  style={{
+                                    width: "100%",
+                                  }}
+                                  variant="outlined"
+                                  name="phone"
+                                  id="phone"
+                                  disabled={isDetailSession}
+                                  placeholder="Contoh: +628567XXXXXXX"
+                                  size="small"
+                                />
+                              )}
+                            </InputMask>
+                          }
+                          control={control}
+                          name="phone"
+                          onChange={(e) => {
+                            controller.setPhone(e[0].target.value);
+                            return e[0].target.value;
+                          }}
+                          rules={{required: true}}
+                          defaultValue={phone}
+                        />
                         {errors &&
                           errors.phone &&
                           errors.phone.type === "required" && (
@@ -585,21 +599,24 @@ const DataInput = () => {
                               {errorMessage.phoneField}
                             </p>
                           )}
-                           {error &&
-                          Number(phone[4]) === 0  && (
-                            <p style={{ color: "red", fontSize: "12px" }}>
-                              No Handphone tidak valid. Silahkan coba kembali
-                            </p>
-                          )}
-                       
+                        {error && isValid(phone) === false && (
+                          <p style={{ color: "red", fontSize: "12px" }}>
+                            No Handphone tidak valid. Silahkan coba kembali
+                          </p>
+                        )}
                       </Box>
                     </GridItem>
                   </GridContainer>
                   <GridContainer className={classes.marginBottom}>
                     <GridItem xs={12} sm={12} md={12} mb={4}>
+                    <Box style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
                       <label htmlFor="email" className={classes.label}>
                         Alamat Surel
                       </label>
+                      <label className={classes.labelOpsional}>
+                        Opsional
+                      </label>
+                      </Box>
                       <Box className={classes.formControl}>
                         <TextField
                           style={{
@@ -627,9 +644,14 @@ const DataInput = () => {
                   </GridContainer>
                   <GridContainer className={classes.marginBottom}>
                     <GridItem xs={12} sm={12} md={12} mb={4}>
+                    <Box style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
                       <label htmlFor="npwp" className={classes.label}>
                         Nomor NPWP
                       </label>
+                      <label className={classes.labelOpsional}>
+                        Opsional
+                      </label>
+                      </Box>
                       <Box className={classes.formControl}>
                         <TextField
                           style={{
@@ -656,9 +678,14 @@ const DataInput = () => {
                   </GridContainer>
                   <GridContainer className={classes.marginBottom}>
                     <GridItem xs={12} sm={12} md={12} mb={4}>
+                    <Box style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
                       <label htmlFor="info" className={classes.label}>
                         Info Donatur
                       </label>
+                      <label className={classes.labelOpsional}>
+                        Opsional
+                      </label>
+                      </Box>
                       <Box className={classes.formControl}>
                         <Controller
                           as={

@@ -52,7 +52,11 @@ const useStyles = makeStyles((theme: Theme) =>
       color: "#323C47",
       fontSize: 12,
       fontWeight: 800,
-      marginTop: theme.spacing(1),
+    },
+    labelOpsional: {
+      color: "#BCBCBC",
+      fontSize: "14px",
+      fontWeight: "bold",
     },
   })
 );
@@ -88,14 +92,16 @@ const DonationInput = ({ index, setIndex }) => {
       if (controller.DonationInfo.donation_item === 1) {
         if (
           _.isNumber(controller.DonationInfo.cash.category_id) &&
-          controller.DonationInfo.cash.value !== 0
+          Number(controller.DonationInfo.cash.value) !== 0
         ) {
           setError(false);
           const [status, response] = await controller.handlePostDonation(e);
           if (status === "success") {
             addToast("Data donasi telah tersimpan", { appearance: "success" });
             setTimeout(() => {
-              history.push(`/dashboard/retail-tanda-terima/${response.id}`);
+              history.push(
+                `/dashboard/donation/retail/tanda-terima/${response.id}`
+              );
             }, 500);
           } else {
             setLoading(false);
@@ -115,16 +121,18 @@ const DonationInput = ({ index, setIndex }) => {
       } else {
         if (
           controller.DonationInfo.goods.category_id !== 0 &&
-          _.isNumber(controller.DonationInfo.goods.status) === true  &&
+          _.isNumber(controller.DonationInfo.goods.status) === true &&
           controller.DonationInfo.goods.quantity !== 0 &&
-          controller.DonationInfo.goods.value !== 0
+          Number(controller.DonationInfo.goods.value) !== 0
         ) {
           setErrorGoods(false);
           const [status, response] = await controller.handlePostDonation(e);
           if (status === "success") {
             addToast("Data donasi telah tersimpan", { appearance: "success" });
             setTimeout(() => {
-              history.push(`/dashboard/retail-tanda-terima/${response.id}`);
+              history.push(
+                `/dashboard/donation/retail/tanda-terima/${response.id}`
+              );
             }, 500);
           } else {
             setLoading(false);
@@ -160,6 +168,7 @@ const DonationInput = ({ index, setIndex }) => {
                     <GridContainer>
                       <GridItem xs={12} sm={12} md={12}>
                         <Box display="flex" flexDirection="column">
+                          {controller.loading && <span>Loading.....</span>}
                           <label className={classes.label}>Jenis Donasi</label>
                           <SimpleSelect
                             async
@@ -187,9 +196,20 @@ const DonationInput = ({ index, setIndex }) => {
                               Belum memilih jenis donasi
                             </p>
                           )}
-                          <label className={classes.label}>
-                            Deskripsi Donasi
-                          </label>
+                          <Box
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              marginTop: "10px",
+                            }}
+                          >
+                            <label className={classes.label}>
+                              Deskripsi Donasi
+                            </label>
+                            <label className={classes.labelOpsional}>
+                              Opsional
+                            </label>
+                          </Box>
                           <Textarea
                             className="text-area"
                             id="description"

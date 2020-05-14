@@ -174,6 +174,7 @@ const Content = () => {
               controller.setLabelSearch(value.label);
               handleFilterUnit(value.value);
             }}
+            selected={controller.filterParamAdmin.filter.school_id}
           />
           <Box
             style={{
@@ -191,6 +192,7 @@ const Content = () => {
             <DateTimePicker
               // openTo="year"
               // views={["year"]}
+              disableToolbar={false}
               minDate={formatEndDate(
                 controller.role !== 2 ? startDateAdmin : startDateOperator,
                 controller.role !== 2 ? 'year' : 'month',
@@ -224,6 +226,7 @@ const Content = () => {
               to
             </span>
             <DateTimePicker
+              disableToolbar={false}
               minDate={formatEndDate(
                 controller.role !== 2 ? startDateAdmin : startDateOperator,
                 controller.role !== 2 ? 'year' : 'month',

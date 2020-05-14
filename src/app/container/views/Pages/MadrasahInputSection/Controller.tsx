@@ -205,7 +205,7 @@ export const UserListInputController = ({ children }) => {
         if(id !== undefined) {
             const updateSchool = await schoolPresenter.updateSchoolData(new SchoolApiRequest(
                 state.inputSchoolData.name,
-                phoneNumber[0],
+                state.inputSchoolData.phone[0] === '+' ? phoneNumber[0] : state.inputSchoolData.phone,
                 state.inputSchoolData.email,
                 _.toNumber(state.inputSchoolData.pos_code),
                 state.inputSchoolData.description,

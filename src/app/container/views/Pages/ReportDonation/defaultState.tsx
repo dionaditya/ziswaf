@@ -1,8 +1,13 @@
+import moment from 'moment';
+
+const startDate = moment().utcOffset("+07:00").subtract(1, 'months').format()
+const endDate =moment().utcOffset("+07:00").format()
+
 const defaultState = {
   reportStep: "filter",
   dateSelected: {
-    start_date: "",
-    end_date: "",
+    start_date: startDate,
+    end_date: endDate,
   },
   unitSelected: [],
   citySelected: [],
@@ -68,7 +73,9 @@ const defaultState = {
     donation_report: []
   },
   modalFilter: false,
-  handleModalFilter: () => {}
+  handleModalFilter: () => {},
+  handleSetFilterData: () => {},
+  debounceSchool: () => {}
 };
 
 export default defaultState;

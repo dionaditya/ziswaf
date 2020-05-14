@@ -55,7 +55,7 @@ interface IFilterOperatorParams {
 }
 
 export interface IState {
-  filterData: object;
+  filterData: any;
   handleClearFilter: Function,
   handleSetFilter: Function,
   reportType: string;
@@ -126,4 +126,6 @@ export interface IState {
   setMessage: Function;
   handleExportPdf: Function
   generalOperatorPerDay: any
+  debouncedSchool: Function
+  loadSchool: Function
 }

@@ -86,6 +86,7 @@ const ContentFilters: React.FC<{}> = () => {
                 handleDateChange={(value) =>
                   handleSetDate("dateSelected", "start_date", value)
                 }
+                disableToolbar={false}
                 format="dd/MM/yyyy"
                 selectedDate={dateSelected["start_date"] || new Date()}
               />
@@ -102,6 +103,7 @@ const ContentFilters: React.FC<{}> = () => {
                   handleSetDate("dateSelected", "end_date", value)
                 }
                 format="dd/MM/yyyy"
+                disableToolbar={false}
                 selectedDate={dateSelected["end_date"] || new Date()}
               />
             </Box>
@@ -126,6 +128,10 @@ const ContentFilters: React.FC<{}> = () => {
                   checked={
                     handleFieldSelected("unitSelected", "unitData", 0).selected
                   }
+                  withSearch
+                  placeholderInput="Cari Unit"
+                  debounce
+                  debounceSchool={controller.debounceSchool}
                 />
               </Box>
             </Box>
@@ -147,6 +153,8 @@ const ContentFilters: React.FC<{}> = () => {
                   checked={
                     handleFieldSelected("citySelected", "cityData", 0).selected
                   }
+                  withSearch
+                  placeholderInput="Cari Kota"
                 />
               </Box>
             </Box>

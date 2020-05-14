@@ -476,7 +476,7 @@ export const StudentListController = ({ children }) => {
   const optionsTable = {
     filterType: "dropdown",
     responsive: "scroll",
-    sort: true,
+    sort: state.data.length ? true : false,
     pagination: true,
     selectableRowsHeader: false,
     textLabels: {

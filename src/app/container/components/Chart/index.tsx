@@ -223,6 +223,9 @@ export function ComboChartGeneral({ title, title2, type, width, color, dataProgn
     },
     colors: color,
     yaxis: {
+      min: 0,
+      max: dataPrognosis === [] ? 10000000 : Math.round(Math.max(...dataPrognosis)+10000000),
+      tickAmount: 4,
       labels: {
         formatter: function (value) {
           return convertCurrency(value);
@@ -327,7 +330,7 @@ export function ComboCharts({ title, title2, type, width, color, dataPrognosis, 
       text: ''
     },
     dataLabels: {
-      enabled: true,
+      enabled: false,
       enabledOnSeries: [1],
     },
     labels: role !== 2 ? [' January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] : dataPerDayProp,
@@ -345,6 +348,9 @@ export function ComboCharts({ title, title2, type, width, color, dataPrognosis, 
     },
     colors: color,
     yaxis: {
+      min: 0,
+      max: dataPrognosis === [] ? 10000000 : Math.round(Math.max(...dataPrognosis)+10000000),
+      tickAmount: 4,
       labels: {
         formatter: function (value) {
           return convertCurrency(value);
@@ -368,16 +374,16 @@ export function ComboCharts({ title, title2, type, width, color, dataPrognosis, 
   )
 }
 
-export function ComboChartUpz({ type, width, color, dataPrognosis, dataPerMonth }) {
+export function ComboChartOperatorDivision({ title, title2, type, width, color, dataPrognosis, dataPerMonth, role, dataPerDay, dataPerDayProp }) {
   const options = {
     series: [{
-      name: 'Realisasi UPZ',
+      name: title,
       type: 'column',
-      data: dataPerMonth
+      data: role !== 2 ? dataPerMonth : dataPerDay.map(val => val.total)
     }, {
-      name: 'Prognosis UPZ',
+      name: role === 1 ? title2 : '',
       type: 'line',
-      data: dataPrognosis
+      data: role !== 2 ? dataPrognosis : []
     }],
     chart: {
       height: 350,
@@ -391,25 +397,30 @@ export function ComboChartUpz({ type, width, color, dataPrognosis, dataPerMonth 
       text: ''
     },
     dataLabels: {
-      enabled: true,
+      enabled: false,
       enabledOnSeries: [1],
     },
-    labels: [' January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    labels: role !== 2 ? [' January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] : dataPerDayProp,
     xaxis: {
       type: 'string',
     },
-    colors: color,
-    yaxis: [{
-      title: {
-        text: '',
-      },
-
-    }, {
-      opposite: true,
-      title: {
-        text: ''
+    tooltip: {
+      enabled: true,
+      y: {
+        formatter: (seriesName) => formatPrice(seriesName),
+        title: {
+          formatter: (seriesName) => seriesName,
+        },
       }
-    }]
+    },
+    colors: color,
+    yaxis: {
+      labels: {
+        formatter: function (value) {
+          return convertCurrency(value);
+        }
+      },
+    },
   };
   return (
     <div className="app">

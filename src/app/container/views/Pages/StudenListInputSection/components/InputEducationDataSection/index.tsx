@@ -90,6 +90,14 @@ const useStyles = makeStyles((theme: Theme) =>
       color: "#323C47",
       fontWeight: "bold",
     },
+    labelOpsional: {
+      color: '#BCBCBC',
+      display: 'flex',
+      justifyContent: 'flex-end',
+      fontSize: '14px',
+      fontWeight: 'bold',
+      fontFamily: 'Poppins',
+    },
   })
 );
 
@@ -412,7 +420,7 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                               width: "100%",
                             }}
                             variant="outlined"
-                            type="text"
+                            type="number"
                             disabled={isDetailSession}
                             id={
                               errors &&
@@ -451,7 +459,7 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                             <KeyboardDatePicker
                               autoOk
                               variant="inline"
-                              disabled={isDetailSession}
+                              disabled={isDetailSession || Number(punishment_count) === 0}
                               inputVariant="outlined"
                               style={{
                                 width: "100%",
@@ -486,6 +494,7 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                           }
                           name="punishment_start"
                           control={control}
+                          rules={{required: Number(punishment_count) > 0 ? true : false }}
                           onChange={(date: any) => {
                             const data = {
                               target: {
@@ -502,6 +511,13 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                               : moment(punishment_start).toDate()
                           }
                         />
+                         {errors &&
+                          errors.punishment_start &&
+                          errors.punishment_start.type === "required" && (
+                            <p style={{ color: "red", fontSize: "12px" }}>
+                              {errorMessage.empty}
+                            </p>
+                          )}
                       </Box>
                     </GridItem>
                     <GridItem xs={12} sm={12} md={6}>
@@ -513,7 +529,7 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                                 autoOk
                                 variant="inline"
                                 inputVariant="outlined"
-                                disabled={isDetailSession}
+                                disabled={isDetailSession || Number(punishment_count) === 0}
                                 style={{
                                   width: "100%",
                                 }}
@@ -539,6 +555,7 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                                 }}
                                 name="punishment_end"
                                 format="dd/MM/yyyy"
+                                
                                 minDate={punishment_start}
                                 inputRef={register}
                                 InputProps={{
@@ -548,6 +565,7 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                             }
                             name="punishment_end"
                             control={control}
+                            rules={{required: Number(punishment_count) > 0 ? true : false }}
                             onChange={(date: any) => {
                               const data = {
                                 target: {
@@ -564,6 +582,13 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                                 : moment(punishment_end).toDate()
                             }
                           />
+                           {errors &&
+                          errors.punishment_end &&
+                          errors.punishment_end.type === "required" && (
+                            <p style={{ color: "red", fontSize: "12px" }}>
+                              {errorMessage.empty}
+                            </p>
+                          )}
                       </Box>
                     </GridItem>
                   </GridContainer>
@@ -572,9 +597,14 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                   <GridContainer>
                     <GridItem xs={12} sm={12} md={12}>
                       <Box className={classes.marginBottom}>
+                      <Box style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
                         <label className={classes.label}>
                           Juz yang telah di hafal
                         </label>
+                        <label className={classes.labelOpsional}>
+                        Opsional
+                      </label>
+                      </Box>
                         <Controller
                           as={
                             <TextField
@@ -608,9 +638,14 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                   <GridContainer>
                     <GridItem xs={12} sm={12} md={12}>
                       <Box className={classes.marginBottom}>
+                      <Box style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
                         <label className={classes.label}>
                           Surat telah di hafal
                         </label>
+                        <label className={classes.labelOpsional}>
+                        Opsional
+                      </label>
+                      </Box>
                         <Controller
                           as={
                             <TextField
@@ -644,9 +679,14 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                   <GridContainer>
                     <GridItem xs={12} sm={12} md={12}>
                       <Box className={classes.marginBottom}>
+                      <Box style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
                         <label className={classes.label}>
-                          Hadis telah di hafal
+                          Hadits telah di hafal
                         </label>
+                        <label className={classes.labelOpsional}>
+                        Opsional
+                      </label>
+                      </Box>
                         <Controller
                           as={
                             <TextField
@@ -680,9 +720,14 @@ const InputDataPendidikanSection = ({ value, setValues }) => {
                   <GridContainer>
                     <GridItem xs={12} sm={12} md={12}>
                       <Box className={classes.marginBottom}>
+                      <Box style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
                         <label className={classes.label}>
                           Catatan Tambahan
                         </label>
+                        <label className={classes.labelOpsional}>
+                        Opsional
+                      </label>
+                      </Box>
                         <Controller
                           as={
                             <TextField

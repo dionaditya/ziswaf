@@ -57,7 +57,7 @@ const dashboardRoutes = [
     layout: "/dashboard",
     divider: false,
     show: true,
-    exact: false,
+    exact: true,
   },
   {
     path: "/donatur",
@@ -149,17 +149,6 @@ const dashboardRoutes = [
     exact: false,
   },
   {
-    path: "/upz",
-    name: "Input Upz",
-    rtlName: "",
-    icon: "other",
-    component: Upz,
-    layout: "/dashboard",
-    divider: false,
-    show: false,
-    exact: false,
-  },
-  {
     path: "/personel-input",
     name: "Input Employee",
     rtlName: "",
@@ -193,27 +182,7 @@ const dashboardRoutes = [
     exact: true,
   },
   {
-    path: "/retail",
-    name: "Input Retail",
-    rtlName: "",
-    icon: "subject",
-    component: Retail,
-    layout: "/dashboard",
-    divider: false,
-    show: false,
-  },
-  {
-    path: "/corporate/donor",
-    name: "Input Corporate",
-    rtlName: "",
-    icon: 'subject',
-    component: Corporate,
-    layout: "/dashboard",
-    divider: false,
-    show: false,
-  },
-  {
-    path: "/corporate-transaction/:donor_id",
+    path: "/donation/corporate",
     name: "Input Corporate",
     rtlName: "",
     icon: 'subject',
@@ -224,7 +193,7 @@ const dashboardRoutes = [
     exact: true
   },
   {
-    path: "/corporate-tanda-terima/:transaction_id",
+    path: "/donation/corporate/transaction",
     name: "Input Corporate",
     rtlName: "",
     icon: 'subject',
@@ -235,7 +204,40 @@ const dashboardRoutes = [
     exact: true
   },
   {
-    path: "/retail-input/:id",
+    path: "/donation/corporate/transaction/:donor_id",
+    name: "Input Corporate",
+    rtlName: "",
+    icon: 'subject',
+    component: Corporate,
+    layout: "/dashboard",
+    divider: false,
+    show: false,
+    exact: true
+  },
+  {
+    path: "/donation/corporate/tanda-terima/:transaction_id",
+    name: "Input Corporate",
+    rtlName: "",
+    icon: 'subject',
+    component: Corporate,
+    layout: "/dashboard",
+    divider: false,
+    show: false,
+    exact: true
+  },
+  {
+    path: "/donation/corporate/tanda-terima",
+    name: "Input Corporate",
+    rtlName: "",
+    icon: 'subject',
+    component: Corporate,
+    layout: "/dashboard",
+    divider: false,
+    show: false,
+    exact: true
+  },
+  {
+    path: "/donation/retail",
     name: "Input Retail",
     rtlName: "",
     icon: 'subject',
@@ -243,21 +245,10 @@ const dashboardRoutes = [
     layout: "/dashboard",
     divider: false,
     show: false,
-    exact: false
+    exact: true
   },
   {
-    path: "/retail-tanda-terima/:transaction_id",
-    name: "Input Retail",
-    rtlName: "",
-    icon: 'subject',
-    component: Retail,
-    layout: "/dashboard",
-    divider: false,
-    show: false,
-    exact: false
-  },
-  {
-    path: "/retail-input",
+    path: "/donation/retail/transaction",
     name: "Input Retail",
     rtlName: "",
     icon: 'subject',
@@ -268,7 +259,7 @@ const dashboardRoutes = [
     exact: true
   },
   {
-    path: "/retail-tanda-terima",
+    path: "/donation/retail/transaction/:id",
     name: "Input Retail",
     rtlName: "",
     icon: 'subject',
@@ -279,29 +270,29 @@ const dashboardRoutes = [
     exact: true
   },
   {
-    path: "/upz",
-    name: "Input UPZ",
+    path: "/donation/retail/tanda-terima",
+    name: "Input Retail",
     rtlName: "",
     icon: 'subject',
-    component: Upz,
+    component: Retail,
     layout: "/dashboard",
     divider: false,
     show: false,
-    exact: false
+    exact: true
   },
   {
-    path: "/upz/donor",
-    name: "Input UPZ",
+    path: "/donation/retail/tanda-terima/:transaction_id",
+    name: "Input Retail",
     rtlName: "",
     icon: 'subject',
-    component: Upz,
+    component: Retail,
     layout: "/dashboard",
     divider: false,
     show: false,
-    exact: false
+    exact: true
   },
   {
-    path: "/upz-transaction/:donor_id",
+    path: "/donation/upz",
     name: "Input UPZ",
     rtlName: "",
     icon: 'subject',
@@ -312,7 +303,7 @@ const dashboardRoutes = [
     exact: true
   },
   {
-    path: "/upz-transaction",
+    path: "/donation/upz/donatur",
     name: "Input UPZ",
     rtlName: "",
     icon: 'subject',
@@ -323,18 +314,7 @@ const dashboardRoutes = [
     exact: true
   },
   {
-    path: "/upz-tanda-terima/:transaction_id",
-    name: "Input UPZ",
-    rtlName: "",
-    icon: 'subject',
-    component: Upz,
-    layout: "/dashboard",
-    divider: false,
-    show: false,
-    exact: false,
-  },
-  {
-    path: "/upz-tanda-terima",
+    path: "/donation/upz/transaction",
     name: "Input UPZ",
     rtlName: "",
     icon: 'subject',
@@ -343,6 +323,39 @@ const dashboardRoutes = [
     divider: false,
     show: false,
     exact: true
+  },
+  {
+    path: "/donation/upz/transaction/:donor_id",
+    name: "Input UPZ",
+    rtlName: "",
+    icon: 'subject',
+    component: Upz,
+    layout: "/dashboard",
+    divider: false,
+    show: false,
+    exact: true
+  },
+  {
+    path: "/donation/upz/tanda-terima",
+    name: "Input UPZ",
+    rtlName: "",
+    icon: 'subject',
+    component: Upz,
+    layout: "/dashboard",
+    divider: false,
+    show: false,
+    exact: true,
+  },
+  {
+    path: "/donation/upz/tanda-terima/:transaction_id",
+    name: "Input UPZ",
+    rtlName: "",
+    icon: 'subject',
+    component: Upz,
+    layout: "/dashboard",
+    divider: false,
+    show: false,
+    exact: true,
   },
   {
     path: "/users-input/:id",
@@ -465,17 +478,6 @@ const dashboardRoutes = [
     show: false,
     exact: false,
   },
-  {
-    path: "/corporate-transaction",
-    name: "Input Corporate",
-    rtlName: "",
-    icon: 'subject',
-    component: Corporate,
-    layout: "/dashboard",
-    divider: false,
-    show: false,
-    exact: true
-  }
 ];
 
 export default dashboardRoutes;

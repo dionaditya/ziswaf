@@ -39,8 +39,8 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const Presentase: React.FC<{data, handleNominalChange, handleSaveAndContinue}> = ({data, handleNominalChange, handleSaveAndContinue}) => {
-  const classes = useStyles();  
+const Presentase: React.FC<{ data, handleNominalChange, handleSaveAndContinue }> = ({ data, handleNominalChange, handleSaveAndContinue }) => {
+  const classes = useStyles();
   const { totalPrognosis, totalPrognosisRetail, totalPrognosisCorporate, totalPrognosisUpz } = data
   const total = totalPrognosisRetail + totalPrognosisCorporate + totalPrognosisUpz;
   const [percentage, setPercentage] = useState({
@@ -55,20 +55,20 @@ const Presentase: React.FC<{data, handleNominalChange, handleSaveAndContinue}> =
 
   const handleNominalBaseOnPercentage = (name, value) => {
     let prognosisName = '';
-    switch(name) {
+    switch (name) {
       case 'retail':
-          prognosisName = 'totalPrognosisRetail';
-          break;
+        prognosisName = 'totalPrognosisRetail';
+        break;
       case 'corporate':
-          prognosisName = 'totalPrognosisCorporate';
-          break;
+        prognosisName = 'totalPrognosisCorporate';
+        break;
       case 'upz':
-          prognosisName = 'totalPrognosisUpz';
-          break;
+        prognosisName = 'totalPrognosisUpz';
+        break;
       default:
         prognosisName = '';
     }
-    const nominal = totalPrognosis/100 * value;
+    const nominal = totalPrognosis / 100 * value;
     handleNominalChange(prognosisName, nominal)
   }
 
@@ -77,7 +77,7 @@ const Presentase: React.FC<{data, handleNominalChange, handleSaveAndContinue}> =
     const percentage = number
     handleNominalBaseOnPercentage(name, percentage);
     setPercentage(prevState => {
-      return {...prevState, [name]: percentage };
+      return { ...prevState, [name]: percentage };
     });
   }
 
@@ -89,9 +89,9 @@ const Presentase: React.FC<{data, handleNominalChange, handleSaveAndContinue}> =
   const handleSetState = (name, value) => {
     const percentage = getPercentage(value)
     setPercentage(prevState => {
-        return {...prevState, [name]: percentage };
+      return { ...prevState, [name]: percentage };
     });
-}
+  }
 
 
   useEffect(() => {
@@ -105,58 +105,58 @@ const Presentase: React.FC<{data, handleNominalChange, handleSaveAndContinue}> =
     const totalPercentage = percentage.retail + percentage.corporate + percentage.upz;
     return Math.round(totalPercentage)
   }
-  
+
   const totals = getTotalPercentage();
   return (
     <React.Fragment>
       <GridContainer>
         <GridItem xs={12} sm={12} md={12}>
-        <Card>
-          <CardHeader color="success">
-            <h4 className={classes.cardTitle}>Metode Prosentase</h4>
-          </CardHeader>
-          <CardBody>
-            <GridContainer>
-              <Box className={classes.formContainer}>
+          <Card>
+            <CardHeader color="success">
+              <h4 className={classes.cardTitle}>Metode Prosentase</h4>
+            </CardHeader>
+            <CardBody>
+              <GridContainer>
+                <Box className={classes.formContainer}>
                   <GridItem xs={12} sm={12} md={12}>
                     <label className={classes.label}> Prognosis Ziswaf </label>
                   </GridItem>
                   <GridItem xs={12} sm={12} md={12}>
-                      <Box className={classes.formControl}>
-                        <InputMask defaultValue={totalPrognosis} placeholder="Rp. 0" type="text" onChange={(value) => handleOnChange('totalPrognosis', value)} />
-                      </Box>
+                    <Box className={classes.formControl}>
+                      <InputMask defaultValue={totalPrognosis === 0 ? '' : totalPrognosis} placeholder="Rp. 0" type="text" onChange={(value) => handleOnChange('totalPrognosis', value)} />
+                    </Box>
                   </GridItem>
                 </Box>
                 <Box className={classes.formContainer}>
                   <GridItem xs={12} sm={12} md={12}>
                     <GridContainer>
                       <GridItem xs={12} sm={12} md={4}>
-                          <GridContainer>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <label className={classes.label}>% Retail </label>
-                            </GridItem>
-                            <GridItem xs={12} sm={12} md={12}>
-                                <Box className={classes.formControl}>
-                                  <OutlinedInput
-                                    value={percentage.retail}
-                                    onChange={(value) => handleOnChangePercentage('retail', value)}
-                                    adornment="%"
-                                  />
-                                </Box>
-                            </GridItem>
-                          </GridContainer>
+                        <GridContainer>
+                          <GridItem xs={12} sm={12} md={12}>
+                            <label className={classes.label}>% Retail </label>
+                          </GridItem>
+                          <GridItem xs={12} sm={12} md={12}>
+                            <Box className={classes.formControl}>
+                              <OutlinedInput
+                                value={percentage.retail}
+                                onChange={(value) => handleOnChangePercentage('retail', value)}
+                                adornment="%"
+                              />
+                            </Box>
+                          </GridItem>
+                        </GridContainer>
                       </GridItem>
                       <GridItem xs={12} sm={12} md={8}>
-                          <GridContainer>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <label className={classes.label}>Prognosis Retail </label>
-                            </GridItem>
-                            <GridItem xs={12} sm={12} md={12}>
-                                <Box className={classes.formControl}>
-                                <InputMask disabled defaultValue={totalPrognosisRetail} placeholder="Rp. 0" type="text" onChange={(value) => {}} />
-                                </Box>
-                            </GridItem>
-                          </GridContainer>
+                        <GridContainer>
+                          <GridItem xs={12} sm={12} md={12}>
+                            <label className={classes.label}>Prognosis Retail </label>
+                          </GridItem>
+                          <GridItem xs={12} sm={12} md={12}>
+                            <Box className={classes.formControl}>
+                              <InputMask disabled defaultValue={Number(totalPrognosis * (percentage.retail / 100)).toFixed()} placeholder="Rp. 0" type="text" onChange={(value) => { }} />
+                            </Box>
+                          </GridItem>
+                        </GridContainer>
                       </GridItem>
                     </GridContainer>
                   </GridItem>
@@ -165,32 +165,32 @@ const Presentase: React.FC<{data, handleNominalChange, handleSaveAndContinue}> =
                   <GridItem xs={12} sm={12} md={12}>
                     <GridContainer>
                       <GridItem xs={12} sm={12} md={4}>
-                          <GridContainer>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <label className={classes.label}>% Corporate </label>
-                            </GridItem>
-                            <GridItem xs={12} sm={12} md={12}>
-                                <Box className={classes.formControl}>
-                                  <OutlinedInput
-                                    value={percentage.corporate}
-                                    onChange={(value) => handleOnChangePercentage('corporate', value)}
-                                    adornment="%"
-                                  />
-                                </Box>
-                            </GridItem>
-                          </GridContainer>
+                        <GridContainer>
+                          <GridItem xs={12} sm={12} md={12}>
+                            <label className={classes.label}>% Corporate </label>
+                          </GridItem>
+                          <GridItem xs={12} sm={12} md={12}>
+                            <Box className={classes.formControl}>
+                              <OutlinedInput
+                                value={percentage.corporate}
+                                onChange={(value) => handleOnChangePercentage('corporate', value)}
+                                adornment="%"
+                              />
+                            </Box>
+                          </GridItem>
+                        </GridContainer>
                       </GridItem>
                       <GridItem xs={12} sm={12} md={8}>
-                          <GridContainer>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <label className={classes.label}>Prognosis Corporate </label>
-                            </GridItem>
-                            <GridItem xs={12} sm={12} md={12}>
-                                <Box className={classes.formControl}>
-                                <InputMask disabled defaultValue={totalPrognosisCorporate} placeholder="Rp. 0" type="text" onChange={(value) => {}} />
-                                </Box>
-                            </GridItem>
-                          </GridContainer>
+                        <GridContainer>
+                          <GridItem xs={12} sm={12} md={12}>
+                            <label className={classes.label}>Prognosis Corporate </label>
+                          </GridItem>
+                          <GridItem xs={12} sm={12} md={12}>
+                            <Box className={classes.formControl}>
+                              <InputMask disabled defaultValue={Number(totalPrognosis * (percentage.corporate / 100)).toFixed()} placeholder="Rp. 0" type="text" onChange={(value) => { }} />
+                            </Box>
+                          </GridItem>
+                        </GridContainer>
                       </GridItem>
                     </GridContainer>
                   </GridItem>
@@ -199,32 +199,32 @@ const Presentase: React.FC<{data, handleNominalChange, handleSaveAndContinue}> =
                   <GridItem xs={12} sm={12} md={12}>
                     <GridContainer>
                       <GridItem xs={12} sm={12} md={4}>
-                          <GridContainer>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <label className={classes.label}>% UPZ </label>
-                            </GridItem>
-                            <GridItem xs={12} sm={12} md={12}>
-                                <Box className={classes.formControl}>
-                                  <OutlinedInput
-                                    value={percentage.upz}
-                                    onChange={(value) => handleOnChangePercentage('upz', value)}
-                                    adornment="%"
-                                  />
-                                </Box>
-                            </GridItem>
-                          </GridContainer>
+                        <GridContainer>
+                          <GridItem xs={12} sm={12} md={12}>
+                            <label className={classes.label}>% UPZ </label>
+                          </GridItem>
+                          <GridItem xs={12} sm={12} md={12}>
+                            <Box className={classes.formControl}>
+                              <OutlinedInput
+                                value={percentage.upz}
+                                onChange={(value) => handleOnChangePercentage('upz', value)}
+                                adornment="%"
+                              />
+                            </Box>
+                          </GridItem>
+                        </GridContainer>
                       </GridItem>
                       <GridItem xs={12} sm={12} md={8}>
-                          <GridContainer>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <label className={classes.label}>Prognosis UPZ </label>
-                            </GridItem>
-                            <GridItem xs={12} sm={12} md={12}>
-                                <Box className={classes.formControl}>
-                                <InputMask disabled defaultValue={totalPrognosisUpz} placeholder="Rp. 0" type="text" onChange={(value) => {}} />
-                                </Box>
-                            </GridItem>
-                          </GridContainer>
+                        <GridContainer>
+                          <GridItem xs={12} sm={12} md={12}>
+                            <label className={classes.label}>Prognosis UPZ </label>
+                          </GridItem>
+                          <GridItem xs={12} sm={12} md={12}>
+                            <Box className={classes.formControl}>
+                              <InputMask disabled defaultValue={Number(totalPrognosis * (percentage.upz / 100)).toFixed()} placeholder="Rp. 0" type="text" onChange={(value) => { }} />
+                            </Box>
+                          </GridItem>
+                        </GridContainer>
                       </GridItem>
                     </GridContainer>
                   </GridItem>
@@ -233,21 +233,21 @@ const Presentase: React.FC<{data, handleNominalChange, handleSaveAndContinue}> =
                   <GridItem xs={12} sm={12} md={12}>
                     <GridContainer>
                       <GridItem xs={12} sm={12} md={4}>
-                          <GridContainer>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <label className={classes.label}>Total Prognosis </label>
-                            </GridItem>
-                            <GridItem xs={12} sm={12} md={12}>
-                                <Box className={classes.formControl}>
-                                  <OutlinedInput
-                                    disabled
-                                    value={totals}
-                                    onChange={(value) =>{}}
-                                    adornment="%"
-                                  />
-                                </Box>
-                            </GridItem>
-                          </GridContainer>
+                        <GridContainer>
+                          <GridItem xs={12} sm={12} md={12}>
+                            <label className={classes.label}>Total Prognosis </label>
+                          </GridItem>
+                          <GridItem xs={12} sm={12} md={12}>
+                            <Box className={classes.formControl}>
+                              <OutlinedInput
+                                disabled
+                                value={totals}
+                                onChange={(value) => { }}
+                                adornment="%"
+                              />
+                            </Box>
+                          </GridItem>
+                        </GridContainer>
                       </GridItem>
                       <GridItem xs={12} sm={12} md={8}>
                         <span style={{ color: `${totals === 100 ? '#00923F' : 'red'}`, fontSize: "12px" }}>
@@ -258,14 +258,14 @@ const Presentase: React.FC<{data, handleNominalChange, handleSaveAndContinue}> =
                   </GridItem>
                 </Box>
               </GridContainer>
-            <Box style={{marginTop: "5vh"}} display="flex" justifyContent="center">
-              <Button disabled={totals !== 100} style={{backgroundColor: '#00923F', color: '#FFFFFF'}} color="success"  onClick={(e) => handleSaveAndContinue(1)} >
-                Simpan & Lanjutkan
+              <Box style={{ marginTop: "5vh" }} display="flex" justifyContent="center">
+                <Button disabled={totals !== 100} style={{ backgroundColor: '#00923F', color: '#FFFFFF' }} color="success" onClick={(e) => handleSaveAndContinue(1)} >
+                  Simpan & Lanjutkan
               </Button>
-            </Box>
-          </CardBody>
-        </Card>
-      </GridItem>
+              </Box>
+            </CardBody>
+          </Card>
+        </GridItem>
       </GridContainer>
     </React.Fragment>
   );

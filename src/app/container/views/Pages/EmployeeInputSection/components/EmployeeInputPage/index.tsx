@@ -90,6 +90,11 @@ const useStyles = makeStyles((theme: Theme) =>
     loadingReset: {
       color: "#00923F",
     },
+    labelOpsional: {
+      color: "#BCBCBC",
+      fontSize: "14px",
+      fontWeight: "bold",
+    },
   })
 );
 
@@ -131,6 +136,53 @@ const EmployeeInputSection = () => {
   const { addToast } = useToasts();
   const classes = useStyles();
 
+  const {
+    school_id,
+    name,
+    place_of_birth,
+    birth_of_date,
+    phone,
+    email,
+    address,
+    status,
+    registered_year,
+    identity_number,
+    pos_code,
+    province_id,
+    regency_id,
+    image,
+    id,
+  } = controller.employeeInput;
+
+  React.useEffect(() => {
+    setProccessing(true);
+    setValue([
+      { school_id: school_id },
+      { name: name },
+      { place_of_birth: place_of_birth },
+      { birth_of_date: birth_of_date },
+      { phone: phone },
+      { email: email },
+      { address: address },
+      { status: status },
+      { registered_year: registered_year },
+      { identity_number: identity_number },
+      { pos_code: pos_code },
+      { province_id: province_id },
+      { regency_id: regency_id },
+      { id: id },
+    ]);
+    setProccessing(false);
+  }, [controller.employeeInput, location.search]);
+
+  const isValid = (phoneNumber) => {
+    if (phoneNumber[0] === "+") {
+      return Number(phoneNumber[3]) !== 0 ? true : false;
+    } else {
+      return Number(phoneNumber[0]) !== 0 ? true : false;
+    }
+  };
+
   const onChange = (e) => {
     controller.handleInput(e)(controller.dispatch)(
       ActionType.handleEmployeeInputData
@@ -154,7 +206,7 @@ const EmployeeInputSection = () => {
     setLoading(true);
     setSubmit(true);
     if (_.isEmpty(errors)) {
-      if (Number(controller.employeeInput.phone[4]) !== 0) {
+      if (isValid(phone)) {
         setError(false);
         const res = await controller.handleSubmit(data)(controller.dispatch);
         if (res !== undefined) {
@@ -196,45 +248,6 @@ const EmployeeInputSection = () => {
       }
     }
   };
-
-  const {
-    school_id,
-    name,
-    place_of_birth,
-    birth_of_date,
-    phone,
-    email,
-    address,
-    status,
-    registered_year,
-    identity_number,
-    pos_code,
-    province_id,
-    regency_id,
-    image,
-    id,
-  } = controller.employeeInput;
-
-  React.useEffect(() => {
-    setProccessing(true);
-    setValue([
-      { school_id: school_id },
-      { name: name },
-      { place_of_birth: place_of_birth },
-      { birth_of_date: birth_of_date },
-      { phone: phone },
-      { email: email },
-      { address: address },
-      { status: status },
-      { registered_year: registered_year },
-      { identity_number: identity_number },
-      { pos_code: pos_code },
-      { province_id: province_id },
-      { regency_id: regency_id },
-      { id: id },
-    ]);
-    setProccessing(false);
-  }, [controller.employeeInput, location.search]);
 
   return (
     <MuiPickersUtilsProvider utils={MomentUtils} locale={idLocale}>
@@ -1223,33 +1236,42 @@ const EmployeeInputSection = () => {
                             >
                               No Telepon/HP
                             </label>
-                            <InputMask
-                              mask="+62 999 999 999 99"
-                              value={phone}
-                              disabled={queryString["?detail"] !== undefined}
-                              maskChar=" "
-                              onChange={onChange}
-                            >
-                              {() => (
-                                <TextField
-                                  style={{
-                                    width: "100%",
-                                  }}
-                                  variant="outlined"
-                                  name="phone"
-                                  id="phone"
-                                  disabled={queryString["?detail"] !== undefined}
-                                  placeholder="Contoh: +628567XXXXXXX"
-                               
-                                  InputProps={{
-                                    classes: { input: classes.input },
-                                  }}
-                                  inputRef={register({
-                                    required: true,
-                                  })}
-                                />
-                              )}
-                            </InputMask>
+                            <Controller
+                              as={
+                                <InputMask
+                                  mask="+6299 999 999 999"
+                                  disabled={
+                                    queryString["?detail"] !== undefined
+                                  }
+                                  maskChar=" "
+                                >
+                                  {() => (
+                                    <TextField
+                                      style={{
+                                        width: "100%",
+                                      }}
+                                      variant="outlined"
+                                      name="phone"
+                                      id="phone"
+                                      disabled={
+                                        queryString["?detail"] !== undefined
+                                      }
+                                      placeholder="Contoh: +628567XXXXXXX"
+                                      size="small"
+                                    />
+                                  )}
+                                </InputMask>
+                              }
+                              control={control}
+                              name="phone"
+                              onChange={(e) => {
+                                onChange(e[0]);
+                                return e[0].target.value;
+                              }}
+                              rules={{ required: true }}
+                              defaultValue={phone}
+                            />
+
                             {errors &&
                               errors.phone &&
                               errors.phone.type === "required" && (
@@ -1257,7 +1279,7 @@ const EmployeeInputSection = () => {
                                   {errorMessage.phone}
                                 </p>
                               )}
-                            {error && Number(phone[4]) === 0 && (
+                            {error && isValid(phone) === false && (
                               <p style={{ color: "red", fontSize: "12px" }}>
                                 No Handphone tidak valid. Silahkan coba kembali
                               </p>
@@ -1268,12 +1290,19 @@ const EmployeeInputSection = () => {
                       <GridContainer className={classes.marginBottom}>
                         <GridItem xs={12} sm={12} md={12} mb={4}>
                           <Box className={classes.marginBottom}>
-                            <label
-                              htmlFor=""
-                              style={{ fontSize: "12px", fontWeight: "bold" }}
+                            <Box
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
                             >
-                              Alamat Surel
-                            </label>
+                              <label style={{ fontSize: "12px", fontWeight: "bold" }}>
+                                Alamat email
+                              </label>
+                              <label className={classes.labelOpsional}>
+                                Opsional
+                              </label>
+                            </Box>
                             {queryString["?detail"] !== undefined ? (
                               <TextField
                                 style={{

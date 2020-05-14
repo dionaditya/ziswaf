@@ -27,28 +27,28 @@ const Corporate: React.FC<{}> = () => {
 
   const { transaction_id, donor_id } = useParams();
   const location = useLocation();
-  const donor = useRouteMatch("/dashboard/upz-transaction/:donor_id");
+  const donor = useRouteMatch("/dashboard/donation/upz/transaction/:donor_id");
   const transaction = useRouteMatch(
-    "/dashboard/upz-tanda-terima/:transaction_id"
+    "/dashboard/donation/upz/tanda-terima/:transaction_id"
   );
-  const upz = useRouteMatch("/dashboard/upz/donor");
+  const upz = useRouteMatch("/dashboard/donation/upz/donatur");
 
   const tabs = [
     {
       name: "Data UPZ",
-      link: "/dashboard/upz",
+      link: "/dashboard/donation/upz",
     },
     {
       name: "Data Donatur",
-      link: "/dashboard/upz/donor",
+      link: "/dashboard/donation/upz/donatur",
     },
     {
       name: "Data Donasi",
-      link: `/dashboard/upz-transaction/${donor_id}`,
+      link: `/dashboard/donation/upz/transaction/${donor_id}`,
     },
     {
       name: "Tanda Terima",
-      link: `/dashboard/upz-tanda-terima/${transaction_id}`,
+      link: `/dashboard/donation/upz/tanda-terima/${transaction_id}`,
     },
   ];
   const handleChange = (e, i) => {

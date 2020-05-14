@@ -37,7 +37,7 @@ export class SchoolMapper extends BaseResponseMapper {
         return new School(
             data.id,
             data.name,
-            data.phone,
+            `+62${data.phone}`,
             data.email,
             data.pos_code,
             data.description,

@@ -2,14 +2,20 @@ import React, { useState } from "react";
 import { container } from "tsyringe";
 import { DonorPresenter } from "@/app/infrastructures/Presenter/Donor/Presenter";
 import { DonationPresenter } from "@/app/infrastructures/Presenter/Donation/Presenter";
-import { CreateDonorApiRequest } from "@/data/payload/api/DonorApiRequest";
+import {
+  CreateDonorApiRequest,
+  UpdateDonorApiRequest,
+} from "@/data/payload/api/DonorApiRequest";
 import { ProvincePresenter } from "@/app/infrastructures/Presenter/Province/Presenter";
 import { CityPresenter } from "@/app/infrastructures/Presenter/City/Presenter";
 import { EmployeePresenter } from "@/app/infrastructures/Presenter/Employee/Presenter";
 import { useDebounce } from "use-lodash-debounce";
 import { CategoryPresenter } from "@/app/infrastructures/Presenter/Category/Presenter";
 import _ from "lodash";
-import { CreateDonationApiRequest, UpdateDonation } from "@/data/payload/api/DonationApiRequest";
+import {
+  CreateDonationApiRequest,
+  UpdateDonation,
+} from "@/data/payload/api/DonationApiRequest";
 import { useLocalStorage } from "@rehooks/local-storage";
 import { UserPresenter } from "@/app/infrastructures/Presenter/User/Presenter";
 import {
@@ -23,7 +29,7 @@ import qs from "qs";
 export interface Cash {
   type_id: any;
   category_id: any;
-  value: number;
+  value: any;
   ref_number: string;
 }
 
@@ -31,7 +37,7 @@ export interface Goods {
   category_id: number;
   description: string;
   quantity: number;
-  value: number;
+  value: any;
   status: any;
 }
 
@@ -77,6 +83,9 @@ interface IState {
   setSelected: Function;
   updateSession: boolean;
   setUpdateSession: Function;
+  handleResetForm: Function;
+  loading: boolean;
+  setLoading: Function;
 }
 
 const initialState: IState = {
@@ -106,14 +115,14 @@ const initialState: IState = {
     cash: {
       type_id: "",
       category_id: "",
-      value: 0,
+      value: "",
       ref_number: "",
     },
     goods: {
       category_id: 0,
       description: "",
       quantity: 0,
-      value: 0,
+      value: "",
       status: "",
     },
   },
@@ -145,6 +154,9 @@ const initialState: IState = {
   setSelected: () => {},
   updateSession: false,
   setUpdateSession: () => {},
+  handleResetForm: () => {},
+  loading: false,
+  setLoading: () => {},
 };
 
 export const CorporateContext = React.createContext<IState>(initialState);
@@ -180,15 +192,16 @@ export const CorporateController = ({ children }) => {
   const donationParams: any = useParams();
   const { transaction_id } = useParams();
   const [updateSession, setUpdateSession] = React.useState(false);
+  const [loading, setLoading] = useState(false);
 
   let isReceipt: any = useRouteMatch({
-    path: "/dashboard/corporate-tanda-terima/:transaction_id",
+    path: "/dashboard/donation/corporate/tanda-terima/:transaction_id",
     strict: false,
     sensitive: true,
   });
 
   let isDonation: any = useRouteMatch({
-    path: "/dashboard/corporate-transaction/:donor_id",
+    path: "/dashboard/donation/corporate/transaction/:donor_id",
     strict: false,
     sensitive: true,
   });
@@ -201,14 +214,16 @@ export const CorporateController = ({ children }) => {
   let query = useQuery();
 
   const phoneNumber: any = state.DonaturInfo.phone
-  .slice(3, state.DonaturInfo.phone.length)
-  .replace(/\s+/g, "")
-  .match(/(\d+)/);
+    .slice(3, state.DonaturInfo.phone.length)
+    .replace(/\s+/g, "")
+    .match(/(\d+)/);
 
   React.useEffect(() => {
+    setLoading(true);
     if (
       isReceipt &&
-      isReceipt.path === "/dashboard/corporate-tanda-terima/:transaction_id"
+      isReceipt.path ===
+        "/dashboard/donation/corporate/tanda-terima/:transaction_id"
     ) {
       (async () => {
         const donationDetail: any = await donationPresenter.getById(
@@ -218,10 +233,13 @@ export const CorporateController = ({ children }) => {
           ...prevState,
           transaction: donationDetail,
         }));
+        setTimeout(() => {
+          setLoading(false);
+        }, 500)
       })();
     } else if (
       isDonation &&
-      isDonation.path === "/dashboard/corporate-transaction/:donor_id"
+      isDonation.path === "/dashboard/donation/corporate/transaction/:donor_id"
     ) {
       (async () => {
         if (query["?edit"] !== undefined) {
@@ -251,9 +269,11 @@ export const CorporateController = ({ children }) => {
               },
               subCategory: subCategory[0].subCategories,
             }));
-          
           })();
           setUpdateSession(true);
+          setTimeout(() => {
+            setLoading(false);
+          }, 500)
         } else {
           (async () => {
             const categoryList =
@@ -285,18 +305,46 @@ export const CorporateController = ({ children }) => {
   React.useEffect(() => {
     if (debouncedValue !== "") {
       (async () => {
-        const donaturQueryResult = await corporatePresenter.getAll({
-          search: debouncedValue,
-          filter: {
-            donor_category: 1
+        const parsingPhoneNumber = (phoneNum) => {
+          if (phoneNum[0] === "+") {
+            return phoneNum.slice(3, phoneNum.length);
+          } else if (phoneNum[0] === "0") {
+            return phoneNum.slice(1, phoneNum.length);
+          } else {
+            return phoneNum;
           }
+        };
+
+        const isSearchPhoneNumber = (phoneNum) => {
+          if (phoneNum[0] === "+") {
+            return true;
+          } else if (phoneNum[0] === "0") {
+            return true;
+          } else {
+            return false;
+          }
+        };
+
+        const donaturQueryResult = await corporatePresenter.getAll({
+          search: parsingPhoneNumber(debouncedValue),
+          filter: {
+            donor_category: 1,
+          },
         });
+
         if (donaturQueryResult !== null) {
           const transformedDonaturQuery = donaturQueryResult.map((val) => {
-            return {
-              value: val.company_name,
-              key: val.id,
-            };
+            if (isSearchPhoneNumber(debouncedValue)) {
+              return {
+                value: `${val.phone} - ${val.company_name}`,
+                key: val.id,
+              };
+            } else {
+              return {
+                value: `${val.company_name} - No HP CP: ${val.phone}`,
+                key: val.id,
+              };
+            }
           });
           setState((prevState) => ({
             ...prevState,
@@ -309,24 +357,50 @@ export const CorporateController = ({ children }) => {
   }, [debouncedValue]);
 
   const postData = async () => {
-    const res = await corporatePresenter.store(
-      new CreateDonorApiRequest(
-        state.DonaturInfo.name,
-        state.DonaturInfo.company_name,
-        state.DonaturInfo.is_company,
-        state.DonaturInfo.position,
-        state.DonaturInfo.email,
-        state.DonaturInfo.address,
-        phoneNumber[0],
-        Number(state.DonaturInfo.status),
-        Number(state.DonaturInfo.npwp),
-        Number(state.DonaturInfo.pos_code),
-        state.DonaturInfo.info,
-        Number(state.DonaturInfo.province_id),
-        Number(state.DonaturInfo.regency_id)
-      )
-    );
-    return res;
+    if (_.isEmpty(state.selectedDonatur) === false) {
+      const res = await corporatePresenter.update(
+        new UpdateDonorApiRequest(
+          state.DonaturInfo.name,
+          state.DonaturInfo.company_name,
+          state.DonaturInfo.is_company,
+          state.DonaturInfo.position,
+          state.DonaturInfo.email,
+          state.DonaturInfo.address,
+          state.DonaturInfo.phone[0] === "+"
+            ? phoneNumber[0]
+            : state.DonaturInfo.phone,
+          Number(state.DonaturInfo.status),
+          Number(state.DonaturInfo.npwp),
+          Number(state.DonaturInfo.pos_code),
+          state.DonaturInfo.info,
+          state.DonaturInfo.province_id,
+          state.DonaturInfo.regency_id
+        ),
+        state.selectedDonatur.id
+      );
+      return res;
+    } else {
+      const res = await corporatePresenter.store(
+        new CreateDonorApiRequest(
+          state.DonaturInfo.name,
+          state.DonaturInfo.company_name,
+          state.DonaturInfo.is_company,
+          state.DonaturInfo.position,
+          state.DonaturInfo.email,
+          state.DonaturInfo.address,
+          state.DonaturInfo.phone[0] === "+"
+            ? phoneNumber[0]
+            : state.DonaturInfo.phone,
+          Number(state.DonaturInfo.status),
+          Number(state.DonaturInfo.npwp),
+          Number(state.DonaturInfo.pos_code),
+          state.DonaturInfo.info,
+          Number(state.DonaturInfo.province_id),
+          Number(state.DonaturInfo.regency_id)
+        )
+      );
+      return res;
+    }
   };
 
   const postUpdateData = async () => {
@@ -338,13 +412,15 @@ export const CorporateController = ({ children }) => {
         state.DonaturInfo.position,
         state.DonaturInfo.email,
         state.DonaturInfo.address,
-        phoneNumber[0],
+        state.DonaturInfo.phone[0] === "+"
+          ? phoneNumber[0]
+          : state.DonaturInfo.phone,
         Number(state.DonaturInfo.status),
         Number(state.DonaturInfo.npwp),
         Number(state.DonaturInfo.pos_code),
         state.DonaturInfo.info,
-        Number(state.DonaturInfo.province_id),
-        Number(state.DonaturInfo.regency_id)
+        state.DonaturInfo.province_id,
+        state.DonaturInfo.regency_id
       )
     );
     return res;
@@ -355,37 +431,37 @@ export const CorporateController = ({ children }) => {
       e.preventDefault();
       if (updateSession) {
         if (state.DonationInfo.donation_item === 1) {
-            await donationPresenter.updateDonation(
-                new UpdateDonation(
-                  state.DonationInfo.category_id,
-                  state.DonationInfo.statement_category_id,
-                  state.DonationInfo.description,
-                  state.DonationInfo.donation_item,
-                  state.DonationInfo.cash,
-                  null
-                ),
-                Number(donationParams.donor_id)
-              );
-              const response = {
-                id: donationParams.donor_id,
-              };
-              return ["success", response];
+          await donationPresenter.updateDonation(
+            new UpdateDonation(
+              state.DonationInfo.category_id,
+              state.DonationInfo.statement_category_id,
+              state.DonationInfo.description,
+              state.DonationInfo.donation_item,
+              state.DonationInfo.cash,
+              null
+            ),
+            Number(donationParams.donor_id)
+          );
+          const response = {
+            id: donationParams.donor_id,
+          };
+          return ["success", response];
         } else {
-            await donationPresenter.updateDonation(
-                new UpdateDonation(
-                  state.DonationInfo.category_id,
-                  state.DonationInfo.statement_category_id,
-                  state.DonationInfo.description,
-                  state.DonationInfo.donation_item,
-                  null,
-                  state.DonationInfo.goods
-                ),
-                Number(donationParams.donor_id)
-              );
-              const response = {
-                id: donationParams.donor_id,
-              };
-              return ["success", response];
+          await donationPresenter.updateDonation(
+            new UpdateDonation(
+              state.DonationInfo.category_id,
+              state.DonationInfo.statement_category_id,
+              state.DonationInfo.description,
+              state.DonationInfo.donation_item,
+              null,
+              state.DonationInfo.goods
+            ),
+            Number(donationParams.donor_id)
+          );
+          const response = {
+            id: donationParams.donor_id,
+          };
+          return ["success", response];
         }
       } else {
         if (state.DonationInfo.donation_item === 1) {
@@ -402,7 +478,7 @@ export const CorporateController = ({ children }) => {
               null
             )
           );
-       
+
           return ["success", postDontation];
         } else {
           const postDontation = await donationPresenter.store(
@@ -418,8 +494,7 @@ export const CorporateController = ({ children }) => {
               state.DonationInfo.goods
             )
           );
-         
-        
+
           return ["success", postDontation];
         }
       }
@@ -429,19 +504,19 @@ export const CorporateController = ({ children }) => {
   };
 
   const handleInput = async (e) => {
-    e.persist();
+    const value = e.target.value;
+    const name = e.target.name;
     if (e.target.name === "province_id") {
       setState((_prevState) => ({
         ..._prevState,
         DonaturInfo: {
           ..._prevState.DonaturInfo,
-          province_id: e.target.value,
+          province_id: value,
         },
       }));
-
       const city = await cityPresenter.loadData({
         filter: {
-          province_id: e.target.value,
+          province_id: value,
         },
       });
       setState((_prevState) => ({
@@ -453,7 +528,7 @@ export const CorporateController = ({ children }) => {
         ..._prevState,
         DonaturInfo: {
           ..._prevState.DonaturInfo,
-          [e.target.name]: e.target.value,
+          [name]: value,
         },
       }));
     }
@@ -503,33 +578,23 @@ export const CorporateController = ({ children }) => {
   const handleSelectedDonatur = async (e) => {
     setSelected(false);
     const SelectedDonatur = state.donatur.filter((val) => val.id === e.key);
-    const provinceId = state.province.filter(
-      (val) => val.name === SelectedDonatur[0].province_id
-    );
+    const city = await cityPresenter.loadData();
 
-    const city = await cityPresenter.loadData({
-      filter: {
-        province_id: provinceId[0].id,
-      },
-    });
-
-    const regencyId = city.filter(
-      (val) => val.name === SelectedDonatur[0].regency_id
-    );
     if (SelectedDonatur.length > 0 || SelectedDonatur !== null) {
       setState((_prevState) => ({
         ..._prevState,
         DonaturInfo: {
           ..._prevState.DonaturInfo,
           ...SelectedDonatur[0],
-          province_id: provinceId[0].id,
-          regency_id: regencyId[0].id,
+          province_id: SelectedDonatur[0].province_id,
+          regency_id: SelectedDonatur[0].regency_id,
         },
         DonationInfo: {
           ..._prevState.DonationInfo,
           donor_id: SelectedDonatur[0].id,
         },
         regency: city,
+        selectedDonatur: SelectedDonatur[0],
       }));
       setSelected(true);
     } else {
@@ -626,6 +691,15 @@ export const CorporateController = ({ children }) => {
     window.open(pdfRef, "_blank");
   };
 
+  const handleResetForm = () => {
+    setState((prevState) => ({
+      ...prevState,
+      DonaturInfo: initialState.DonaturInfo,
+      selectedDonatur: initialState.selectedDonatur,
+      search: initialState.search,
+    }));
+  };
+
   return (
     <CorporateProvider
       value={{
@@ -648,6 +722,9 @@ export const CorporateController = ({ children }) => {
         setSelected,
         updateSession,
         setUpdateSession,
+        handleResetForm,
+        loading: loading,
+        setLoading: setLoading,
       }}
     >
       {children}

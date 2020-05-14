@@ -243,7 +243,7 @@ export const UserListController = ({ children }) => {
     const optionsTable = {
         filterType: "dropdown",
         responsive: "scroll",
-        sort: true,
+        sort: state.data.length > 0 ? true : false,
         pagination: true,
         page: pagination.pages,
         count: pagination.total,

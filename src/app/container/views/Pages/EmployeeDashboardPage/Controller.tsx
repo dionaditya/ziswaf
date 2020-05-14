@@ -408,7 +408,7 @@ export const StudentListController = ({ children }) => {
   const optionsTable = {
     filterType: "dropdown",
     responsive: "scroll",
-    sort: true,
+    sort: state.data.length > 0 ? true : false,
     page: pagination.page,
     count: pagination.total,
     rowsPerPage: pagination.rowsPerPage,

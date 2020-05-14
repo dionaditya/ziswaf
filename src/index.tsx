@@ -6,6 +6,10 @@ import "./index.css";
 import * as serviceWorker from "./serviceWorker";
 import LoadingPage from './LoadingPage';
 
+if(process.env.NODE_ENV === 'production') {
+    console.log = () => {}
+}
+
 
 const App = React.lazy(() => import('./App'))
 

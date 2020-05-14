@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useContext } from "react";
-import { ComboCharts } from "@/app/container/components/Chart";
+import { ComboCharts, ComboChartOperatorDivision } from "@/app/container/components/Chart";
 import "react-datepicker/dist/react-datepicker.css";
 import DataTableReportPencapaianDivisi from "@/app/container/components/ReportDataTables/PencapaianDivisi";
 import { ReportContext } from "../../Controller";
@@ -136,20 +136,35 @@ const LaporanDivisi = () => {
                           "#00796B",
                           controller.divisionReport.totalPersentRetail || 0
                         )}
-                      <ComboCharts
-                        width="100%"
-                        type="line"
-                        title="Realisasi Retail"
-                        title2={controller.role === 1 && "Prognosis Retail"}
-                        role={controller.role}
-                        color={["#00796B", "#00796B"]}
-                        dataPrognosis={Object.values(
-                          controller.PrognosisRetail
-                        )}
-                        dataPerMonth={Object.values(controller.retailPermonth)}
-                        dataPerDay={controller.tableRetailOp}
-                        dataPerDayProp={Object.keys(controller.tableRetailOp)}
-                      />
+                      {controller.role === 1 ?
+                        <ComboCharts
+                          width="100%"
+                          type="line"
+                          title="Realisasi Retail"
+                          title2={controller.role === 1 && "Prognosis Retail"}
+                          role={controller.role}
+                          color={["#00796B", "#00796B"]}
+                          dataPrognosis={Object.values(
+                            controller.PrognosisRetail
+                          )}
+                          dataPerMonth={Object.values(controller.retailPermonth)}
+                          dataPerDay={controller.tableRetailOp}
+                          dataPerDayProp={Object.keys(controller.tableRetailOp)}
+                        /> :
+                        <ComboChartOperatorDivision
+                          width="100%"
+                          type="line"
+                          title="Realisasi Retail"
+                          title2={controller.role === 1 && "Prognosis Retail"}
+                          role={controller.role}
+                          color={["#00796B", "#00796B"]}
+                          dataPrognosis={Object.values(
+                            controller.PrognosisRetail
+                          )}
+                          dataPerMonth={Object.values(controller.retailPermonth)}
+                          dataPerDay={controller.tableRetailOp}
+                          dataPerDayProp={Object.keys(controller.tableRetailOp)}
+                        />}
                     </Box>
                   </CardBody>
                 </Card>
@@ -167,22 +182,40 @@ const LaporanDivisi = () => {
                           "#B71C1C",
                           controller.divisionReport.totalPersentCorporate || 0
                         )}
-                      <ComboCharts
-                        width="100%"
-                        type="line"
-                        title="Realisasi Corporate"
-                        title2={controller.role === 1 && "Prognosis Corporate"}
-                        color={["#EA8A8A", "#B71C1C"]}
-                        role={controller.role}
-                        dataPrognosis={Object.values(
-                          controller.prognosisCorporate
-                        )}
-                        dataPerMonth={Object.values(
-                          controller.corporatePermonth
-                        )}
-                        dataPerDay={controller.tableCoprOp}
-                        dataPerDayProp={Object.keys(controller.tableCoprOp)}
-                      />
+                      {controller.role === 1 ?
+                        <ComboCharts
+                          width="100%"
+                          type="line"
+                          title="Realisasi Corporate"
+                          title2={controller.role === 1 && "Prognosis Corporate"}
+                          color={["#EA8A8A", "#B71C1C"]}
+                          role={controller.role}
+                          dataPrognosis={Object.values(
+                            controller.prognosisCorporate
+                          )}
+                          dataPerMonth={Object.values(
+                            controller.corporatePermonth
+                          )}
+                          dataPerDay={controller.tableCoprOp}
+                          dataPerDayProp={Object.keys(controller.tableCoprOp)}
+                        />
+                        :
+                        <ComboChartOperatorDivision
+                          width="100%"
+                          type="line"
+                          title="Realisasi Corporate"
+                          title2={controller.role === 1 && "Prognosis Corporate"}
+                          color={["#EA8A8A", "#B71C1C"]}
+                          role={controller.role}
+                          dataPrognosis={Object.values(
+                            controller.prognosisCorporate
+                          )}
+                          dataPerMonth={Object.values(
+                            controller.corporatePermonth
+                          )}
+                          dataPerDay={controller.tableCoprOp}
+                          dataPerDayProp={Object.keys(controller.tableCoprOp)}
+                        />}
                     </Box>
                   </CardBody>
                 </Card>
@@ -200,18 +233,32 @@ const LaporanDivisi = () => {
                           "#1976D2",
                           controller.divisionReport.totalPersentUpz || 0
                         )}
-                      <ComboCharts
-                        width="100%"
-                        type="line"
-                        title="Realisasi Upz"
-                        title2={controller.role === 1 && "Prognosis UPZ"}
-                        role={controller.role}
-                        color={["#6697C8", "#1976D2"]}
-                        dataPrognosis={Object.values(controller.prognosisUpz)}
-                        dataPerMonth={Object.values(controller.upzPermonth)}
-                        dataPerDay={controller.tableUpzOp}
-                        dataPerDayProp={Object.keys(controller.tableUpzOp)}
-                      />
+                      {controller.role === 1 ?
+                        <ComboCharts
+                          width="100%"
+                          type="line"
+                          title="Realisasi Upz"
+                          title2={controller.role === 1 && "Prognosis UPZ"}
+                          role={controller.role}
+                          color={["#6697C8", "#1976D2"]}
+                          dataPrognosis={Object.values(controller.prognosisUpz)}
+                          dataPerMonth={Object.values(controller.upzPermonth)}
+                          dataPerDay={controller.tableUpzOp}
+                          dataPerDayProp={Object.keys(controller.tableUpzOp)}
+                        />
+                        :
+                        <ComboChartOperatorDivision
+                          width="100%"
+                          type="line"
+                          title="Realisasi Upz"
+                          title2={controller.role === 1 && "Prognosis UPZ"}
+                          role={controller.role}
+                          color={["#6697C8", "#1976D2"]}
+                          dataPrognosis={Object.values(controller.prognosisUpz)}
+                          dataPerMonth={Object.values(controller.upzPermonth)}
+                          dataPerDay={controller.tableUpzOp}
+                          dataPerDayProp={Object.keys(controller.tableUpzOp)}
+                        />}
                     </Box>
                   </CardBody>
                 </Card>

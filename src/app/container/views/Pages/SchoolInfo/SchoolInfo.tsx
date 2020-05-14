@@ -87,7 +87,10 @@ const SchoolInfo = () => {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const controller = React.useContext(MadrasahInfoContext);
   const { register, handleSubmit, watch, control } = useForm();
-  const [alertSucess, setSuccess] = React.useState(false);
+  const [alertSucess, setSuccess] = React.useState({
+    employee: false,
+    student: false
+  });
   const { id } = useParams();
   const classes = useStyles();
 
@@ -99,18 +102,24 @@ const SchoolInfo = () => {
     history.push(`/dashboard/personel-input?school_id=${id}`);
   };
 
-  const handleDeleteData = (e) => {
-    const isSuccess = controller.handleDelete(e);
+  const handleDeleteData = async (e) => {
+    const isSuccess = await controller.handleDelete(e);
     if (isSuccess) {
-      setSuccess(true);
+      setSuccess({
+        ...alertSucess,
+        employee: true
+      });
       setDialogOpen(false);
     }
   };
 
-  const handleDeleteStudentData = (e) => {
-    const isSuccess = controller.handleDeleteStudent(e);
+  const handleDeleteStudentData = async (e) => {
+    const isSuccess = await controller.handleDeleteStudent(e);
     if (isSuccess) {
-      setSuccess(true);
+      setSuccess({
+        ...alertSucess,
+        student: true
+      });
       setDialogOpen(false);
     }
   };
@@ -119,7 +128,10 @@ const SchoolInfo = () => {
     if (reason === "clickaway") {
       return;
     }
-    setSuccess(false);
+    setSuccess({
+      employee: false,
+      student: false
+    });
   };
 
   const onPressEnter = (e) => {
@@ -724,7 +736,7 @@ const SchoolInfo = () => {
                     handleClose={(e) => setDialogOpen(false)}
                   />
                   <Snackbar
-                    open={alertSucess}
+                    open={alertSucess.employee}
                     autoHideDuration={4000}
                     onClose={handleClose}
                   >
@@ -868,7 +880,7 @@ const SchoolInfo = () => {
                     handleClose={(e) => setDialogOpen(false)}
                   />
                   <Snackbar
-                    open={alertSucess}
+                    open={alertSucess.student}
                     autoHideDuration={4000}
                     onClose={handleClose}
                   >

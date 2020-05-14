@@ -7,6 +7,7 @@ import { SchoolPresenter } from '@/app/infrastructures/Presenter/School/Presente
 import { CityPresenter } from '@/app/infrastructures/Presenter/City/Presenter'
 import { CategoryPresenter } from '@/app/infrastructures/Presenter/Category/Presenter'
 import { DashboardAdminPresenter } from '@/app/infrastructures/Presenter/DashboardAdmin/Presenter';
+import { useDebounce } from 'use-lodash-debounce';
 
 export const ReportDonationContext = React.createContext<ReportDonationInterface>(ReportDonationDefaultState)
 export const { Provider: ReportDonationProvider, Consumer: ReportDonationConsumer } = ReportDonationContext
@@ -17,6 +18,9 @@ const ReportDonationController = ({ children }) => {
     const cityPresenter: CityPresenter = container.resolve(CityPresenter)
     const categoryPresenter: CategoryPresenter = container.resolve(CategoryPresenter)
     const dashboardPresenter: DashboardAdminPresenter = container.resolve(DashboardAdminPresenter)
+    const [unitQuery, setUnitQuery] = useState('')
+    const debouncedSchool = useDebounce(unitQuery, 200)
+    const [isDebounce, setDebounce] = useState(false)
 
     const handleMultiSelectedFilter = (field, label, name) => {
         const parseName = parseInt(name, 10);
@@ -74,13 +78,10 @@ const ReportDonationController = ({ children }) => {
         }
     }
     useEffect(() => {
+        setDebounce(false)
         const getCityData = async () => {
             try {
                 const filterParamUnit = {
-                    paging: {
-                        page: 1,
-                        limit: 200,
-                    },
                     filter: {
                         school: 1,
                         is_transaction: 1
@@ -109,6 +110,7 @@ const ReportDonationController = ({ children }) => {
     }, [state.unitSelected])
 
     useEffect(() => {
+        setDebounce(false)
         const getUnitData = async () => {
             try {
                 setState(prevState => ({ ...prevState, unitSelected: [] }))
@@ -117,7 +119,7 @@ const ReportDonationController = ({ children }) => {
                 const filterParamUnit = {
                     paging: {
                         page: 1,
-                        limit: 500,
+                        limit: 10,
                     },
                     filter: {
                         is_transaction: 1,
@@ -153,6 +155,7 @@ const ReportDonationController = ({ children }) => {
     }, [state.citySelected])
 
     useEffect(() => {
+        setDebounce(false)
         const getStatment = async () => {
             try {
                 const filterParam = {
@@ -184,6 +187,46 @@ const ReportDonationController = ({ children }) => {
         getStatment()
     }, [state.citySelected, state.unitSelected])
 
+    useEffect(() => {
+        if(isDebounce) {
+            const getUnitData = async () => {
+                try {
+                    const getListSelectedRegency = state.citySelected;
+                    const regency = getListSelectedRegency.map(item => item['name']).join(',')
+                    const filterParamUnit = {
+                        filter: {
+                            is_transaction: 1,
+                            regency: regency
+                        },
+                        search: debouncedSchool,
+                        sort: {
+                            id: "ASC",
+                        },
+                    }
+                 const response: any = await schoolPresenter.loadData(filterParamUnit);
+                 if(response.status === 200 || response.status === 201) {
+                     const { data } = response
+                     const responseData = data?.data;
+                     if(!isEmpty(responseData)) {
+                         const transformData = responseData.map(item => {
+                             return {
+                                 name: item.id,
+                                 label: item.name
+                             }
+                         })
+                        setState(prevState  => ({...prevState, unitData: [{name: 0, label: "Semua"}].concat(transformData)}))
+                     } else {
+                        setState(prevState  => ({...prevState, unitData: [{label: "Belum Ada Unit"}]}))
+                     }
+                 }
+                } catch(error) {
+                    setState(prevState  => ({...prevState, unitDataLoading: false}))
+                }
+            }
+            getUnitData()
+        }
+    }, [debouncedSchool])
+
     const handleClearFilter = () => {
         setState(prevState => ({
             ...prevState,
@@ -213,8 +256,22 @@ const ReportDonationController = ({ children }) => {
         }))
     }
 
+    const debounceSchool = (value) => {
+        setDebounce(true)
+        setUnitQuery(value)
+    }
+
     return (
-        <ReportDonationProvider value={{ ...state, handleModalFilter: handleModalFilter, handleMultiSelectedFilter: handleMultiSelectedFilter, handleSetState: handleSetState, handleClearFilter: handleClearFilter, handleCreateReport: handleCreateReport }}>
+        <ReportDonationProvider value={{ 
+            ...state, 
+            handleModalFilter: handleModalFilter, 
+            handleMultiSelectedFilter: handleMultiSelectedFilter, 
+            handleSetState: handleSetState, 
+            handleClearFilter: handleClearFilter, 
+            handleCreateReport: handleCreateReport,
+            debounceSchool: debounceSchool
+            
+            }}>
             {children}
         </ReportDonationProvider>
     )

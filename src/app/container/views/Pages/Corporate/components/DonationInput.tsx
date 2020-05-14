@@ -68,8 +68,11 @@ const useStyles = makeStyles((theme: Theme) =>
       color: "#323C47",
       fontSize: 12,
       fontWeight: 800,
-      marginTop: "2vh",
-      marginBottom: "2vh",
+    },
+    labelOpsional: {
+      color: '#BCBCBC',
+      fontSize: '14px',
+      fontWeight: 'bold',
     },
   })
 );
@@ -105,10 +108,8 @@ const DonationInput = ({ index, setIndex }) => {
       setErrorDonation(false);
       if (controller.DonationInfo.donation_item === 1) {
         if (
-          _.isNumber(
-            controller.DonationInfo.cash.category_id &&
-              controller.DonationInfo.cash.value !== 0
-          )
+          _.isNumber(controller.DonationInfo.cash.category_id) &&
+          Number(controller.DonationInfo.cash.value) !== 0
         ) {
           setError(false);
           const [status, response] = await controller.handlePostDonation(e);
@@ -119,7 +120,7 @@ const DonationInput = ({ index, setIndex }) => {
               });
               setTimeout(() => {
                 history.push(
-                  `/dashboard/corporate-tanda-terima/${response.id}`
+                  `/dashboard/donation/corporate/tanda-terima/${response.id}`
                 );
               }, 500);
             } else {
@@ -128,7 +129,7 @@ const DonationInput = ({ index, setIndex }) => {
               });
               setTimeout(() => {
                 history.push(
-                  `/dashboard/corporate-tanda-terima/${response.id}`
+                  `/dashboard/donation/corporate/tanda-terima/${response.id}`
                 );
               }, 500);
             }
@@ -152,9 +153,10 @@ const DonationInput = ({ index, setIndex }) => {
           controller.DonationInfo.goods.category_id !== 0 &&
           _.isNumber(controller.DonationInfo.goods.status) === true &&
           controller.DonationInfo.goods.quantity !== 0 &&
-          controller.DonationInfo.goods.value !== 0
+          Number(controller.DonationInfo.goods.value) !== 0
         ) {
           setErrorGoods(false);
+
           const [status, response] = await controller.handlePostDonation(e);
           if (status === "success") {
             if (controller.updateSession) {
@@ -163,7 +165,7 @@ const DonationInput = ({ index, setIndex }) => {
               });
               setTimeout(() => {
                 history.push(
-                  `/dashboard/corporate-tanda-terima/${response.id}`
+                  `/dashboard/donation/corporate/tanda-terima/${response.id}`
                 );
               }, 500);
             } else {
@@ -172,7 +174,7 @@ const DonationInput = ({ index, setIndex }) => {
               });
               setTimeout(() => {
                 history.push(
-                  `/dashboard/corporate-tanda-terima/${response.id}`
+                  `/dashboard/donation/corporate/tanda-terima/${response.id}`
                 );
               }, 500);
             }
@@ -198,6 +200,7 @@ const DonationInput = ({ index, setIndex }) => {
     }
   };
 
+
   return (
     <React.Fragment>
       <ThemeProvider theme={innerTheme}>
@@ -214,6 +217,12 @@ const DonationInput = ({ index, setIndex }) => {
                     <CardBody>
                       <GridItem xs={12} sm={12} md={12}>
                         <Box display="flex" flexDirection="column">
+                          {
+                            controller.loading && 
+                            <span>
+                              Loading.....
+                            </span>
+                          }
                           <label htmlFor="info" className={classes.label}>
                             Jenis Donasi
                           </label>
@@ -243,9 +252,14 @@ const DonationInput = ({ index, setIndex }) => {
                               Belum memilih jenis donasi
                             </p>
                           )}
+                          <Box style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
                           <label htmlFor="info" className={classes.label}>
                             Deskripsi Donasi
                           </label>
+                          <label className={classes.labelOpsional}>
+                            Opsional
+                          </label>
+                          </Box>
                           <Textarea
                             className="text-area"
                             id="description"

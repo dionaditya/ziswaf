@@ -54,8 +54,10 @@ export const ReportController = ({ children }) => {
   const [labelSearch, setLabelSearch] = useState('')
   const [labelSearchRegency, setLabelSearchRegency] = useState('')
 
+  const [unitQuery, setUnitQuery] = useState('')
+
   const debouncedSearchTerm = useDebounce(regency, 500)
-  const debouncedSearchSchool = useDebounce(unit, 500)
+  const debouncedSearchSchool = useDebounce(unitQuery, 300)
 
   //Filter 
 
@@ -175,28 +177,23 @@ export const ReportController = ({ children }) => {
   const idSchool = school_name?.id;
   const nameSchool = school_name?.name;
 
-  console.log(operatorData.data)
   const getSchoolData = async (val) => {
-    setState(prevState => ({
-      ...prevState,
-      filterData: {
-        ...prevState.filterData,
-        unitDataLoading: true
-      }
-    }))
     const filterSchool = {
       paging: {
         page: 1,
-        limit: 9999,
+        limit: 10
       },
       search: val
     }
 
+    const filterSchoolDebounced = {
+      search: val
+    }
+
     try {
-      const response = await schoolPresenter.loadData(filterSchool)
+      const response = await schoolPresenter.loadData(val === "" ? filterSchool : filterSchoolDebounced)
 
       if (response.status === 200 || response.status === 201) {
-        setState(prevState => ({ ...prevState, unitDataLoading: false }))
         const { data } = response
         const responseData = data?.data;
         if (!isEmpty(responseData)) {
@@ -212,7 +209,7 @@ export const ReportController = ({ children }) => {
             filterData: {
               ...prevState.filterData,
               unitData: transformData,
-              unitDataLoading: false
+              unitDataRaw: responseData,
             }
           }))
 
@@ -222,7 +219,7 @@ export const ReportController = ({ children }) => {
             filterData: {
               ...prevState.filterData,
               unitData: [],
-              unitDataLoading: false
+              unitDataRaw: [],
             }
           }))
         }
@@ -260,7 +257,7 @@ export const ReportController = ({ children }) => {
     }
 
     try {
-      const response = await regencyPresenter.loadData(filterParamCity)
+      const response: any = await regencyPresenter.loadData(filterParamCity)
       if (!isEmpty(response)) {
         const transformData = response.map(item => {
           return {
@@ -273,7 +270,7 @@ export const ReportController = ({ children }) => {
           ...prevState,
           filterData: {
             ...prevState.filterData,
-            cityData: [{ name: 0, label: "Semua" }].concat(transformData),
+            cityData: response,
             cityDataLoading: false
           }
         }))
@@ -289,6 +286,7 @@ export const ReportController = ({ children }) => {
     }
   }
 
+
   useEffect(() => {
     getSchoolData("")
   }, [])
@@ -296,6 +294,19 @@ export const ReportController = ({ children }) => {
   useEffect(() => {
     getRegencyData("")
   }, [])
+
+  React.useEffect(() => {
+    if (debouncedSearchSchool !== "") {
+      (async () => {
+        getSchoolData(debouncedSearchSchool)
+      })();
+    } else {
+      (async () => {
+        getSchoolData(debouncedSearchSchool)
+      })();
+    }
+  }, [debouncedSearchSchool]);
+
 
   const setSchoolData = options => {
     const { value, label } = options
@@ -410,6 +421,26 @@ export const ReportController = ({ children }) => {
       window.open(pdfRef, '_blank')
   }
 
+  const loadSchool = async (newValue, callback) => {
+    const transformData = state.filterData['unitDataRaw'].map((val) => {
+      return {
+        value: val['id'],
+        label: val['name'],
+      };
+    });
+    const witHDefaultValue = [{
+      value: "",
+      label: "SEMUA"
+    }, ...transformData]
+
+    return callback(witHDefaultValue);
+  };
+
+  const debouncedSchool = (value) => {
+    setUnitQuery(value)
+  }
+ 
+
  return (
     <ReportProvider
       value={{
@@ -483,7 +514,9 @@ export const ReportController = ({ children }) => {
         message,
         setMessage,
         handleExportPdf,
-        generalOperatorPerDay
+        generalOperatorPerDay,
+        debouncedSchool,
+        loadSchool
       }}>
       {children}
     </ReportProvider>

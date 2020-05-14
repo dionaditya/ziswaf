@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { container } from "tsyringe";
 import { DonorPresenter } from "@/app/infrastructures/Presenter/Donor/Presenter";
 import { DonationPresenter } from "@/app/infrastructures/Presenter/Donation/Presenter";
-import { CreateDonorApiRequest } from "@/data/payload/api/DonorApiRequest";
+import { CreateDonorApiRequest, UpdateDonorApiRequest } from "@/data/payload/api/DonorApiRequest";
 import { ProvincePresenter } from "@/app/infrastructures/Presenter/Province/Presenter";
 import { CityPresenter } from "@/app/infrastructures/Presenter/City/Presenter";
 import { EmployeePresenter } from "@/app/infrastructures/Presenter/Employee/Presenter";
@@ -27,7 +27,7 @@ import qs from "qs";
 export interface Cash {
   type_id: any;
   category_id: any;
-  value: number;
+  value: any;
   ref_number: string;
 }
 
@@ -35,7 +35,7 @@ export interface Goods {
   category_id: number;
   description: string;
   quantity: number;
-  value: number;
+  value: any;
   status: number;
 }
 
@@ -81,6 +81,9 @@ interface IState {
   setSelected: Function;
   updateSession: boolean;
   setUpdateSession: Function;
+  handleResetForm: Function
+  loading: boolean
+  setLoading: Function
 }
 
 const initialState: IState = {
@@ -110,15 +113,15 @@ const initialState: IState = {
     cash: {
       type_id: "",
       category_id: "",
-      value: 0,
+      value: "",
       ref_number: "",
     },
     goods: {
       category_id: 0,
       description: "",
       quantity: 0,
-      value: 0,
-      status: 0,
+      value: "",
+      status: "",
     },
   },
   transaction: {},
@@ -133,22 +136,26 @@ const initialState: IState = {
   subCategory: [],
   data: [],
   category: [],
-  setState: () => {},
-  postData: () => {},
-  handleInput: () => {},
-  handleSearchDonatur: () => {},
-  handleSelectedDonatur: () => {},
-  handlePostDonation: () => {},
-  handleInputDonation: () => {},
-  handleTypeDonation: () => {},
-  handleCashInput: () => {},
-  handleGoodsInput: () => {},
+  setState: () => { },
+  postData: () => { },
+  handleInput: () => { },
+  handleSearchDonatur: () => { },
+  handleSelectedDonatur: () => { },
+  handlePostDonation: () => { },
+  handleInputDonation: () => { },
+  handleTypeDonation: () => { },
+  handleCashInput: () => { },
+  handleGoodsInput: () => { },
   selected: false,
-  handleExportPdf: () => {},
-  postUpdateData: () => {},
-  setSelected: () => {},
+  handleExportPdf: () => { },
+  postUpdateData: () => { },
+  setSelected: () => { },
   updateSession: false,
-  setUpdateSession: () => {},
+  setUpdateSession: () => { },
+  handleResetForm: () => {},
+  loading: false,
+  setLoading: () => {}
+
 };
 
 export const RetailContext = React.createContext<IState>(initialState);
@@ -161,7 +168,7 @@ export const RetailController = ({ children }) => {
   const [state, setState] = useState<IState>(initialState);
   const [index, setIndex] = useState(0);
   const [category, setCategory] = useState<any>([{}]);
-  const debouncedValue = useDebounce(state.search, 100);
+  const debouncedValue = useDebounce(state.search, 20);
   const retailPresenter: DonorPresenter = container.resolve(DonorPresenter);
   const donationPresenter: DonationPresenter = container.resolve(
     DonationPresenter
@@ -178,15 +185,16 @@ export const RetailController = ({ children }) => {
   const donationParams: any = useParams();
   const { transaction_id } = useParams();
   const [updateSession, setUpdateSession] = React.useState(false);
+  const [loading, setLoading] = useState(false);
 
   let isReceipt: any = useRouteMatch({
-    path: "/dashboard/retail-tanda-terima/:transaction_id",
+    path: "/dashboard/donation/retail/tanda-terima/:transaction_id",
     strict: false,
     sensitive: true,
   });
 
   let isDonation: any = useRouteMatch({
-    path: "/dashboard/retail-input/:id",
+    path: "/dashboard/donation/retail/transaction/:id",
     strict: false,
     sensitive: true,
   });
@@ -199,14 +207,15 @@ export const RetailController = ({ children }) => {
   let query = useQuery();
 
   const phoneNumber: any = state.DonaturInfo.phone
-  .slice(3, state.DonaturInfo.phone.length)
-  .replace(/\s+/g, "")
-  .match(/(\d+)/);
+    .slice(3, state.DonaturInfo.phone.length)
+    .replace(/\s+/g, "")
+    .match(/(\d+)/);
 
   React.useEffect(() => {
+    setLoading(true)
     if (
       isReceipt &&
-      isReceipt.path === "/dashboard/retail-tanda-terima/:transaction_id"
+      isReceipt.path === "/dashboard/donation/retail/tanda-terima/:transaction_id"
     ) {
       (async () => {
         const donationDetail: any = await donationPresenter.getById(
@@ -216,10 +225,13 @@ export const RetailController = ({ children }) => {
           ...prevState,
           transaction: donationDetail,
         }));
+        setTimeout(() => {
+          setLoading(false)
+        }, 500)
       })();
     } else if (
       isDonation &&
-      isDonation.path === "/dashboard/retail-input/:id"
+      isDonation.path === "/dashboard/donation/retail/transaction/:id"
     ) {
       if (query["?edit"] === "true") {
         (async () => {
@@ -246,9 +258,12 @@ export const RetailController = ({ children }) => {
             },
             subCategory: subCategory[0].subCategories,
           }));
-         
+          setTimeout(() => {
+            setLoading(false)
+          }, 500)
         })();
         setUpdateSession(true);
+     
       } else {
         (async () => {
           const categoryList =
@@ -279,17 +294,43 @@ export const RetailController = ({ children }) => {
   React.useEffect(() => {
     if (debouncedValue !== "") {
       (async () => {
+        const parsingPhoneNumber = (phoneNum) => {
+          if (phoneNum[0] === '+') {
+            return phoneNum.slice(3, phoneNum.length)
+          } else if (phoneNum[0] === '0') {
+            return phoneNum.slice(1, phoneNum.length)
+          } else {
+            return phoneNum
+          }
+        }
+
+        const isSearchPhoneNumber = (phoneNum) => {
+          if (phoneNum[0] === '+') {
+            return true
+          } else if (phoneNum[0] === '0') {
+            return true
+          } else {
+            return false
+          }
+        }
         const donaturQueryResult = await retailPresenter.getAll({
-          search: debouncedValue,
+          search: parsingPhoneNumber(debouncedValue),
           filter: { donor_category: 0 },
         });
 
         if (donaturQueryResult !== null) {
           const transformedDonaturQuery = donaturQueryResult.map((val) => {
-            return {
-              value: val.company_name,
-              key: val.id,
-            };
+            if (isSearchPhoneNumber((debouncedValue))) {
+              return {
+                value: `${val.phone} - ${val.name}`,
+                key: val.id,
+              };
+            } else {
+              return {
+                value: `${val.name} - ${val.phone}`,
+                key: val.id,
+              };
+            }
           });
           setState((prevState) => ({
             ...prevState,
@@ -303,24 +344,47 @@ export const RetailController = ({ children }) => {
 
 
   const postData = async () => {
-    const res = await retailPresenter.store(
-      new CreateDonorApiRequest(
-        state.DonaturInfo.name,
-        state.DonaturInfo.company_name,
-        state.DonaturInfo.is_company,
-        state.DonaturInfo.position,
-        state.DonaturInfo.email,
-        state.DonaturInfo.address,
-        phoneNumber[0],
-        Number(state.DonaturInfo.status),
-        Number(state.DonaturInfo.npwp),
-        Number(state.DonaturInfo.pos_code),
-        state.DonaturInfo.info,
-        Number(state.DonaturInfo.province_id),
-        Number(state.DonaturInfo.regency_id)
-      )
-    );
-    return res;
+    if (_.isEmpty(state.selectedDonatur) === false) {
+      const res = await retailPresenter.update(
+        new UpdateDonorApiRequest(
+          state.DonaturInfo.name,
+          state.DonaturInfo.company_name,
+          state.DonaturInfo.is_company,
+          state.DonaturInfo.position,
+          state.DonaturInfo.email,
+          state.DonaturInfo.address,
+          state.DonaturInfo.phone[0] === '+' ? phoneNumber[0] : state.DonaturInfo.phone,
+          Number(state.DonaturInfo.status),
+          Number(state.DonaturInfo.npwp),
+          Number(state.DonaturInfo.pos_code),
+          state.DonaturInfo.info,
+          state.DonaturInfo.province_id,
+          state.DonaturInfo.regency_id
+        ),
+        state.selectedDonatur.id
+      );
+      return res;
+    } else {
+      const res = await retailPresenter.store(
+        new CreateDonorApiRequest(
+          state.DonaturInfo.name,
+          state.DonaturInfo.company_name,
+          state.DonaturInfo.is_company,
+          state.DonaturInfo.position,
+          state.DonaturInfo.email,
+          state.DonaturInfo.address,
+          state.DonaturInfo.phone[0] === '+' ? phoneNumber[0] : state.DonaturInfo.phone,
+          Number(state.DonaturInfo.status),
+          Number(state.DonaturInfo.npwp),
+          Number(state.DonaturInfo.pos_code),
+          state.DonaturInfo.info,
+          state.DonaturInfo.province_id,
+          state.DonaturInfo.regency_id
+        )
+      );
+      return res;
+    }
+
   };
 
   const postUpdateData = async () => {
@@ -332,13 +396,13 @@ export const RetailController = ({ children }) => {
         state.DonaturInfo.position,
         state.DonaturInfo.email,
         state.DonaturInfo.address,
-        phoneNumber[0],
+        state.DonaturInfo.phone[0] === '+' ? phoneNumber[0] : state.DonaturInfo.phone,
         Number(state.DonaturInfo.status),
         Number(state.DonaturInfo.npwp),
         Number(state.DonaturInfo.pos_code),
         state.DonaturInfo.info,
-        Number(state.DonaturInfo.province_id),
-        Number(state.DonaturInfo.regency_id)
+        state.DonaturInfo.province_id,
+        state.DonaturInfo.regency_id
       )
     );
     return res
@@ -349,7 +413,7 @@ export const RetailController = ({ children }) => {
       e.preventDefault();
       if (updateSession) {
         if (state.DonationInfo.donation_item === 1) {
-           await donationPresenter.updateDonation(
+          await donationPresenter.updateDonation(
             new UpdateDonation(
               state.DonationInfo.category_id,
               state.DonationInfo.statement_category_id,
@@ -365,7 +429,7 @@ export const RetailController = ({ children }) => {
           };
           return ["success", response];
         } else {
-           await donationPresenter.updateDonation(
+          await donationPresenter.updateDonation(
             new UpdateDonation(
               state.DonationInfo.category_id,
               state.DonationInfo.statement_category_id,
@@ -379,7 +443,7 @@ export const RetailController = ({ children }) => {
           const response = {
             id: donationParams.id,
           };
-          return ["success", response];     
+          return ["success", response];
         }
       } else {
         if (state.DonationInfo.donation_item === 1) {
@@ -435,7 +499,7 @@ export const RetailController = ({ children }) => {
 
       const city = await cityPresenter.loadData({
         filter: {
-          province_id: e.target.value,
+          province_id: value,
         },
       });
       setState((_prevState) => ({
@@ -498,33 +562,24 @@ export const RetailController = ({ children }) => {
   const handleSelectedDonatur = async (e) => {
     setSelected(false);
     const SelectedDonatur = state.donatur.filter((val) => val.id === e.key);
-    const provinceId = state.province.filter(
-      (val) => val.name === SelectedDonatur[0].province_id
-    );
 
-    const city = await cityPresenter.loadData({
-      filter: {
-        province_id: provinceId[0].id,
-      },
-    });
+    const city = await cityPresenter.loadData();
 
-    const regencyId = city.filter(
-      (val) => val.name === SelectedDonatur[0].regency_id
-    );
     if (SelectedDonatur.length > 0 || SelectedDonatur !== null) {
       setState((_prevState) => ({
         ..._prevState,
         DonaturInfo: {
           ..._prevState.DonaturInfo,
           ...SelectedDonatur[0],
-          province_id: provinceId[0].id,
-          regency_id: regencyId[0].id,
+          province_id: SelectedDonatur[0].province_id,
+          regency_id: SelectedDonatur[0].regency_id,
         },
         DonationInfo: {
           ..._prevState.DonationInfo,
           donor_id: SelectedDonatur[0].id,
         },
         regency: city,
+        selectedDonatur: SelectedDonatur[0]
       }));
       setSelected(true);
     } else {
@@ -621,6 +676,16 @@ export const RetailController = ({ children }) => {
     window.open(pdfRef, "_blank");
   };
 
+  const handleResetForm = () => {
+    setState(prevState => ({
+      ...prevState,
+      DonaturInfo: initialState.DonaturInfo,
+      selectedDonatur: initialState.selectedDonatur,
+      search: initialState.search
+    }))
+  }
+
+
 
   return (
     <RetailProvider
@@ -644,6 +709,9 @@ export const RetailController = ({ children }) => {
         setSelected,
         updateSession,
         setUpdateSession,
+        handleResetForm,
+        loading: loading, 
+        setLoading: setLoading
       }}
     >
       {children}

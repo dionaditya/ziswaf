@@ -124,7 +124,7 @@ const initialState = {
   fetchRegency: () => { },
   fetchSchool: () => { },
   debouncedSchool: () => { },
-  handleDelete: () => { }
+  handleDelete: () => { },
 };
 
 export const DonationContext = React.createContext<IState>(initialState);
@@ -226,7 +226,7 @@ export const DonationController = ({ children }) => {
 
   const optionsTable = {
     responsive: "scroll",
-    sort: true,
+    sort: data.length > 0 ?  true : false,
     pagination: true,
     selectableRowsHeader: false,
     search: false,
@@ -443,16 +443,6 @@ export const DonationController = ({ children }) => {
     }
   }, [debouncedQueySchoolValue]);
 
-  // React.useEffect(() => {
-  //   if (debouncedQueyRegencyValue !== "") {
-  //     (async () => {
-  //       const regency: any = await cityPresenter.loadData({
-  //         search: debouncedQueyRegencyValue,
-  //       });
-  //       setRegency(regency);
-  //     })();
-  //   }
-  // }, [debouncedQueyRegencyValue]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -512,8 +502,19 @@ export const DonationController = ({ children }) => {
     const code = e.keyCode || e.which;
     if (code === 13) {
       setLoading(true);
+
+      const parsingPhoneNumber = (phoneNum) => {
+        if (phoneNum[0] === '+') {
+          return phoneNum.slice(3, phoneNum.length)
+        } else if (phoneNum[0] === '0') {
+          return phoneNum.slice(1, phoneNum.length)
+        } else {
+          return phoneNum
+        }
+      }
+
       let res = await donationPresenter.getAllWithPagination({
-        search: filterParam.search,
+        search: parsingPhoneNumber(filterParam.search),
         filter: filterParam.filter,
         sort: {
           created_at: "DESC",

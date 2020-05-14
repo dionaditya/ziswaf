@@ -28,6 +28,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
 import InputMask from "react-input-mask";
+import SelectWithSearch from "@/app/container/components/SelectWithSearch";
 
 const innerTheme = createMuiTheme({
   palette: {
@@ -60,6 +61,11 @@ const useStyles = makeStyles((theme: Theme) =>
       color: "#323C47",
       fontSize: 12,
       fontWeight: 800,
+    },
+    labelOpsional: {
+      color: "#BCBCBC",
+      fontSize: "14px",
+      fontWeight: "bold",
     },
     modal: {
       marginTop: "5vh",
@@ -134,15 +140,23 @@ const DonorInput = ({ index, setIndex }) => {
     regency: "Belum memlihi kota asal",
   };
 
+  const isValid = (phoneNumber) => {
+    if (phoneNumber[0] === "+") {
+      return Number(phoneNumber[3]) !== 0 ? true : false;
+    } else {
+      return Number(phoneNumber[0]) !== 0 ? true : false;
+    }
+  };
+
   const handleSubmitInput = async (e) => {
     setLoading(true);
     if (_.isEmpty(errors)) {
       if (controller.selected) {
         history.push(
-          `/dashboard/retail-input/${controller.DonationInfo.donor_id}`
+          `/dashboard/donation/retail/transaction/${controller.DonationInfo.donor_id}`
         );
       } else {
-        if (Number(phone[4]) !== 0) {
+        if (isValid(phone)) {
           setError(false);
           const [status, response] = await controller.postData();
           if (status === "error") {
@@ -154,6 +168,15 @@ const DonorInput = ({ index, setIndex }) => {
                   "Nama dan Nomor Handphone yang sama ditemukan dalam database"
                 ) {
                   setStatusModal(true);
+                } else if (
+                  response.data.message === "Nomer handphone sudah terdaftar"
+                ) {
+                  addToast(
+                    `${response.data.message}. Silahkan gunakan fitur search`,
+                    {
+                      appearance: "error",
+                    }
+                  );
                 } else {
                   addToast(response.data.message, {
                     appearance: "error",
@@ -170,7 +193,7 @@ const DonorInput = ({ index, setIndex }) => {
               appearance: "success",
             });
             setTimeout(() => {
-              history.push(`/dashboard/retail-input/${response.data.data.id}`);
+              history.push(`/dashboard/donation/retail/transaction/${response.data.data.id}`);
             }, 1000);
           }
         } else {
@@ -188,7 +211,7 @@ const DonorInput = ({ index, setIndex }) => {
         appearance: "success",
       });
       setTimeout(() => {
-        history.push(`/dashboard/retail-input/${response.data.data.id}`);
+        history.push(`/dashboard/donation/retail/transaction/${response.data.data.id}`);
       }, 1000);
     } else {
       if (response !== undefined) {
@@ -222,244 +245,331 @@ const DonorInput = ({ index, setIndex }) => {
           <form onSubmit={handleSubmit(handleSubmitInput)}>
             <GridContainer>
               <GridItem sm={12} md={12}>
-                <GridContainer>
-                  <GridItem xs={12} sm={12} md={12}>
-                    <GridItem xs={12} sm={12} md={12}>
-                      <Box
-                        display="flex"
-                        flexDirection="row"
-                        justifyContent="flex-end"
-                      >
-                        <AutoSearch
-                          value={controller.search}
-                          data={controller.optionsDonatur}
-                          handleChange={handleSearchDonatur}
-                          onSelect={handleSelectedDonatur}
-                          placeholder="Cari Donatur"
-                        />
-                      </Box>
+                <GridItem xs={12} sm={12} md={12}>
+                  <GridContainer>
+                    <GridItem xs={0} sm={0} md={8}></GridItem>
+                    <GridItem xs={12} sm={6} md={4}>
+                      <AutoSearch
+                        value={controller.search}
+                        data={controller.optionsDonatur}
+                        handleChange={handleSearchDonatur}
+                        onSelect={handleSelectedDonatur}
+                        placeholder="Cari Nama atau Nomor Handphone Donatur"
+                      />
                     </GridItem>
-                  </GridItem>
-                </GridContainer>
-                <GridContainer>
-                  <GridItem xs={12} sm={6} md={6}>
-                    <Box className={classes.modal}>
-                      <Card>
-                        <CardHeader>
-                          <h2 className="black-text">Status</h2>
-                        </CardHeader>
-                        <CardBody>
-                          <GridContainer>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <Box
-                                display="flex"
-                                flexDirection="row"
-                                marginLeft="20px"
-                              >
-                                <FormGroup row>
-                                  <FormControlLabel
-                                    control={
-                                      <Checkbox
-                                        checked={status === 1}
-                                        onChange={(e) => {
-                                          const data = {
-                                            target: {
-                                              name: "status",
-                                              value: 1,
-                                            },
-                                          };
-                                          onChange(data);
-                                        }}
-                                        name="status"
-                                        inputRef={register}
-                                        disabled={controller.selected}
-                                        color="primary"
-                                      />
-                                    }
-                                    label="Bapak"
-                                    labelPlacement="end"
-                                  />
-                                  <FormControlLabel
-                                    control={
-                                      <Checkbox
-                                        checked={status === 2}
-                                        onChange={(e) => {
-                                          const data = {
-                                            target: {
-                                              name: "status",
-                                              value: 2,
-                                            },
-                                          };
-                                          onChange(data);
-                                        }}
-                                        name="status"
-                                        inputRef={register}
-                                        disabled={controller.selected}
-                                        color="primary"
-                                      />
-                                    }
-                                    label="Ibu"
-                                    labelPlacement="end"
-                                  />
-                                  <FormControlLabel
-                                    control={
-                                      <Checkbox
-                                        checked={status === 3}
-                                        onChange={(e) => {
-                                          const data = {
-                                            target: {
-                                              name: "status",
-                                              value: 3,
-                                            },
-                                          };
-                                          onChange(data);
-                                        }}
-                                        name="status"
-                                        inputRef={register}
-                                        disabled={controller.selected}
-                                        color="primary"
-                                      />
-                                    }
-                                    label="Saudara"
-                                    labelPlacement="end"
-                                  />
-                                  <FormControlLabel
-                                    control={
-                                      <Checkbox
-                                        checked={status === 4}
-                                        onChange={(e) => {
-                                          const data = {
-                                            target: {
-                                              name: "status",
-                                              value: 4,
-                                            },
-                                          };
-                                          onChange(data);
-                                        }}
-                                        name="status"
-                                        inputRef={register}
-                                        disabled={controller.selected}
-                                        color="primary"
-                                      />
-                                    }
-                                    label="Saudari"
-                                    labelPlacement="end"
-                                  />
-                                </FormGroup>
-                              </Box>
-                            </GridItem>
-                          </GridContainer>
-                          <GridContainer>
-                            <GridItem xs={12} sm={12} md={12}>
+                  </GridContainer>
+                </GridItem>
+                <GridItem xs={12} sm={12} md={12}>
+                  <GridContainer>
+                    <GridItem xs={12} sm={6} md={6}>
+                      <Box className={classes.modal}>
+                        <Card>
+                          <CardHeader>
+                            <h2 className="black-text">Status</h2>
+                          </CardHeader>
+                          <CardBody>
+                            <GridContainer>
                               <GridItem xs={12} sm={12} md={12}>
-                                <label className={classes.label}>
-                                  Nama Lengkap
-                                </label>
+                                <Box
+                                  display="flex"
+                                  flexDirection="row"
+                                  marginLeft="20px"
+                                >
+                                  <FormGroup row>
+                                    <FormControlLabel
+                                      control={
+                                        <Checkbox
+                                          checked={status === 1}
+                                          onChange={(e) => {
+                                            const data = {
+                                              target: {
+                                                name: "status",
+                                                value: 1,
+                                              },
+                                            };
+                                            onChange(data);
+                                          }}
+                                          name="status"
+                                          inputRef={register}
+                                          disabled={controller.selected}
+                                          color="primary"
+                                        />
+                                      }
+                                      label="Bapak"
+                                      labelPlacement="end"
+                                    />
+                                    <FormControlLabel
+                                      control={
+                                        <Checkbox
+                                          checked={status === 2}
+                                          onChange={(e) => {
+                                            const data = {
+                                              target: {
+                                                name: "status",
+                                                value: 2,
+                                              },
+                                            };
+                                            onChange(data);
+                                          }}
+                                          name="status"
+                                          inputRef={register}
+                                          disabled={controller.selected}
+                                          color="primary"
+                                        />
+                                      }
+                                      label="Ibu"
+                                      labelPlacement="end"
+                                    />
+                                    <FormControlLabel
+                                      control={
+                                        <Checkbox
+                                          checked={status === 3}
+                                          onChange={(e) => {
+                                            const data = {
+                                              target: {
+                                                name: "status",
+                                                value: 3,
+                                              },
+                                            };
+                                            onChange(data);
+                                          }}
+                                          name="status"
+                                          inputRef={register}
+                                          disabled={controller.selected}
+                                          color="primary"
+                                        />
+                                      }
+                                      label="Saudara"
+                                      labelPlacement="end"
+                                    />
+                                    <FormControlLabel
+                                      control={
+                                        <Checkbox
+                                          checked={status === 4}
+                                          onChange={(e) => {
+                                            const data = {
+                                              target: {
+                                                name: "status",
+                                                value: 4,
+                                              },
+                                            };
+                                            onChange(data);
+                                          }}
+                                          name="status"
+                                          inputRef={register}
+                                          disabled={controller.selected}
+                                          color="primary"
+                                        />
+                                      }
+                                      label="Saudari"
+                                      labelPlacement="end"
+                                    />
+                                  </FormGroup>
+                                </Box>
                               </GridItem>
+                            </GridContainer>
+                            <GridContainer>
                               <GridItem xs={12} sm={12} md={12}>
-                                <TextField
-                                  name="name"
-                                  placeholder="Nama Lengkap"
-                                  type="text"
-                                  variant="outlined"
-                                  style={{ width: "100%" }}
-                                  onChange={onChange}
-                                  disabled={controller.selected}
-                                  inputRef={register({ required: true })}
-                                />
-                                {errors &&
-                                  errors.name &&
-                                  errors.name.type === "required" && (
-                                    <p
-                                      style={{ color: "red", fontSize: "12px" }}
-                                    >
-                                      {errorMessage.name}
-                                    </p>
-                                  )}
-                              </GridItem>
-                              <GridItem xs={12} sm={12} md={12}>
-                                <GridContainer>
-                                  <GridItem xs={12} sm={12} md={12}>
-                                    <label className={classes.label}>
-                                      Alamat Tinggal
-                                    </label>
-                                  </GridItem>
-                                  <GridItem xs={12} sm={12} md={12}>
-                                    <Box className={classes.formControl}>
+                                <GridItem xs={12} sm={12} md={12}>
+                                  <label className={classes.label}>
+                                    Nama Lengkap
+                                  </label>
+                                </GridItem>
+                                <GridItem xs={12} sm={12} md={12}>
+                                  <TextField
+                                    name="name"
+                                    placeholder="Nama Lengkap"
+                                    type="text"
+                                    variant="outlined"
+                                    style={{ width: "100%" }}
+                                    onChange={onChange}
+                                    disabled={
+                                      controller.selected ||
+                                      controller.selectedDonatur.name !==
+                                        undefined
+                                        ? true
+                                        : false
+                                    }
+                                    inputRef={register({ required: true })}
+                                  />
+                                  {errors &&
+                                    errors.name &&
+                                    errors.name.type === "required" && (
+                                      <p
+                                        style={{
+                                          color: "red",
+                                          fontSize: "12px",
+                                        }}
+                                      >
+                                        {errorMessage.name}
+                                      </p>
+                                    )}
+                                </GridItem>
+                                <GridItem xs={12} sm={12} md={12}>
+                                  <GridContainer>
+                                    <GridItem xs={12} sm={12} md={12}>
+                                      <label className={classes.label}>
+                                        Alamat Tinggal
+                                      </label>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={12}>
+                                      <Box className={classes.formControl}>
+                                        <Controller
+                                          as={
+                                            <textarea
+                                              className="text-area"
+                                              id="address"
+                                              name="address"
+                                              placeholder="Alamat Tinggal"
+                                              value={address}
+                                              disabled={controller.selected}
+                                              onChange={onChange}
+                                              style={{
+                                                minHeight: "100px",
+                                                width: "100%",
+                                              }}
+                                            />
+                                          }
+                                          name="address"
+                                          onChange={(value) => {
+                                            onChange(value[0]);
+                                            return value[0].target.value;
+                                          }}
+                                          rules={{ required: true }}
+                                          control={control}
+                                          defaultValue={address}
+                                        />
+                                        {errors &&
+                                          errors.address &&
+                                          errors.address.type ===
+                                            "required" && (
+                                            <p
+                                              style={{
+                                                color: "red",
+                                                fontSize: "12px",
+                                              }}
+                                            >
+                                              {errorMessage.address}
+                                            </p>
+                                          )}
+                                      </Box>
+                                    </GridItem>
+                                  </GridContainer>
+                                </GridItem>
+                                <GridItem xs={12} sm={12} md={12}>
+                                  <GridContainer>
+                                    <GridItem xs={12} sm={12} md={12}>
+                                      <label className={classes.label}>
+                                        Provinsi
+                                      </label>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={12}>
+                                      <Box className={classes.formControl}>
+                                        <Controller
+                                          as={
+                                            <SelectWithSearch
+                                              async
+                                              isDisabled={controller.selected}
+                                              onChange={(selectedValue) => {
+                                                const e = {
+                                                  target: {
+                                                    name: "province_id",
+                                                    value: selectedValue.value,
+                                                  },
+                                                };
+                                                onChange(e);
+                                              }}
+                                              value={province_id}
+                                              data={province}
+                                              name="province_id"
+                                              label="Provinsi"
+                                              placeholder={
+                                                province_id || "Pilih Provinsi"
+                                              }
+                                            />
+                                          }
+                                          name="province_id"
+                                          rules={{ required: true }}
+                                          control={control}
+                                          onChange={(selectedValue) => {
+                                            const e = {
+                                              target: {
+                                                name: "province_id",
+                                                value: selectedValue[0].value,
+                                              },
+                                            };
+                                            onChange(e);
+                                            return selectedValue[0].value;
+                                          }}
+                                          defaultValue={province_id}
+                                        />
+
+                                        {errors &&
+                                          errors.province_id &&
+                                          errors.province_id.type ===
+                                            "required" && (
+                                            <p
+                                              style={{
+                                                color: "red",
+                                                fontSize: "12px",
+                                              }}
+                                            >
+                                              {errorMessage.province}
+                                            </p>
+                                          )}
+                                      </Box>
+                                    </GridItem>
+                                  </GridContainer>
+                                </GridItem>
+                                <GridItem xs={12} sm={12} md={12}>
+                                  <GridContainer>
+                                    <GridItem xs={12} sm={12} md={12}>
+                                      <label className={classes.label}>
+                                        Kota
+                                      </label>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={12}>
                                       <Controller
                                         as={
-                                          <textarea
-                                            className="text-area"
-                                            id="address"
-                                            name="address"
-                                            placeholder="Alamat Tinggal"
-                                            value={address}
-                                            disabled={controller.selected}
-                                            onChange={onChange}
-                                            style={{
-                                              minHeight: "100px",
-                                              width: "100%",
-                                            }}
-                                          />
-                                        }
-                                        name="address"
-                                        onChange={(value) => {
-                                          onChange(value[0]);
-                                          return value[0].target.value;
-                                        }}
-                                        rules={{ required: true }}
-                                        control={control}
-                                        defaultValue={address}
-                                      />
-                                      {errors &&
-                                        errors.address &&
-                                        errors.address.type === "required" && (
-                                          <p
-                                            style={{
-                                              color: "red",
-                                              fontSize: "12px",
-                                            }}
-                                          >
-                                            {errorMessage.address}
-                                          </p>
-                                        )}
-                                    </Box>
-                                  </GridItem>
-                                </GridContainer>
-                              </GridItem>
-                              <GridItem xs={12} sm={12} md={12}>
-                                <GridContainer>
-                                  <GridItem xs={12} sm={12} md={12}>
-                                    <label className={classes.formControl}>
-                                      Provinsi
-                                    </label>
-                                  </GridItem>
-                                  <GridItem xs={12} sm={12} md={12}>
-                                    <Box className={classes.formControl}>
-                                      <Controller
-                                        as={
-                                          <SimpleSelect
+                                          <SelectWithSearch
                                             async
-                                            onChange={onChange}
-                                            disabled={controller.selected}
-                                            value={province_id || ""}
-                                            data={province}
-                                            name="province_id"
-                                            label="Provinsi"
+                                            isDisabled={controller.selected}
+                                            onChange={(selectedValue) => {
+                                              const e = {
+                                                target: {
+                                                  name: "regency_id",
+                                                  value: selectedValue.value,
+                                                },
+                                              };
+                                              onChange(e);
+                                            }}
+                                            value={regency_id}
+                                            data={regency}
+                                            name="regency_id"
+                                            label="Kota"
+                                            placeholder={
+                                              regency_id || "Pilih Kota"
+                                            }
                                           />
                                         }
-                                        name="province_id"
-                                        onChange={(value) => {
-                                          onChange(value[0]);
-                                          return value[0].target.value;
-                                        }}
+                                        name="regency_id"
                                         rules={{ required: true }}
                                         control={control}
-                                        defaultValue={province_id}
+                                        onChange={(selectedValue) => {
+                                          const e = {
+                                            target: {
+                                              name: "regency_id",
+                                              value: selectedValue[0].value,
+                                            },
+                                          };
+                                          onChange(e);
+                                          return selectedValue[0].value;
+                                        }}
+                                        defaultValue={regency_id}
                                       />
                                       {errors &&
-                                        errors.province_id &&
-                                        errors.province_id.type ===
+                                        errors.regency_id &&
+                                        errors.regency_id.type ===
                                           "required" && (
                                           <p
                                             style={{
@@ -467,98 +577,222 @@ const DonorInput = ({ index, setIndex }) => {
                                               fontSize: "12px",
                                             }}
                                           >
-                                            {errorMessage.province}
+                                            {errorMessage.regency}
                                           </p>
                                         )}
-                                    </Box>
-                                  </GridItem>
-                                </GridContainer>
-                              </GridItem>
-                              <GridItem xs={12} sm={12} md={12}>
-                                <GridContainer>
-                                  <GridItem xs={12} sm={12} md={12}>
-                                    <label className={classes.formControl}>
-                                      Kota
-                                    </label>
-                                  </GridItem>
-                                  <GridItem xs={12} sm={12} md={12}>
-                                    <Controller
-                                      as={
-                                        <SimpleSelect
-                                          async
-                                          onChange={onChange}
-                                          disabled={controller.selected}
-                                          value={regency_id || ""}
-                                          data={regency}
-                                          name="regency_id"
-                                          label="Provinsi"
-                                        />
+                                    </GridItem>
+                                  </GridContainer>
+                                </GridItem>
+                                <GridItem xs={12} sm={12} md={12}>
+                                  <label className={classes.label}>
+                                    Kode Pos
+                                  </label>
+                                </GridItem>
+                                <GridItem xs={12} sm={12} md={12}>
+                                  <Box className={classes.formControl}>
+                                    <TextField
+                                      variant="outlined"
+                                      id="pos_code"
+                                      name="pos_code"
+                                      type="text"
+                                      style={{ width: "100%" }}
+                                      disabled={controller.selected}
+                                      placeholder="Kode Pos"
+                                      onChange={onChange}
+                                      inputRef={register({
+                                        required: true,
+                                        pattern: /^[0-9]*$/i,
+                                      })}
+                                      className={
+                                        errors && errors.pos_code
+                                          ? "invalid"
+                                          : "validate"
                                       }
-                                      name="regency_id"
-                                      onChange={(value) => {
-                                        onChange(value[0]);
-                                        return value[0].target.value;
-                                      }}
-                                      rules={{ required: true }}
-                                      control={control}
-                                      defaultValue={regency_id}
                                     />
                                     {errors &&
-                                      errors.regency_id &&
-                                      errors.regency_id.type === "required" && (
+                                      errors.pos_code &&
+                                      errors.pos_code.type === "required" && (
                                         <p
                                           style={{
                                             color: "red",
                                             fontSize: "12px",
                                           }}
                                         >
-                                          {errorMessage.regency}
+                                          {errorMessage.pos_code}
                                         </p>
                                       )}
-                                  </GridItem>
-                                </GridContainer>
+                                    {errors &&
+                                      errors.pos_code &&
+                                      errors.pos_code.type === "pattern" && (
+                                        <p
+                                          style={{
+                                            color: "red",
+                                            fontSize: "12px",
+                                          }}
+                                        >
+                                          Hanya Boleh diisi dengan angka
+                                        </p>
+                                      )}
+                                  </Box>
+                                </GridItem>
                               </GridItem>
+                            </GridContainer>
+                          </CardBody>
+                        </Card>
+                      </Box>
+                    </GridItem>
+                    <GridItem xs={12} sm={6} md={6}>
+                      <Box className={classes.modal}>
+                        <Card>
+                          <CardHeader>
+                            <h2 className="black-text">Kontak Donatur</h2>
+                          </CardHeader>
+                          <CardBody>
+                            <GridContainer>
                               <GridItem xs={12} sm={12} md={12}>
-                                <label className={classes.label}>
-                                  Kode Pos
-                                </label>
-                              </GridItem>
-                              <GridItem xs={12} sm={12} md={12}>
-                                <Box className={classes.formControl}>
-                                  <TextField
-                                    variant="outlined"
-                                    id="pos_code"
-                                    name="pos_code"
-                                    type="text"
-                                    style={{ width: "100%" }}
-                                    disabled={controller.selected}
-                                    placeholder="Kode Pos"
-                                    onChange={onChange}
-                                    inputRef={register({
-                                      required: true,
-                                      pattern: /^[0-9]*$/i,
-                                    })}
-                                    className={
-                                      errors && errors.pos_code
-                                        ? "invalid"
-                                        : "validate"
+                                <GridItem xs={12} sm={12} md={12}>
+                                  <label className={classes.label}>
+                                    No Handphone
+                                  </label>
+                                  <Controller
+                                    as={
+                                      <InputMask
+                                        mask="+6299 999 999 999"
+                                        disabled={
+                                          controller.selected ||
+                                          controller.selectedDonatur.phone !==
+                                            undefined
+                                            ? true
+                                            : false
+                                        }
+                                        maskChar=" "
+                                      >
+                                        {() => (
+                                          <TextField
+                                            style={{
+                                              width: "100%",
+                                            }}
+                                            variant="outlined"
+                                            name="phone"
+                                            id="phone"
+                                            disabled={
+                                              controller.selected ||
+                                              controller.selectedDonatur
+                                                .phone !== undefined
+                                                ? true
+                                                : false
+                                            }
+                                            placeholder="Contoh: +628567XXXXXXX"
+                                            size="small"
+                                          />
+                                        )}
+                                      </InputMask>
                                     }
+                                    control={control}
+                                    name="phone"
+                                    onChange={(e) => {
+                                      onChange(e[0]);
+                                      return e[0].target.value;
+                                    }}
+                                    rules={{ required: true }}
+                                    defaultValue={phone}
                                   />
                                   {errors &&
-                                    errors.pos_code &&
-                                    errors.pos_code.type === "required" && (
+                                    errors.phone &&
+                                    errors.phone.type === "required" && (
                                       <p
                                         style={{
                                           color: "red",
                                           fontSize: "12px",
                                         }}
                                       >
-                                        {errorMessage.pos_code}
+                                        {errorMessage.phone}
                                       </p>
                                     )}
+                                  {error && isValid(phone) === false && (
+                                    <p
+                                      style={{ color: "red", fontSize: "12px" }}
+                                    >
+                                      No Handphone tidak valid. Silahkan coba
+                                      kembali. Contoh: +62857xxxxxx
+                                    </p>
+                                  )}
+                                </GridItem>
+                              </GridItem>
+                            </GridContainer>
+                            <GridContainer>
+                              <GridItem xs={12} sm={12} md={12}>
+                                <GridItem xs={12} sm={12} md={12}>
+                                  <Box
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <label className={classes.label}>
+                                      Alamat Surel
+                                    </label>
+                                    <label className={classes.labelOpsional}>
+                                      Opsional
+                                    </label>
+                                  </Box>
+                                </GridItem>
+                                <GridItem xs={12} sm={12} md={12}>
+                                  <Box className={classes.formControl}>
+                                    <TextField
+                                      id="email"
+                                      name="email"
+                                      disabled={controller.selected}
+                                      variant="outlined"
+                                      type="email"
+                                      style={{ width: "100%" }}
+                                      placeholder="Alamat Surel"
+                                      onChange={onChange}
+                                      inputRef={register}
+                                    />
+                                  </Box>
+                                </GridItem>
+                                <GridItem xs={12} sm={12} md={12}>
+                                  <h2 className="black-text">
+                                    Keterangan Tambahan
+                                  </h2>
+                                </GridItem>
+                                <GridItem xs={12} sm={12} md={12}>
+                                  <Box
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <label className={classes.label}>
+                                      No NPWP
+                                    </label>
+                                    <label className={classes.labelOpsional}>
+                                      Opsional
+                                    </label>
+                                  </Box>
+                                </GridItem>
+                                <GridItem xs={12} sm={12} md={12}>
+                                  <Box className={classes.formControl}>
+                                    <TextField
+                                      id="npwp"
+                                      disabled={controller.selected}
+                                      name="npwp"
+                                      variant="outlined"
+                                      type="text"
+                                      inputRef={register({
+                                        pattern: /^[0-9]*$/i,
+                                      })}
+                                      style={{ width: "100%" }}
+                                      placeholder="No NPWP"
+                                      onChange={onChange}
+                                    />
+                                  </Box>
                                   {errors &&
-                                    errors.pos_code &&
-                                    errors.pos_code.type === "pattern" && (
+                                    errors.npwp &&
+                                    errors.npwp.type === "pattern" && (
                                       <p
                                         style={{
                                           color: "red",
@@ -568,166 +802,59 @@ const DonorInput = ({ index, setIndex }) => {
                                         Hanya Boleh diisi dengan angka
                                       </p>
                                     )}
-                                </Box>
-                              </GridItem>
-                            </GridItem>
-                          </GridContainer>
-                        </CardBody>
-                      </Card>
-                    </Box>
-                  </GridItem>
-                  <GridItem xs={12} sm={6} md={6}>
-                    <Box className={classes.modal}>
-                      <Card>
-                        <CardHeader>
-                          <h2 className="black-text">Kontak Donatur</h2>
-                        </CardHeader>
-                        <CardBody>
-                          <GridContainer>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <GridItem xs={12} sm={12} md={12}>
-                                <label className={classes.formControl}>
-                                  No Handphone
-                                </label>
-                                <InputMask
-                                  mask="+62 999 999 999 99"
-                                  value={phone}
-                                  disabled={controller.selected}
-                                  maskChar=" "
-                                  onChange={onChange}
-                                >
-                                  {() => (
-                                    <TextField
-                                      style={{
-                                        width: "100%",
-                                      }}
-                                      variant="outlined"
-                                      name="phone"
-                                      id="phone"
-                                      disabled={controller.selected}
-                                      placeholder="Contoh: +628567XXXXXXX"
-                                      size="small"
-                                      inputRef={register({
-                                        required: true,
-                                      })}
-                                    />
-                                  )}
-                                </InputMask>
-                                {errors &&
-                                  errors.phone &&
-                                  errors.phone.type === "required" && (
-                                    <p
-                                      style={{ color: "red", fontSize: "12px" }}
-                                    >
-                                      {errorMessage.phone}
-                                    </p>
-                                  )}
-                                {error && Number(phone[4]) === 0 && (
-                                  <p style={{ color: "red", fontSize: "12px" }}>
-                                     No Handphone tidak valid. Silahkan coba kembali. Contoh: +62857xxxxxx
-                                  </p>
-                                )}
-                            
-                              </GridItem>
-                            </GridItem>
-                          </GridContainer>
-                          <GridContainer>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <GridItem xs={12} sm={12} md={12}>
-                                <label className={classes.formControl}>
-                                  Alamat Surel
-                                </label>
-                              </GridItem>
-                              <GridItem xs={12} sm={12} md={12}>
-                                <Box className={classes.formControl}>
-                                  <TextField
-                                    id="email"
-                                    name="email"
-                                    disabled={controller.selected}
-                                    variant="outlined"
-                                    type="email"
-                                    style={{ width: "100%" }}
-                                    placeholder="Alamat Surel"
-                                    onChange={onChange}
-                                    inputRef={register}
-                                  />
-                                </Box>
-                              </GridItem>
-                              <GridItem xs={12} sm={12} md={12}>
-                                <h2 className="black-text">
-                                  Keterangan Tambahan
-                                </h2>
-                              </GridItem>
-                              <GridItem xs={12} sm={12} md={12}>
-                                <label htmlFor="npwp" className="black-text">
-                                  No NPWP
-                                </label>
-                              </GridItem>
-                              <GridItem xs={12} sm={12} md={12}>
-                                <Box className={classes.formControl}>
-                                  <TextField
-                                    id="npwp"
-                                    disabled={controller.selected}
-                                    name="npwp"
-                                    variant="outlined"
-                                    type="text"
-                                    inputRef={register({
-                                      pattern: /^[0-9]*$/i,
-                                    })}
-                                    style={{ width: "100%" }}
-                                    placeholder="No NPWP"
-                                    onChange={onChange}
-                                  />
-                                </Box>
-                                {errors &&
-                                  errors.npwp &&
-                                  errors.npwp.type === "pattern" && (
-                                    <p
-                                      style={{ color: "red", fontSize: "12px" }}
-                                    >
-                                      Hanya Boleh diisi dengan angka
-                                    </p>
-                                  )}
-                              </GridItem>
-                              <GridItem xs={12} sm={12} md={12}>
-                                <label className={classes.formControl}>
-                                  Info Donatur
-                                </label>
-                              </GridItem>
-                              <GridItem xs={12} sm={12} md={12}>
-                                <Box className={classes.formControl}>
-                                  <Controller
-                                    as={
-                                      <TextareaAutosize
-                                        className="text-area"
-                                        id="info"
-                                        disabled={controller.selected}
-                                        name="info"
-                                        placeholder="Info Donatur"
-                                        onChange={onChange}
-                                        style={{
-                                          minHeight: "100px",
-                                          width: "100%",
-                                        }}
-                                      />
-                                    }
-                                    name="info"
-                                    onChange={(value) => {
-                                      onChange(value[0]);
-                                      return value[0].target.value;
+                                </GridItem>
+                                <GridItem xs={12} sm={12} md={12}>
+                                  <Box
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      marginTop: "10px",
                                     }}
-                                    control={control}
-                                    defaultValue={info}
-                                  />
-                                </Box>
+                                  >
+                                    <label className={classes.label}>
+                                      Info Donatur
+                                    </label>
+                                    <label className={classes.labelOpsional}>
+                                      Opsional
+                                    </label>
+                                  </Box>
+                                </GridItem>
+                                <GridItem xs={12} sm={12} md={12}>
+                                  <Box className={classes.formControl}>
+                                    <Controller
+                                      as={
+                                        <TextareaAutosize
+                                          className="text-area"
+                                          id="info"
+                                          disabled={controller.selected}
+                                          name="info"
+                                          placeholder="Info Donatur"
+                                          onChange={onChange}
+                                          style={{
+                                            minHeight: "100px",
+                                            width: "100%",
+                                          }}
+                                        />
+                                      }
+                                      name="info"
+                                      onChange={(value) => {
+                                        onChange(value[0]);
+                                        return value[0].target.value;
+                                      }}
+                                      control={control}
+                                      defaultValue={info}
+                                    />
+                                  </Box>
+                                </GridItem>
                               </GridItem>
-                            </GridItem>
-                          </GridContainer>
-                        </CardBody>
-                      </Card>
-                    </Box>
-                  </GridItem>
-                </GridContainer>
+                            </GridContainer>
+                          </CardBody>
+                        </Card>
+                      </Box>
+                    </GridItem>
+                  </GridContainer>
+                </GridItem>
+
                 <ModalWarningData
                   showModal={statusModal}
                   setShowModal={() => setStatusModal(false)}
@@ -747,18 +874,34 @@ const DonorInput = ({ index, setIndex }) => {
                       justifyContent="flex-end"
                     >
                       <div className="right mt-4 mr-4 mb-4 ml-4">
-                        <Button
-                          style={{
-                            background: "white",
-                            color: "#00923F",
-                            fontWeight: "bold",
-                            border: " 2px solid #00923F",
-                            marginRight: "20px",
-                          }}
-                          onClick={(e) => controller.setSelected(false)}
-                        >
-                          Ubah Data
-                        </Button>
+                        {controller.selected === false &&
+                        controller.selectedDonatur.name !== undefined ? (
+                          <Button
+                            style={{
+                              background: "white",
+                              color: "#00923F",
+                              fontWeight: "bold",
+                              border: " 2px solid #00923F",
+                              marginRight: "20px",
+                            }}
+                            onClick={(e) => controller.handleResetForm()}
+                          >
+                            Reset form
+                          </Button>
+                        ) : (
+                          <Button
+                            style={{
+                              background: "white",
+                              color: "#00923F",
+                              fontWeight: "bold",
+                              border: " 2px solid #00923F",
+                              marginRight: "20px",
+                            }}
+                            onClick={(e) => controller.setSelected(false)}
+                          >
+                            Ubah Data
+                          </Button>
+                        )}
                       </div>
                       <div className="right mt-4 mr-4 mb-4 ml-4">
                         <Button

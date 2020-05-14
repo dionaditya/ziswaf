@@ -52,7 +52,7 @@ export class EmployeeMapper extends BaseResponseMapper {
             data.name,
             data.place_of_birth,
             moment(data.birth_of_date).toDate(),
-            data.phone,
+            `+62${data.phone}`,
             data.email,
             data.address,
             data.status,

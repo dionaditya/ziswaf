@@ -74,7 +74,6 @@ const initialState: IState = {
   schoolId: 0,
   filterStatus: {},
   displayColumn: [{}],
-
   loading: false,
   error: false,
   handleSearch: () => {},
@@ -155,7 +154,7 @@ const MadrasahInfoController = ({ children }) => {
   const optionsTable = {
     filterType: "dropdown",
     responsive: "scroll",
-    sort: true,
+    sort: state.employee.length ? true : false,
     pagination: true,
     selectableRowsHeader: false,
     search: false,
@@ -332,7 +331,7 @@ const MadrasahInfoController = ({ children }) => {
   const optionsStudentDataTable = {
     filterType: "dropdown",
     responsive: "scroll",
-    sort: true,
+    sort: state.students.length ? true : false,
     pagination: true,
     selectableRowsHeader: false,
     textLabels: {
@@ -484,42 +483,40 @@ const MadrasahInfoController = ({ children }) => {
                     <GridItem xs={12} sm={12} md={12} mb={4} mr={2}>
                       <GridContainer>
                         <GridItem xs={12} sm={12} md={3}>
-                            <div
-                              style={{
-                                width: "82px",
-                                height: "82px",
-                                border: "1px solid #979797",
-                                borderRadius: "50%",
-                              }}
-                            >
-                              {state.students[rowMeta.dataIndex]["image"] ===
-                                "" ||
-                              state.students[rowMeta.dataIndex]["image"] ===
-                                null ? (
-                                <Avatar
-                                  style={{
-                                    background: "orange",
-                                    width: "82px",
-                                    height: "82px",
-                                  }}
-                                >
-                                  {state.students[rowMeta.dataIndex]["name"][0]}
-                                </Avatar>
-                              ) : (
-                                <img
-                                  src={
-                                    state.students[rowMeta.dataIndex]["image"]
-                                  }
-                                  alt="foto siswa"
-                                  width="80px"
-                                  height="80px"
-                                  style={{
-                                    border: "2px solid transparent",
-                                    borderRadius: "50%",
-                                  }}
-                                />
-                              )}
-                            </div>
+                          <div
+                            style={{
+                              width: "82px",
+                              height: "82px",
+                              border: "1px solid #979797",
+                              borderRadius: "50%",
+                            }}
+                          >
+                            {state.students[rowMeta.dataIndex]["image"] ===
+                              "" ||
+                            state.students[rowMeta.dataIndex]["image"] ===
+                              null ? (
+                              <Avatar
+                                style={{
+                                  background: "orange",
+                                  width: "82px",
+                                  height: "82px",
+                                }}
+                              >
+                                {state.students[rowMeta.dataIndex]["name"][0]}
+                              </Avatar>
+                            ) : (
+                              <img
+                                src={state.students[rowMeta.dataIndex]["image"]}
+                                alt="foto siswa"
+                                width="80px"
+                                height="80px"
+                                style={{
+                                  border: "2px solid transparent",
+                                  borderRadius: "50%",
+                                }}
+                              />
+                            )}
+                          </div>
                         </GridItem>
                         <GridItem xs={12} sm={12} md={9}>
                           <GridContainer>
@@ -853,7 +850,6 @@ const MadrasahInfoController = ({ children }) => {
       ...filterStatus,
       search: query,
     });
-    console.log(employeeBySearchQuery);
     if (employeeBySearchQuery.data.data !== null) {
       setState((prevState) => ({
         ...prevState,
@@ -933,60 +929,104 @@ const MadrasahInfoController = ({ children }) => {
     }
   };
 
-  const handleDelete = async (id) => {
-    const employeeBySearchQuery: any = employeePresenter.deleteEmployeeData(id);
-    if (employeeBySearchQuery) {
-      const employee = await employeePresenter.loadData(filterStatus);
-      setPagintion({
-        total: employee.data.pagination.total,
-        page: employee.data.pagination.current_page - 1,
-        rowsPerPage: employee.data.pagination.page_size,
-      });
-      setFilterStatus((prevState) => ({
-        ...prevState,
-        paging: {
-          page: employee.data.pagination.current_page - 1,
-          limit: employee.data.pagination.page_size,
-        },
-      }));
-      setState((prevState) => ({
-        ...prevState,
-        employee: employee.data.data,
-      }));
-      return true;
-    } else {
+  const handleDelete = async () => {
+    try {
+      const employeeBySearchQuery: any = await employeePresenter.deleteEmployeeData(
+        tableIndex
+      );
+      if (employeeBySearchQuery !== null) {
+        const employee = await employeePresenter.loadData(filterStatus);
+        if (employee.data.data !== null) {
+          setPagintion({
+            total: employee.data.pagination.total,
+            page: employee.data.pagination.current_page - 1,
+            rowsPerPage: employee.data.pagination.page_size,
+          });
+          setFilterStatus((prevState) => ({
+            ...prevState,
+            paging: {
+              page: employee.data.pagination.current_page - 1,
+              limit: employee.data.pagination.page_size,
+            },
+          }));
+          setState((prevState) => ({
+            ...prevState,
+            employee: employee.data.data,
+          }));
+        } else {
+          setPagintion({
+            total: employee.data.pagination.total,
+            page: employee.data.pagination.current_page,
+            rowsPerPage: employee.data.pagination.page_size,
+          });
+          setFilterStatus((prevState) => ({
+            ...prevState,
+            paging: {
+              page: employee.data.pagination.current_page,
+              limit: employee.data.pagination.page_size,
+            },
+          }));
+          setState((prevState) => ({
+            ...prevState,
+            employee: [],
+          }));
+        }
+
+        return true;
+      }
+    } catch (e) {
       return false;
     }
   };
 
-  const handleDeleteStudent = async (id) => {
-    const studentBySearchQuery: any = studentPresenter.deleteStudentData(id);
-
-    if (studentBySearchQuery) {
-      const students = await studentPresenter.loadData(filterStatus);
-      setPagintionOfStudentData((prevState) => ({
-        total: students.data.pagination.total,
-        page: students.data.pagination.cuurent_page - 1,
-        rowsPerPage: students.data.pagination.page_size,
-      }));
-      setFilterStatusOfStudentData((prevState) => ({
-        ...prevState,
-        paging: {
-          page: students.data.pagination.cuurent_page - 1,
-          limit: students.data.pagination.page_size,
-        },
-      }));
-      setState((prevState) => ({
-        ...prevState,
-        students: students.data.data,
-      }));
-      return true;
-    } else {
+  const handleDeleteStudent = async () => {
+    try {
+      const studentBySearchQuery: any = await studentPresenter.deleteStudentData(
+        tableIndexOfStudentData
+      );
+      if (studentBySearchQuery !== null) {
+        const students = await studentPresenter.loadData(filterStatus);
+        if (students.data.data !== null) {
+          setPagintionOfStudentData((prevState) => ({
+            total: students.data.pagination.total,
+            page: students.data.pagination.cuurent_page - 1,
+            rowsPerPage: students.data.pagination.page_size,
+          }));
+          setFilterStatusOfStudentData((prevState) => ({
+            ...prevState,
+            paging: {
+              page: students.data.pagination.cuurent_page - 1,
+              limit: students.data.pagination.page_size,
+            },
+          }));
+          setState((prevState) => ({
+            ...prevState,
+            students: students.data.data,
+          }));
+        } else {
+          setPagintionOfStudentData((prevState) => ({
+            total: students.data.pagination.total,
+            page: students.data.pagination.cuurent_page,
+            rowsPerPage: students.data.pagination.page_size,
+          }));
+          setFilterStatusOfStudentData((prevState) => ({
+            ...prevState,
+            paging: {
+              page: students.data.pagination.cuurent_page,
+              limit: students.data.pagination.page_size,
+            },
+          }));
+          setState((prevState) => ({
+            ...prevState,
+            students: [],
+          }));
+        }
+        return true;
+      }
+    } catch (e) {
       return false;
     }
   };
-
-  console.log(state);
 
   return (
     <MadrasahInfoContext.Provider

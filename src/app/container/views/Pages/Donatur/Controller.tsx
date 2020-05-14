@@ -314,7 +314,6 @@ const DonorController = ({ children }) => {
   const [toogleSwitch, setToogleSwitch] = React.useState(false);
 
   function useQuery() {
-    const location = useLocation();
     return qs.parse(location.search);
   }
 
@@ -462,7 +461,7 @@ const DonorController = ({ children }) => {
   const optionsTable = {
     filterType: "dropdown",
     responsive: "scroll",
-    sort: true,
+    sort: state.data.length > 0 ? true : false,
     pagination: true,
     selectableRowsHeader: false,
     textLabels: {
@@ -717,13 +716,25 @@ const DonorController = ({ children }) => {
 
   const handleSearch = async (controller: { filterStatus: string }) => {
     dispatch({ type: ActionType.setLoading, payload: true });
+    
+    const parsingPhoneNumber = (phoneNum) => {
+      if (phoneNum[0] === '+') {
+        return phoneNum.slice(3, phoneNum.length)
+      } else if (phoneNum[0] === '0') {
+        return phoneNum.slice(1, phoneNum.length)
+      } else {
+        return phoneNum
+      }
+    }
+
     const listDonor = await donorPresenter.getAllWithPagination({
-      search: filterStatus.search,
+      search: parsingPhoneNumber(filterStatus.search),
       filter: filterStatus.filter,
       sort: {
         id: "DESC",
       },
     });
+
     if (listDonor.data.data === null) {
       dispatch({ type: ActionType.setData, payload: [] });
       setPagination({

@@ -1,32 +1,37 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useContext } from "react";
-import { RetailContext } from '../Controller';
-import moment from 'moment'
+import { RetailContext } from "../Controller";
+import moment from "moment";
 import Pdf from "react-to-pdf";
-import GridContainer from '@/app/container/commons/Grid/GridContainer';
-import GridItem from '@/app/container/commons/Grid/GridItem';
+import GridContainer from "@/app/container/commons/Grid/GridContainer";
+import GridItem from "@/app/container/commons/Grid/GridItem";
 import Card from "@/app/container/commons/Card/Card.js";
 import CardHeader from "@/app/container/commons/Card/CardHeader.js";
 import CardBody from "@/app/container/commons/Card/CardBody.js";
-import Button from "@/app/container/commons/CustomButtons/Button.tsx"
-import { Box, Button as ButtonPdf, makeStyles, Theme, createStyles } from '@material-ui/core';
-import ModalDetail from './ModalDetail';
-import { NominalFormat } from '@/app/infrastructures/misc/NominalFormat';
-
+import Button from "@/app/container/commons/CustomButtons/Button.tsx";
+import {
+  Box,
+  Button as ButtonPdf,
+  makeStyles,
+  Theme,
+  createStyles,
+} from "@material-ui/core";
+import ModalDetail from "./ModalDetail";
+import { NominalFormat } from "@/app/infrastructures/misc/NominalFormat";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     modal: {
-      marginTop: '5vh'
+      marginTop: "5vh",
     },
   })
 );
 
 const Receipt = ({ index, setIndex }) => {
-  const controller = useContext(RetailContext)
+  const controller = useContext(RetailContext);
   const [open, setOpen] = React.useState(false);
   const ref: any = React.createRef();
-  const classes = useStyles()
+  const classes = useStyles();
   const handleOpen = () => {
     setOpen(true);
   };
@@ -36,9 +41,8 @@ const Receipt = ({ index, setIndex }) => {
   };
 
   const options = {
-    orientation: 'landscape',
+    orientation: "landscape",
   };
-
 
   const {
     donor_name,
@@ -53,8 +57,8 @@ const Receipt = ({ index, setIndex }) => {
     good_status,
     donor_address,
     quantity,
-    ref_number
-  } = controller.transaction
+    ref_number,
+  } = controller.transaction;
 
   return (
     <>
@@ -62,16 +66,20 @@ const Receipt = ({ index, setIndex }) => {
         <GridItem xs={12} sm={12} md={12}>
           <ModalDetail setCloseModal={handleClose} showModal={open} />
           <Box className={classes.modal}>
-            <Card >
+            <Card>
               <CardHeader color="primary">
                 <Box display="flex" flexDirection="row">
                   <GridItem xs={12} sm={6} md={6}>
                     <h4
                       className="card-title white-text"
-                      style={{ fontWeight: "bold", color: '#ffffff' }}
+                      style={{ fontWeight: "bold", color: "#ffffff" }}
                     >
-                      TANDA TERIMA
-                  </h4>
+                      {controller.loading ? (
+                        <span>Loading.....</span>
+                      ) : (
+                        <span>TANDA TERIMA</span>
+                      )}
+                    </h4>
                   </GridItem>
                   <GridItem xs={12} sm={6} md={6}>
                     <Box display="flex" justifyContent="flex-end">
@@ -79,12 +87,12 @@ const Receipt = ({ index, setIndex }) => {
                         node="button"
                         style={{
                           color: "#ffffff",
-                          background: "#6DB400"
+                          background: "#6DB400",
                         }}
                         onClick={handleOpen}
                       >
                         Lihat Detail
-                  </Button>
+                      </Button>
                     </Box>
                   </GridItem>
                 </Box>
@@ -97,11 +105,11 @@ const Receipt = ({ index, setIndex }) => {
                         style={{
                           color: "#828282",
                           fontSize: "12px",
-                          fontWeight: "bold"
+                          fontWeight: "bold",
                         }}
                       >
                         KATEGORI ZISWAF
-                  </span>
+                      </span>
                       <p className="black-text">{division_name}</p>
                     </div>
                     <div className="row mb-4">
@@ -109,11 +117,11 @@ const Receipt = ({ index, setIndex }) => {
                         style={{
                           color: "#828282",
                           fontSize: "12px",
-                          fontWeight: "bold"
+                          fontWeight: "bold",
                         }}
                       >
                         TANGGAL & WAKTU
-                  </span>
+                      </span>
                       <p className="black-text">{created_at}</p>
                     </div>
                     <div className="row mb-4">
@@ -121,11 +129,11 @@ const Receipt = ({ index, setIndex }) => {
                         style={{
                           color: "#828282",
                           fontSize: "12px",
-                          fontWeight: "bold"
+                          fontWeight: "bold",
                         }}
                       >
                         NOMOR KWITANSI
-                  </span>
+                      </span>
                       <p className="black-text">{kwitansi || "-"}</p>
                     </div>
                   </GridItem>
@@ -135,23 +143,23 @@ const Receipt = ({ index, setIndex }) => {
                         style={{
                           color: "#828282",
                           fontSize: "12px",
-                          fontWeight: "bold"
+                          fontWeight: "bold",
                         }}
                       >
                         NAMA DONATUR
-                  </span>
-                      <p className="black-text">{donor_name || '-'}</p>
+                      </span>
+                      <p className="black-text">{donor_name || "-"}</p>
                     </div>
                     <div className="row mb-4">
                       <span
                         style={{
                           color: "#828282",
                           fontSize: "12px",
-                          fontWeight: "bold"
+                          fontWeight: "bold",
                         }}
                       >
                         ALAMAT DONATUR
-                  </span>
+                      </span>
                       <p className="black-text">{donor_address || "-"}</p>
                     </div>
                     <div className="row mb-4">
@@ -159,11 +167,11 @@ const Receipt = ({ index, setIndex }) => {
                         style={{
                           color: "#828282",
                           fontSize: "12px",
-                          fontWeight: "bold"
+                          fontWeight: "bold",
                         }}
                       >
                         JENIS DONASI
-                  </span>
+                      </span>
                       <p className="black-text">{category || "-"}</p>
                     </div>
                     <div className="row mb-4">
@@ -171,12 +179,12 @@ const Receipt = ({ index, setIndex }) => {
                         style={{
                           color: "#828282",
                           fontSize: "12px",
-                          fontWeight: "bold"
+                          fontWeight: "bold",
                         }}
                       >
                         KETERANGAN DONASI
-                  </span>
-                      <p className="black-text">{statement_category || '-'}</p>
+                      </span>
+                      <p className="black-text">{statement_category || "-"}</p>
                     </div>
                   </GridItem>
                   <GridItem xs={4} sm={4} md={4}>
@@ -185,94 +193,93 @@ const Receipt = ({ index, setIndex }) => {
                         style={{
                           color: "#828282",
                           fontSize: "12px",
-                          fontWeight: "bold"
+                          fontWeight: "bold",
                         }}
                       >
                         BENTUK DONASI
-                  </span>
+                      </span>
                       <p className="black-text">{item_type || "-"}</p>
                     </div>
-                       {
-                        item_type === "Uang" ? (
-                          <div>
-                            <div className="row mb-4">
-                              <span
-                                style={{
-                                  color: "#828282",
-                                  fontSize: "12px",
-                                  fontWeight: "bold"
-                                }}
-                              >
-                                TUNAI / NON TUNAI
-                         </span>
-                              <p className="black-text">{item_category}</p>
-                            </div>
-                            <div className="row mb-4">
-                              <span
-                                style={{
-                                  color: "#828282",
-                                  fontSize: "12px",
-                                  fontWeight: "bold"
-                                }}
-                              >
-                                JUMLAH
-                         </span>
-                              <p className="black-text">{NominalFormat(total)}</p>
-                            </div>
-                            <div className="row mb-4">
-                              <span
-                                style={{
-                                  color: "#828282",
-                                  fontSize: "12px",
-                                  fontWeight: "bold"
-                                }}
-                              >
-                                NO REF
-                        </span>
-                              <p className="black-text">{ref_number || "NOMOR REFERENSI"}</p>
-                            </div>
-                          </div>
-                        ) : (<div>
-                          <div className="row mb-4">
-                            <span
-                              style={{
-                                color: "#828282",
-                                fontSize: "12px",
-                                fontWeight: "bold"
-                              }}
-                            >
-                              DESKRIPSI BARANG
-                       </span>
-                            <p className="black-text">{item_category}</p>
-                          </div>
+                    {item_type === "Uang" ? (
+                      <div>
+                        <div className="row mb-4">
+                          <span
+                            style={{
+                              color: "#828282",
+                              fontSize: "12px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            TUNAI / NON TUNAI
+                          </span>
+                          <p className="black-text">{item_category}</p>
+                        </div>
+                        <div className="row mb-4">
+                          <span
+                            style={{
+                              color: "#828282",
+                              fontSize: "12px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            JUMLAH
+                          </span>
+                          <p className="black-text">{NominalFormat(total)}</p>
+                        </div>
+                        <div className="row mb-4">
+                          <span
+                            style={{
+                              color: "#828282",
+                              fontSize: "12px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            NO REF
+                          </span>
+                          <p className="black-text">{ref_number || "-"}</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <div className="row mb-4">
+                          <span
+                            style={{
+                              color: "#828282",
+                              fontSize: "12px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            DESKRIPSI BARANG
+                          </span>
+                          <p className="black-text">{item_category}</p>
+                        </div>
 
-                          <div className="row mb-4">
-                            <span
-                              style={{
-                                color: "#828282",
-                                fontSize: "12px",
-                                fontWeight: "bold"
-                              }}
-                            >
-                              JUMLAH
-                       </span>
-                            <p className="black-text">{quantity}</p>
-                          </div>
-                          <div className="row mb-4">
-                            <span
-                              style={{
-                                color: "#828282",
-                                fontSize: "12px",
-                                fontWeight: "bold"
-                              }}
-                            >
-                              STATUS BARANG
-                      </span>
-                            <p className="black-text">{good_status}</p>
-                          </div>
-                        </div>)
-                      }
-                    
+                        <div className="row mb-4">
+                          <span
+                            style={{
+                              color: "#828282",
+                              fontSize: "12px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            JUMLAH
+                          </span>
+                          <p className="black-text">{quantity}</p>
+                        </div>
+                        <div className="row mb-4">
+                          <span
+                            style={{
+                              color: "#828282",
+                              fontSize: "12px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            STATUS BARANG
+                          </span>
+                          <p className="black-text">{good_status}</p>
+                        </div>
+                      </div>
+                    )}
                   </GridItem>
                 </GridContainer>
               </CardBody>
@@ -287,11 +294,12 @@ const Receipt = ({ index, setIndex }) => {
               style={{
                 background: "#00923F",
                 color: "#ffffff",
-                marginLeft: "4px"
+                marginLeft: "4px",
               }}
               variant="contained"
               color="secondary"
-              onClick={() => controller.handleExportPdf()}>
+              onClick={() => controller.handleExportPdf()}
+            >
               Cetak
             </Button>
           </Box>

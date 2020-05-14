@@ -65,20 +65,13 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const ModalFilter = ({ showModal, setShowModal }) => {
   const [loading, setLoading] = React.useState(false);
-  const [startDate, setStartDate] = React.useState(new Date());
-  const [endDate, setEndDate] = React.useState(new Date());
+  const [startDate, setStartDate] = React.useState(null);
+  const [endDate, setEndDate] = React.useState(null);
   const [startTotal, setStartTotal] = React.useState(0);
   const [endTotal, setEndTotal] = React.useState(startTotal);
   const classes = useStyles();
   const controller = useContext(DonationContext);
 
-  // function myFormat(num) {
-  //   const formatter = new Intl.NumberFormat("sv-SE", {
-  //     style: "decimal",
-  //     currency: "SEK"
-  //   });
-  //   return formatter.format(num);
-  // }
 
   const body = (
     <GridContainer style={{ padding: "10px 20px" }}>
@@ -88,6 +81,7 @@ const ModalFilter = ({ showModal, setShowModal }) => {
             <Box style={{ width: "100%" }}>
               <span className={classes.subLabel}>Mulai</span>
               <DateTimePicker
+                disableToolbar={false}
                 selectedDate={startDate}
                 handleDateChange={(date) => {
                   setStartDate(date);
@@ -99,9 +93,9 @@ const ModalFilter = ({ showModal, setShowModal }) => {
                     },
                   }));
                 }}
-                maxDate={endDate}
-                placeholderText="Pilih tanggal"
-                dateFormat="dd-MM-yyyy"
+                placeholder="Pilih tanggal"
+                format="dd-MM-yyyy"
+                inputVariant="outlined"
               />
             </Box>
           </GridItem>
@@ -109,6 +103,7 @@ const ModalFilter = ({ showModal, setShowModal }) => {
             <Box style={{ width: "100%" }}>
               <span className={classes.subLabel}>Hingga</span>
               <DateTimePicker
+                disableToolbar={false}
                 selectedDate={endDate}
                 handleDateChange={(date) => {
                   setEndDate(date);
@@ -121,8 +116,9 @@ const ModalFilter = ({ showModal, setShowModal }) => {
                   }));
                 }}
                 minDate={startDate}
-                placeholderText="Pilih tanggal"
-                dateFormat="dd-MM-yyyy"
+                placeholder="Pilih tanggal"
+                format="dd-MM-yyyy"
+                inputVariant="outlined"
               />
             </Box>
           </GridItem>
@@ -159,26 +155,26 @@ const ModalFilter = ({ showModal, setShowModal }) => {
                   }
                 />
               ) : (
-                <SelectWithSearchWithDebounced
-                  isDisabled={false}
-                  loadOptions={controller.loadSchool}
-                  onChange={(e) => {
-                    controller.setFilterParam((prevState) => ({
-                      ...prevState,
-                      filter: {
-                        ...prevState.filter,
-                        school_id: e.value,
-                      },
-                    }));
-                  }}
-                  value={controller.filterParam.filter.school_id}
-                  data={[asyncDefaultValue, ...controller.school]}
-                  name="school_id"
-                  label="UNIT"
-                  debounced={controller.debouncedSchool}
-                  placeholder={controller.loading ? "loading..." : "SEMUA"}
-                />
-              )}
+                  <SelectWithSearchWithDebounced
+                    isDisabled={false}
+                    loadOptions={controller.loadSchool}
+                    onChange={(e) => {
+                      controller.setFilterParam((prevState) => ({
+                        ...prevState,
+                        filter: {
+                          ...prevState.filter,
+                          school_id: e.value,
+                        },
+                      }));
+                    }}
+                    value={controller.filterParam.filter.school_id}
+                    data={[asyncDefaultValue, ...controller.school]}
+                    name="school_id"
+                    label="UNIT"
+                    debounced={controller.debouncedSchool}
+                    placeholder={controller.loading ? "loading..." : "SEMUA"}
+                  />
+                )}
             </Box>
           </GridItem>
           <GridItem xs={12} sm={12} md={6}>
@@ -324,7 +320,7 @@ const ModalFilter = ({ showModal, setShowModal }) => {
                 MULAI
               </label>
               <InputMask
-                defaultValue={startTotal}
+                defaultValue={startTotal === 0 ? '' : startTotal}
                 placeholder="Rp. 0"
                 type="text"
                 onChange={(value) => {
@@ -333,7 +329,7 @@ const ModalFilter = ({ showModal, setShowModal }) => {
                     ...prevState,
                     filter: {
                       ...prevState.filter,
-                      start_total: value,
+                      start_total: value === 0 ? '' : value,
                     },
                   }));
                 }}
@@ -346,16 +342,17 @@ const ModalFilter = ({ showModal, setShowModal }) => {
                 HINGGA
               </label>
               <InputMask
-                defaultValue={endTotal < startTotal ? startTotal : endTotal}
+                defaultValue={endTotal < startTotal ? startTotal === 0 ? '' : startTotal : endTotal === 0 ? '' : endTotal}
                 placeholder="Rp. 0"
                 type="text"
                 onChange={(value) => {
                   setEndTotal(value);
+                  
                   controller.setFilterParam((prevState) => ({
                     ...prevState,
                     filter: {
                       ...prevState.filter,
-                      end_total: value,
+                      end_total: value === 0 ? '' : value,
                     },
                   }));
                 }}
@@ -381,8 +378,8 @@ const ModalFilter = ({ showModal, setShowModal }) => {
                   e.preventDefault();
                   setLoading(true);
                   await controller.clearData();
-                  setStartDate(new Date());
-                  setEndDate(new Date());
+                  setStartDate(null);
+                  setEndDate(null);
                   setStartTotal(0);
                   setEndTotal(0);
                   setLoading(false);
@@ -406,10 +403,10 @@ const ModalFilter = ({ showModal, setShowModal }) => {
                     <span>CLEAR ALL</span>
                   </div>
                 ) : (
-                  <div>
-                    <span>CLEAR ALL</span>
-                  </div>
-                )}
+                    <div>
+                      <span>CLEAR ALL</span>
+                    </div>
+                  )}
               </Button>
             </Box>
           </GridItem>
@@ -435,26 +432,26 @@ const ModalFilter = ({ showModal, setShowModal }) => {
                   <span>Terapkan Filter</span>
                 </Button>
               ) : (
-                <Button
-                  small
-                  onClick={async (e) => {
-                    e.preventDefault();
-                    setLoading(true);
-                    await controller.fetchData();
-                    setLoading(false);
-                    setShowModal(false);
-                  }}
-                  node="button"
-                  style={{
-                    background: "#228B22",
-                    color: "#FFFFFF",
-                    fontWeight: "bold",
-                    marginLeft: "4px",
-                  }}
-                >
-                  <span>Terapkan Filter</span>
-                </Button>
-              )}
+                  <Button
+                    small
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      setLoading(true);
+                      await controller.fetchData();
+                      setLoading(false);
+                      setShowModal(false);
+                    }}
+                    node="button"
+                    style={{
+                      background: "#228B22",
+                      color: "#FFFFFF",
+                      fontWeight: "bold",
+                      marginLeft: "4px",
+                    }}
+                  >
+                    <span>Terapkan Filter</span>
+                  </Button>
+                )}
             </Box>
           </GridItem>
         </GridContainer>

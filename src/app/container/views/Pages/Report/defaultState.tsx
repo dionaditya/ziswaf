@@ -22,6 +22,7 @@ const initialState = {
     // Unit ma'had Data
     unitSelected: [],
     unitData: [],
+    unitDataRaw: [],
     unitDataLoading: false,
     unitDataFetching: false,
     // City data
@@ -158,7 +159,9 @@ const initialState = {
   setMessage: () => { },
   message: "",
   handleExportPdf: () => { },
-  generalOperatorPerDay: []
+  generalOperatorPerDay: [],
+  debouncedSchool: () => {},
+  loadSchool: () => {}
 };
 
 export default initialState

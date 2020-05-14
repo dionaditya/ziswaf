@@ -217,7 +217,7 @@ const DonorPage = () => {
                           handleSearchFunc(event);
                         }
                       }}
-                      placeholder="Cari Donatur"
+                      placeholder="Cari Donatur (Nama atau Nomor Handphone)"
                     />
                   </Box>
                 </GridItem>

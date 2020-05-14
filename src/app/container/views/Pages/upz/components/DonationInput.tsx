@@ -11,7 +11,14 @@ import Card from "@/app/container/commons/Card/Card.js";
 import CardHeader from "@/app/container/commons/Card/CardHeader.js";
 import CardBody from "@/app/container/commons/Card/CardBody.js";
 import Button from "@/app/container/commons/CustomButtons/Button.tsx";
-import { Box, Radio, Paper } from "@material-ui/core";
+import {
+  Box,
+  Radio,
+  Paper,
+  makeStyles,
+  Theme,
+  createStyles,
+} from "@material-ui/core";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -32,7 +39,26 @@ const innerTheme = createMuiTheme({
   },
 });
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    label: {
+      color: "#323C47",
+      fontSize: 12,
+      fontWeight: 800,
+    },
+    formContainer: {
+      marginRight: theme.spacing(2),
+    },
+    labelOpsional: {
+      color: "#BCBCBC",
+      fontSize: "14px",
+      fontWeight: "bold",
+    },
+  })
+);
+
 const DonationInput = ({ index, setIndex }) => {
+  const classes = useStyles();
   const [showComponent, setShowComponent] = useState(0);
 
   const controller = useContext(CorporateContext);
@@ -41,7 +67,7 @@ const DonationInput = ({ index, setIndex }) => {
   const [error, setError] = useState(false);
   const [errorDonation, setErrorDonation] = useState(false);
   const [errorGoods, setErrorGoods] = useState(false);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const onChange = (e) => {
     controller.handleInputDonation(e);
@@ -53,34 +79,39 @@ const DonationInput = ({ index, setIndex }) => {
   };
 
   const handleSubmit = async (e) => {
-    setLoading(true)
+    setLoading(true);
     if (
       controller.DonationInfo.category_id !== 0 &&
       controller.DonationInfo.statement_category_id !== 0
     ) {
       setErrorDonation(false);
       if (controller.DonationInfo.donation_item === 1) {
-        if (_.isNumber(controller.DonationInfo.cash.category_id) && controller.DonationInfo.cash.value !== 0) {
+        if (
+          _.isNumber(controller.DonationInfo.cash.category_id) &&
+          Number(controller.DonationInfo.cash.value) !== 0
+        ) {
           setError(false);
           const [status, response] = await controller.handlePostDonation(e);
           if (status === "success") {
-            if(controller.updateSession) {
-              addToast("Data donasi berhasil diperbarui", { appearance: "success" });
+            if (controller.updateSession) {
+              addToast("Data donasi berhasil diperbarui", {
+                appearance: "success",
+              });
               setTimeout(() => {
-                history.push(
-                  `/dashboard/upz-tanda-terima/${response.id}`
-                );
+                history.push(`/dashboard/donation/upz/tanda-terima/${response.id}`);
               }, 500);
             } else {
-              addToast("Data donasi telah tersimpan", { appearance: "success" });
+              addToast("Data donasi telah tersimpan", {
+                appearance: "success",
+              });
               setTimeout(() => {
                 history.push(
-                  `/dashboard/upz-tanda-terima/${response.id}?employee_id=${controller.DonationInfo.employee_id}`
+                  `/dashboard/donation/upz/tanda-terima/${response.id}?employee_id=${controller.DonationInfo.employee_id}`
                 );
               }, 500);
             }
           } else {
-            setLoading(false)
+            setLoading(false);
             if (
               response.response.status === 400 ||
               response.response.status === 402
@@ -91,37 +122,39 @@ const DonationInput = ({ index, setIndex }) => {
             }
           }
         } else {
-          setLoading(false)
+          setLoading(false);
           setError(true);
         }
       } else {
         if (
           controller.DonationInfo.goods.category_id !== 0 &&
-          _.isNumber(controller.DonationInfo.goods.status) === true  &&
-          controller.DonationInfo.goods.value !== 0 &&
+          _.isNumber(controller.DonationInfo.goods.status) === true &&
+          Number(controller.DonationInfo.goods.value) !== 0 &&
           controller.DonationInfo.goods.quantity !== 0
         ) {
           setErrorGoods(false);
           const [status, response] = await controller.handlePostDonation(e);
           if (status === "success") {
-            if(controller.updateSession) {
-               addToast("Data donasi berhasil diperbarui", { appearance: "success" });
+            if (controller.updateSession) {
+              addToast("Data donasi berhasil diperbarui", {
+                appearance: "success",
+              });
 
               setTimeout(() => {
-                history.push(
-                  `/dashboard/upz-tanda-terima/${response.id}`
-                );
+                history.push(`/dashboard/donation/upz/tanda-terima/${response.id}`);
               }, 500);
             } else {
-              addToast("Data donasi telah tersimpan", { appearance: "success" });
+              addToast("Data donasi telah tersimpan", {
+                appearance: "success",
+              });
               setTimeout(() => {
                 history.push(
-                  `/dashboard/upz-tanda-terima/${response.id}?employee_id=${controller.DonationInfo.employee_id}`
+                  `/dashboard/donation/upz/tanda-terima/${response.id}?employee_id=${controller.DonationInfo.employee_id}`
                 );
               }, 500);
             }
           } else {
-            setLoading(false)
+            setLoading(false);
             if (
               response.response.status === 400 ||
               response.response.status === 402
@@ -132,12 +165,12 @@ const DonationInput = ({ index, setIndex }) => {
             }
           }
         } else {
-          setLoading(false)
+          setLoading(false);
           setErrorGoods(true);
         }
       }
     } else {
-      setLoading(false)
+      setLoading(false);
       setErrorDonation(true);
     }
   };
@@ -158,7 +191,8 @@ const DonationInput = ({ index, setIndex }) => {
                     <CardBody>
                       <GridItem xs={12} sm={12} md={12}>
                         <Box display="flex" flexDirection="column">
-                          <label htmlFor="info" className="black-text">
+                        {controller.loading && <span>Loading.....</span>}
+                          <label htmlFor="info" className={classes.label}>
                             Jenis Donasi
                           </label>
                           <SimpleSelect
@@ -169,7 +203,7 @@ const DonationInput = ({ index, setIndex }) => {
                             name="category_id"
                             label="Jenis Donasi"
                           />
-                          <label htmlFor="info" className="black-text">
+                          <label htmlFor="info" className={classes.label}>
                             Kategori Donasi
                           </label>
                           <SimpleSelect
@@ -187,9 +221,20 @@ const DonationInput = ({ index, setIndex }) => {
                               Belum memilih jenis donasi
                             </p>
                           )}
-                          <label htmlFor="info" className="black-text">
-                            Deskripsi Donasi
-                          </label>
+                          <Box
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              marginTop: "10px",
+                            }}
+                          >
+                            <label htmlFor="info" className={classes.label}>
+                              Deskripsi Donasi
+                            </label>
+                            <label className={classes.labelOpsional}>
+                              Opsional
+                            </label>
+                          </Box>
                           <Textarea
                             className="text-area"
                             id="description"
@@ -283,7 +328,12 @@ const DonationInput = ({ index, setIndex }) => {
                     justifyContent="flex-end"
                   >
                     <div className="right mt-4 mr-4 mb-4 ml-4">
-                      <Button onClick={handleSubmit} color="primary" loading={loading} disabled={loading}>
+                      <Button
+                        onClick={handleSubmit}
+                        color="primary"
+                        loading={loading}
+                        disabled={loading}
+                      >
                         Simpan & Lanjutkan
                       </Button>
                     </div>

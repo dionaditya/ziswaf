@@ -35,74 +35,85 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const Nominal: React.FC<{data, handleNominalChange, handleSaveAndContinue}> = ({data, handleNominalChange, handleSaveAndContinue}) => {
-    const classes = useStyles();  
-    const { totalPrognosisRetail, totalPrognosisCorporate, totalPrognosisUpz } = data
-    const total = totalPrognosisRetail + totalPrognosisCorporate + totalPrognosisUpz;
-    const handleOnChange = (name, value) => {
-      handleNominalChange(name, value)
-      handleNominalChange('totalPrognosis', total)
-    };
+const Nominal: React.FC<{ data, handleNominalChange, handleSaveAndContinue }> = ({ data, handleNominalChange, handleSaveAndContinue }) => {
+  const classes = useStyles();
+  const { totalPrognosisRetail, totalPrognosisCorporate, totalPrognosisUpz } = data
+  const [error, setError] = React.useState(false);
+  const total = totalPrognosisRetail + totalPrognosisCorporate + totalPrognosisUpz;
+  const handleOnChange = (name, value) => {
+    handleNominalChange(name, value)
+    handleNominalChange('totalPrognosis', total)
+  };
+
+
+  const handleSubmit = () => {
+    if (totalPrognosisRetail === 0 && totalPrognosisCorporate === 0 && totalPrognosisUpz === 0) {
+      setError(true)
+    } else {
+      setError(false)
+      handleSaveAndContinue(1)
+    }
+  }
 
   return (
     <React.Fragment>
       <GridContainer>
         <GridItem xs={12} sm={12} md={12}>
-        <Card>
-          <CardHeader color="success">
-            <h4 className={classes.cardTitle}>Metode Nominal</h4>
-          </CardHeader>
-          <CardBody>
-            <GridContainer>
-              <Box className={classes.formContainer}>
-                <GridItem xs={12} sm={12} md={12}>
-                  <label className={classes.label}> Prognosis Retail </label>
-                </GridItem>
-                <GridItem xs={12} sm={12} md={12}>
+          <Card>
+            <CardHeader color="success">
+              <h4 className={classes.cardTitle}>Metode Nominal</h4>
+            </CardHeader>
+            <CardBody>
+              <GridContainer>
+                <Box className={classes.formContainer}>
+                  <GridItem xs={12} sm={12} md={12}>
+                    <label className={classes.label}> Prognosis Retail </label>
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={12}>
                     <Box className={classes.formControl}>
-                      <InputMask defaultValue={totalPrognosisRetail} placeholder="Rp. 0" type="text" onChange={(value) => handleOnChange('totalPrognosisRetail', value)} />
+                      <InputMask defaultValue={totalPrognosisRetail === 0 ? '' : totalPrognosisRetail} placeholder="Rp. 0" type="text" onChange={(value) => handleOnChange('totalPrognosisRetail', value)} />
                     </Box>
-                </GridItem>
-              </Box>
-              <Box className={classes.formContainer}>
-                <GridItem xs={12} sm={12} md={12}>
-                  <label className={classes.label}> Prognosis Corporate </label>
-                </GridItem>
-                <GridItem xs={12} sm={12} md={12}>
+                  </GridItem>
+                </Box>
+                <Box className={classes.formContainer}>
+                  <GridItem xs={12} sm={12} md={12}>
+                    <label className={classes.label}> Prognosis Corporate </label>
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={12}>
                     <Box className={classes.formControl}>
-                      <InputMask defaultValue={totalPrognosisCorporate} placeholder="Rp. 0" type="text" onChange={(value) => handleOnChange('totalPrognosisCorporate', value)} />
+                      <InputMask defaultValue={totalPrognosisCorporate === 0 ? '' : totalPrognosisCorporate} placeholder="Rp. 0" type="text" onChange={(value) => handleOnChange('totalPrognosisCorporate', value)} />
                     </Box>
-                </GridItem>
-              </Box>
-              <Box className={classes.formContainer}>
-                <GridItem xs={12} sm={12} md={12}>
-                  <label className={classes.label}> Prognosis UPZ </label>
-                </GridItem>
-                <GridItem xs={12} sm={12} md={12}>
+                  </GridItem>
+                </Box>
+                <Box className={classes.formContainer}>
+                  <GridItem xs={12} sm={12} md={12}>
+                    <label className={classes.label}> Prognosis UPZ </label>
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={12}>
                     <Box className={classes.formControl}>
-                    <InputMask defaultValue={totalPrognosisUpz} placeholder="Rp. 0" type="text" onChange={(value) => handleOnChange('totalPrognosisUpz', value)} />
+                      <InputMask defaultValue={totalPrognosisUpz === 0 ? '' : totalPrognosisUpz} placeholder="Rp. 0" type="text" onChange={(value) => handleOnChange('totalPrognosisUpz', value)} />
                     </Box>
-                </GridItem>
-              </Box>
-              <Box className={classes.formContainer} style={{marginTop: "5vh"}}>
-                <GridItem xs={12} sm={12} md={12}>
-                  <label className={classes.label}> Jumlah Prognosis Ziswaf </label>
-                </GridItem>
-                <GridItem xs={12} sm={12} md={12}>
+                  </GridItem>
+                </Box>
+                <Box className={classes.formContainer} style={{ marginTop: "5vh" }}>
+                  <GridItem xs={12} sm={12} md={12}>
+                    <label className={classes.label}> Jumlah Prognosis Ziswaf </label>
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={12}>
                     <Box className={classes.formControl}>
-                    <InputMask disabled defaultValue={total} placeholder="Rp. 0" type="text" onChange={(value) => {}} />
+                      <InputMask disabled defaultValue={total} placeholder="Rp. 0" type="text" onChange={(value) => { }} />
                     </Box>
-                </GridItem>
-              </Box>
-            </GridContainer>
-            <Box style={{marginTop: "5vh"}} display="flex" justifyContent="center">
-              <Button style={{backgroundColor: '#00923F', color: '#FFFFFF'}} color="success" onClick={(e) =>  handleSaveAndContinue(1)}>
-                Simpan & Lanjutkan
+                  </GridItem>
+                </Box>
+              </GridContainer>
+              <Box style={{ marginTop: "5vh" }} display="flex" justifyContent="center">
+                <Button style={{ backgroundColor: '#00923F', color: '#FFFFFF' }} color="success" onClick={(e) =>  handleSaveAndContinue(1)}>
+                  Simpan & Lanjutkan
               </Button>
-            </Box>
-          </CardBody>
-        </Card>
-      </GridItem>
+              </Box>
+            </CardBody>
+          </Card>
+        </GridItem>
       </GridContainer>
     </React.Fragment>
   );

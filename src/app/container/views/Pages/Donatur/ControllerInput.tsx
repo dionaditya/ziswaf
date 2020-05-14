@@ -125,7 +125,6 @@ export const DonorController = ({ children }) => {
   const location = useLocation();
   const query = qs.parse(location.search);
 
-  console.log(location);
 
   React.useEffect(() => {
     if (id !== undefined) {
@@ -219,7 +218,7 @@ export const DonorController = ({ children }) => {
           position,
           email,
           address,
-          phoneNumber[0],
+          phone[0] === '+' ? phoneNumber[0] : phone,
           Number(status),
           Number(npwp),
           Number(posCode),
@@ -262,7 +261,7 @@ export const DonorController = ({ children }) => {
           position,
           email,
           address,
-          phoneNumber[0],
+          phone[0] === '+' ? phoneNumber[0] : phone,
           Number(checkbox),
           Number(npwp),
           Number(posCode),
@@ -301,7 +300,7 @@ export const DonorController = ({ children }) => {
         position,
         email,
         address,
-        phoneNumber[0],
+        phone[0] === '+' ? phoneNumber[0] : phone,
         Number(status),
         Number(npwp),
         Number(posCode),

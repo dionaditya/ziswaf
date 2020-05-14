@@ -578,13 +578,12 @@ export const MadrasahController = ({ children }) => {
   const optionsTable = {
     filterType: "dropdown",
     responsive: "scroll",
-    sort: true,
+    sort: state.data.length ? true :false,
     pagination: true,
     page: pagination.page,
     count: pagination.total,
     rowsPerPage: pagination.rowsPerPage,
     selectableRowsHeader: false,
-
     search: false,
     filter: false,
     elevation: 0,

@@ -314,16 +314,22 @@ export const StudentListInputController = ({ children }) => {
     const debouncedSchool = useDebounce(querySchool, 40);
   
     const formatPhone: any = (phoneNumber) => {
-        const formatValue = phoneNumber
-        .slice(3, phoneNumber.length)
-        .replace(/\s+/g, "")
-        .match(/(\d+)/);
 
-        if(formatValue === null) {
-            return ''
+        if(phoneNumber[0] === '+') {
+            const formatValue = phoneNumber
+            .slice(3, phoneNumber.length)
+            .replace(/\s+/g, "")
+            .match(/(\d+)/);
+    
+            if(formatValue === null) {
+                return ''
+            } else {
+                return formatValue[0]
+            }
         } else {
-            return formatValue[0]
+            return phoneNumber
         }
+        
     }
 
 
@@ -610,7 +616,6 @@ export const StudentListInputController = ({ children }) => {
             
             try {
                 if (state.student_info.image !== null && _.isNil(state.student_info.image) === false) {
-
                     const {
                         identity_number,
                         school_id,

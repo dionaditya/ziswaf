@@ -24,10 +24,14 @@ const useStyles = makeStyles((theme: Theme) =>
       color: "#323C47",
       fontSize: 12,
       fontWeight: 800,
-      marginTop: theme.spacing(2),
     },
     formContainer: {
       marginRight: theme.spacing(2),
+    },
+    labelOpsional: {
+      color: '#BCBCBC',
+      fontSize: '14px',
+      fontWeight: 'bold',
     },
   })
 );
@@ -68,7 +72,12 @@ const JenisBarang = ({ controller, onChange, error }) => {
                           Belum memilih jenis donasi barang
                         </p>
                       )}
+                      <Box style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
                       <label className={classes.label}>Deskripsi Barang</label>
+                      <label className={classes.labelOpsional}>
+                            Opsional
+                      </label>
+                      </Box>
                       <Textarea
                         className="text-area"
                         id="description"
@@ -116,7 +125,7 @@ const JenisBarang = ({ controller, onChange, error }) => {
                             onChange(e);
                           }}
                         />
-                          {error && value === 0 && (
+                          {error && Number(value) === 0 && (
                         <p style={{ color: "red", fontSize: "12px" }}>
                           Jumlah estimasi nilai brang harus lebih dari Rp. 0
                         </p>

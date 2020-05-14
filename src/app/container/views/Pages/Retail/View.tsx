@@ -27,21 +27,21 @@ const Retail: React.FC<{}> = () => {
   const [value, setValue] = React.useState(0)
   const location = useLocation()
   const { id, transaction_id } = useParams()
-  const donor = useRouteMatch('/dashboard/retail-input/:id')
-  const transaction = useRouteMatch('/dashboard/retail-tanda-terima/:transaction_id')
+  const donor = useRouteMatch('/dashboard/donation/retail/transaction/:id')
+  const transaction = useRouteMatch('/dashboard/donation/retail/tanda-terima/:transaction_id')
 
   const tabs = [
     {
       name: 'Data Donatur',
-      link: '/dashboard/retail'
+      link: '/dashboard/donation/retail'
     },
     {
       name: 'Data Donasi',
-      link: `/dashboard/retail-input/${id}`
+      link: `/dashboard/donation/retail/transaction/${id}`
     },
     {
       name: 'Tanda Terima',
-      link: `/dashboard/retail-tanda-terima/${transaction_id}`
+      link: `/dashboard/donation/retail/tanda-terima/${transaction_id}`
     },
   ]
 

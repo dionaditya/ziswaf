@@ -37,4 +37,5 @@ export interface ReportDonationInterface  {
     statementReportTotal: object,
     modalFilter: boolean,
     handleModalFilter: Function,
+    debounceSchool: Function
 }
